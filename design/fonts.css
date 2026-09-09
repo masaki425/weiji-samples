@@ -1,0 +1,38 @@
+/* ==========================================================================
+   W Eiji design system — fonts.css
+   印刷物の書体（細い幾何学サンセリフ + 細いゴシック + 雲形ロゴのセリフ）を
+   無料の Web フォントで近似する。組み合わせの根拠は docs/design_system.md。
+
+   Latin display / body : DM Sans (300 / 400 / 500)      ← 印刷: 細い幾何学サンセリフ
+   Japanese             : Zen Kaku Gothic New (300/400/700) ← 印刷: 細いゴシック
+   Japanese fallback    : Noto Sans JP (300 / 400)
+   Serif (logo only)    : EB Garamond (400)              ← 印刷: Sabon 系のセリフ
+
+   読み込みはこのファイルの @import に一本化する。ページ側では
+   <link rel="preconnect" href="https://fonts.googleapis.com"> と
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> を head に置く。
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Zen+Kaku+Gothic+New:wght@300;400;700&family=Noto+Sans+JP:wght@300;400&family=EB+Garamond:wght@400&display=swap");
+
+/* --------------------------------------------------------------------------
+   ローカル代替（Web フォント到着前のレイアウト移動を抑える）
+   size-adjust は目視で合わせた暫定値。
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: "DM Sans Fallback";
+  src: local("Helvetica Neue"), local("Arial");
+  size-adjust: 98%;
+  ascent-override: 96%;
+  descent-override: 26%;
+}
+
+@font-face {
+  font-family: "Zen Kaku Gothic New Fallback";
+  /* local() は書体のフルネームか PostScript 名で指定する */
+  src: local("Hiragino Sans W3"), local("HiraginoSans-W3"),
+       local("Hiragino Kaku Gothic ProN W3"), local("HiraKakuProN-W3"),
+       local("Yu Gothic Regular"), local("YuGothic-Regular"),
+       local("Meiryo");
+  size-adjust: 100%;
+}

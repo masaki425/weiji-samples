@@ -1,0 +1,1534 @@
+/* ==========================================================================
+   W Eiji design system — components.css
+   部品は tokens.css の意味役割（--color-*）と人物エイリアス（--a-*, --s-*）だけを使う。
+   原色トークン（blue / red のランプ）を直接書かない。grep で検査できるよう、
+   このファイルには原色トークン名を一切書かない。
+   クラス命名: .c-部品, .c-部品__要素, .c-部品--変種。レイアウト補助は .l-*
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   layout helpers
+   -------------------------------------------------------------------------- */
+.l-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6) var(--space-7);
+}
+
+.l-stack > * + * {
+  margin-top: var(--space-4);
+}
+
+.l-section {
+  padding-block: var(--space-8);
+}
+
+@media (max-width: 47.99em) {
+  .l-two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   primitives
+   -------------------------------------------------------------------------- */
+.c-label {
+  display: inline-block;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--color-text-3);
+}
+
+.c-label--a { color: var(--color-a-text); }
+.c-label--s { color: var(--color-s-text); }
+.c-label--m { color: var(--color-common-text); }
+
+.c-caption {
+  font-size: var(--text-sm);
+  color: var(--color-text-3);
+  line-height: 1.6;
+}
+
+.c-credit {
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-hairline {
+  height: var(--hairline);
+  border: 0;
+  margin: 0;
+  background: linear-gradient(90deg, var(--color-a), var(--color-s));
+}
+
+.c-hairline--a { background: var(--color-a); }
+.c-hairline--s { background: var(--color-s); }
+.c-hairline--m { background: var(--color-common); }
+.c-hairline--ink { background: var(--color-line); }
+
+.c-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0.6em 1.4em;
+  border: 1px solid var(--color-text);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.c-button:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.c-button--a {
+  border-color: var(--color-a-text);
+  color: var(--color-a-text);
+}
+
+.c-button--a:hover {
+  background: var(--color-a-text);
+  color: var(--color-on-a);
+}
+
+.c-button--s {
+  border-color: var(--color-s-text);
+  color: var(--color-s-text);
+}
+
+.c-button--s:hover {
+  background: var(--color-s-text);
+  color: var(--color-on-s);
+}
+
+.c-button--m {
+  border-color: var(--color-common-text);
+  color: var(--color-common-text);
+}
+
+.c-button--m:hover {
+  background: var(--color-common-text);
+  color: var(--color-on-common);
+}
+
+.c-button[aria-pressed="true"] {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* 人物タグ: 名前の前に置く小さな印 */
+.c-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-person::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  background: var(--person, var(--color-text));
+  flex: none;
+}
+
+.c-person--a { --person: var(--color-a); }
+.c-person--s { --person: var(--color-s); }
+.c-person--m { --person: var(--color-common); }
+
+/* 線画 SVG（<svg> をインラインで置くか <img> で読む） */
+.c-shape {
+  display: block;
+  width: var(--shape-size, 120px);
+  height: auto;
+  color: var(--color-text);
+}
+
+.c-shape--on-a { color: var(--color-shape-on-a); }
+.c-shape--on-s { color: var(--color-shape-on-s); }
+
+.c-table {
+  font-size: var(--text-sm);
+}
+
+.c-table th {
+  width: 9em;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   header / nav
+   -------------------------------------------------------------------------- */
+.c-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: 64px;
+  padding-inline: var(--gutter);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-bg);
+}
+
+.c-header__logo {
+  font-size: var(--text-lg);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  text-decoration: none;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.c-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.c-nav__list {
+  display: flex;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-nav__link {
+  display: inline-block;
+  padding-block: var(--space-2);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  text-decoration: none;
+  color: var(--color-text-2);
+  border-bottom: 1px solid transparent;
+}
+
+.c-nav__link:hover,
+.c-nav__link[aria-current="page"] {
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
+}
+
+.c-lang {
+  display: inline-flex;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+}
+
+.c-lang__link {
+  padding: var(--space-2) var(--space-1);
+  text-decoration: none;
+  color: var(--color-text-3);
+}
+
+.c-lang__link[aria-current="true"] {
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-text);
+}
+
+.c-nav__toggle {
+  display: none;
+}
+
+@media (max-width: 47.99em) {
+  .c-nav__toggle {
+    display: inline-flex;
+  }
+
+  .c-nav__list {
+    display: none;
+    position: absolute;
+    inset: 64px 0 auto 0;
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-4) var(--gutter) var(--space-6);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-line);
+    z-index: 10;
+  }
+
+  .c-nav[data-open="true"] .c-nav__list {
+    display: flex;
+  }
+
+  .c-nav__link {
+    display: block;
+    min-height: 44px;
+    padding-block: var(--space-3);
+    font-size: var(--text-md);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   split hero: 左 A / 右 S。モバイルは A が上（ポスターの上下と同じ）
+   -------------------------------------------------------------------------- */
+.c-split-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: min(70vh, 640px);
+}
+
+.c-split-hero__pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-7) var(--gutter);
+  overflow: hidden;
+}
+
+.c-split-hero__pane--a {
+  background: var(--color-a);
+  color: var(--color-on-a);
+}
+
+.c-split-hero__pane--s {
+  background: var(--color-s);
+  color: var(--color-on-s);
+}
+
+/* 白い表示文字は 24px 以上に限る。小さな文字は --ink にする（AA 4.5 以上） */
+.c-split-hero__title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-display);
+}
+
+.c-split-hero__sub {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-split-hero__meta {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-split-hero__shape {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--gutter);
+  width: clamp(80px, 18vw, 200px);
+}
+
+.c-split-hero__pane--a .c-split-hero__shape { color: var(--color-shape-on-a); }
+.c-split-hero__pane--s .c-split-hero__shape { color: var(--color-shape-on-s); }
+
+/* 鏡像の飾り文字（ポスターの反転タイトル）。装飾のみ */
+.c-split-hero__mirror {
+  position: absolute;
+  inset-inline: var(--gutter);
+  bottom: var(--space-3);
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  color: var(--color-a);
+  transform: scale(1, -1);
+  opacity: 0.9;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 47.99em) {
+  .c-split-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .c-split-hero__pane {
+    min-height: 44vh;
+    padding-block: var(--space-6);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   eiji columns: 二列の人物ブロック
+   -------------------------------------------------------------------------- */
+.c-eiji {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-7);
+}
+
+.c-eiji__col {
+  border-top: 2px solid var(--col);
+  padding-top: var(--space-4);
+}
+
+.c-eiji__col--a { --col: var(--color-a); --col-text: var(--color-a-text); }
+.c-eiji__col--s { --col: var(--color-s); --col-text: var(--color-s-text); }
+
+.c-eiji__role {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  color: var(--col-text);
+}
+
+.c-eiji__name {
+  margin: var(--space-1) 0 var(--space-3);
+  font-size: var(--text-2xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-eiji__name-en {
+  display: block;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text-3);
+}
+
+.c-eiji__body {
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 47.99em) {
+  .c-eiji {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   timeline: 中央に年、左 A、右 S。共通の出来事は全幅
+   -------------------------------------------------------------------------- */
+.c-timeline {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--hairline);
+  background: var(--color-line);
+}
+
+.c-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--space-5);
+  padding-block: var(--space-4);
+}
+
+.c-timeline__year {
+  grid-column: 2;
+  align-self: start;
+  justify-self: center;
+  padding: 0 var(--space-2);
+  background: var(--color-bg);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+}
+
+.c-timeline__a,
+.c-timeline__s {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+
+.c-timeline__a {
+  grid-column: 1;
+  text-align: right;
+}
+
+.c-timeline__s {
+  grid-column: 3;
+  text-align: left;
+}
+
+.c-timeline__a::before,
+.c-timeline__s::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-inline: 0.5em;
+  border-radius: 50%;
+  vertical-align: 0.1em;
+  background: var(--color-a);
+}
+
+.c-timeline__s::before {
+  background: var(--color-s);
+}
+
+.c-timeline__a::before {
+  float: right;
+  margin-top: 0.55em;
+}
+
+.c-timeline__s::before {
+  float: left;
+  margin-top: 0.55em;
+}
+
+/* 共通行: 二人に共通する出来事は緑（カタログの中央部分の色） */
+.c-timeline__item--common .c-timeline__year,
+.c-timeline__common {
+  color: var(--color-common-strong);
+}
+
+.c-timeline__common {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 36em;
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  text-align: center;
+  font-size: var(--text-sm);
+  background: var(--color-bg);
+  border-top: var(--hairline) solid transparent;
+  border-image: linear-gradient(90deg, var(--color-a), var(--color-s)) 1;
+}
+
+.c-timeline__item--common .c-timeline__year {
+  grid-row: 1;
+}
+
+@media (max-width: 47.99em) {
+  .c-timeline::before {
+    display: none;
+  }
+
+  .c-timeline__item {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-2);
+    padding-left: 0;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .c-timeline__year,
+  .c-timeline__a,
+  .c-timeline__s,
+  .c-timeline__common {
+    grid-column: 1;
+    justify-self: start;
+    text-align: left;
+    padding-inline: 0;
+    max-width: none;
+  }
+
+  .c-timeline__year {
+    order: -1;
+    font-size: var(--text-md);
+  }
+
+  .c-timeline__a::before,
+  .c-timeline__s::before {
+    float: left;
+    margin-left: 0;
+  }
+
+  .c-timeline__common {
+    border-image: none;
+    border-top: 0;
+    padding: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   cards: work / exhibit / event / news
+   -------------------------------------------------------------------------- */
+.c-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-6) var(--space-5);
+}
+
+.c-work {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.c-work__media {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--color-bg-2);
+}
+
+.c-work__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.c-work__no {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.c-work__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.c-work__title-en {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-2);
+}
+
+.c-work__text {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-2);
+}
+
+.c-work__no { color: var(--voice-strong); }
+.c-work--a .c-work__no { color: var(--color-a-text); }
+.c-work--s .c-work__no { color: var(--color-s-text); }
+
+.c-event {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+
+.c-event__date {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.3;
+}
+
+.c-event__day {
+  display: block;
+  font-size: var(--text-2xl);
+  font-weight: 300;
+}
+
+.c-event__meta {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+}
+
+.c-event__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 400;
+}
+
+.c-event__facts {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-2);
+}
+
+.c-event__facts dt {
+  display: inline;
+  color: var(--color-text-3);
+}
+
+.c-event__facts dt::after {
+  content: "：";
+}
+
+.c-event__facts dd {
+  display: inline;
+  margin: 0 var(--space-3) 0 0;
+}
+
+.c-event__photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+.c-event__photos img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 47.99em) {
+  .c-event {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+.c-news {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-sm);
+}
+
+.c-news__date {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-3);
+}
+
+.c-news__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  font-weight: 400;
+}
+
+@media (max-width: 47.99em) {
+  .c-news {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   quote: A は左罫・左寄せ、S は右罫・右寄せ
+   -------------------------------------------------------------------------- */
+.c-quote {
+  max-width: 36em;
+  margin: 0;
+  padding-inline: var(--space-5);
+  border-inline-start: 2px solid var(--q, var(--color-line));
+}
+
+.c-quote__text {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.c-quote__source {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-3);
+}
+
+.c-quote--a { --q: var(--color-a); }
+.c-quote--m { --q: var(--color-common); }
+
+.c-quote--s {
+  --q: var(--color-s);
+  margin-inline-start: auto;
+  text-align: right;
+  border-inline-start: 0;
+  border-inline-end: 2px solid var(--q);
+}
+
+/* --------------------------------------------------------------------------
+   video: サムネイルのファサード。クリック後に iframe を差し込む
+   -------------------------------------------------------------------------- */
+.c-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+.c-video__facade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.c-video__facade img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  transition: opacity var(--transition);
+}
+
+.c-video__facade:hover img {
+  opacity: 1;
+}
+
+.c-video__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 72px;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid var(--paper);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--paper);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  background: rgba(26, 26, 26, 0.45);
+}
+
+.c-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.c-video-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-3);
+}
+
+.c-chapters {
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.c-chapters li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-top: 1px solid var(--color-line);
+}
+
+.c-chapters time {
+  color: var(--color-text-3);
+}
+
+/* --------------------------------------------------------------------------
+   gallery + lightbox
+   -------------------------------------------------------------------------- */
+.c-gallery__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.c-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-gallery__item {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.c-gallery__item img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  object-fit: cover;
+  transition: opacity var(--transition);
+}
+
+.c-gallery__item:hover img {
+  opacity: 0.85;
+}
+
+.c-gallery__item[hidden] {
+  display: none;
+}
+
+.c-lightbox {
+  width: min(96vw, 1400px);
+  max-height: 96vh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.c-lightbox::backdrop {
+  background: rgba(26, 26, 26, 0.85);
+}
+
+.c-lightbox__figure {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 96vh;
+}
+
+.c-lightbox__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--ink);
+}
+
+.c-lightbox__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--paper);
+}
+
+.c-lightbox__caption .c-credit {
+  color: var(--line);
+}
+
+.c-lightbox__controls {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.c-lightbox__btn {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--paper);
+  background: rgba(26, 26, 26, 0.6);
+  color: var(--paper);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   catalogue / footer
+   -------------------------------------------------------------------------- */
+.c-catalogue {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 2fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.c-catalogue__cover {
+  aspect-ratio: 1 / 1.414;
+  background: var(--color-bg-2);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+}
+
+@media (max-width: 47.99em) {
+  .c-catalogue {
+    grid-template-columns: 1fr;
+  }
+}
+
+.c-footer {
+  margin-top: var(--space-9);
+  padding: var(--space-7) var(--gutter) var(--space-8);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-sm);
+  color: var(--color-text-2);
+}
+
+.c-footer__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-6);
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.c-footer__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--color-text-3);
+}
+
+.c-footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-footer li {
+  margin-bottom: var(--space-1);
+}
+
+.c-footer__copy {
+  max-width: var(--container);
+  margin: var(--space-7) auto 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* 雲形ロゴ: SVG の外形の上に文字を重ねる */
+.c-cloud {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--cloud-size, 200px);
+  color: var(--color-text);
+}
+
+.c-cloud svg {
+  grid-area: 1 / 1;
+  width: 100%;
+}
+
+.c-cloud__text {
+  grid-area: 1 / 1;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: calc(var(--cloud-size, 200px) * 0.1);
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+}
+
+/* ==========================================================================
+   v0.2: カタログ（AO2025book）から取り込んだ部品
+   色はすべて --voice-*（祖先の data-voice="a|s|m" で決まる）か --color-* を使う
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   section label: 下線付きの和文ラベル＋英語の小ラベル（「展覧会概要 / Event Overview」）
+   -------------------------------------------------------------------------- */
+.c-section-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4em;
+  margin-block-end: var(--space-6);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+}
+
+.c-section-label__ja {
+  padding-block-end: 0.2em;
+  border-block-end: var(--rule) solid currentColor;
+}
+
+.c-section-label__en {
+  font-size: var(--text-xs);
+}
+
+/* --------------------------------------------------------------------------
+   text header: タイトル左、著者右（役職は小さく下に）
+   -------------------------------------------------------------------------- */
+.c-text-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-4) var(--space-6);
+  align-items: start;
+  margin-block-end: var(--space-7);
+}
+
+.c-text-header__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+}
+
+.c-text-header__title-en {
+  display: block;
+  font-size: var(--text-md);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-text);
+}
+
+.c-text-header__author {
+  text-align: end;
+}
+
+.c-text-header__name {
+  display: block;
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+}
+
+.c-text-header__role {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-3);
+}
+
+/* 縦組みの中では、タイトルが右端（最初）、著者が左端（最後）の段になる */
+.c-text-header--vertical {
+  display: block;
+}
+
+.c-text-header--vertical .c-text-header__title {
+  margin-block-end: var(--space-6);
+}
+
+.c-text-header--vertical .c-text-header__author {
+  text-align: end; /* 縦組みでは「下」 */
+}
+
+@media (max-width: 47.99em) {
+  .c-text-header {
+    grid-template-columns: 1fr;
+  }
+
+  .c-text-header__author,
+  .c-text-header--vertical .c-text-header__author {
+    text-align: start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Q&A card: 角丸の枠、質問（JP / EN）、点線、回答（JP / EN）
+   質問はセクション色、回答は墨（本文は墨という決定）
+   -------------------------------------------------------------------------- */
+.c-qa-card {
+  padding: var(--space-4) var(--space-5);
+  border: var(--rule) solid var(--voice);
+  border-radius: var(--radius-card);
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  background: var(--color-bg);
+}
+
+.c-qa-card__q,
+.c-qa-card__a {
+  margin: 0;
+  max-inline-size: none;
+}
+
+.c-qa-card__q {
+  color: var(--voice-strong);
+}
+
+.c-qa-card__who {
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+}
+
+.c-qa-card__who::before {
+  content: "／";
+}
+
+.c-qa-card__en {
+  display: block;
+  margin-block-start: 0.3em;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: var(--voice-text);
+}
+
+.c-qa-card__a .c-qa-card__en {
+  color: var(--color-text-2);
+}
+
+.c-qa-card__divider {
+  margin: var(--space-3) 0;
+  border: 0;
+  border-block-start: 1px dotted var(--voice);
+}
+
+.c-qa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   work list: 罫、3 列の写真、丸数字の項目（2 段）、英文のラン・イン
+   -------------------------------------------------------------------------- */
+.c-worklist__photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4) var(--space-3);
+  padding-block: var(--space-4);
+  border-block: var(--rule) solid var(--voice);
+}
+
+.c-worklist__photos figure img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  object-fit: cover;
+}
+
+.c-worklist__photos figcaption {
+  margin-block-start: 0.4em;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--voice-strong);
+}
+
+.c-worklist__entries {
+  columns: 2;
+  column-gap: var(--space-7);
+  margin: var(--space-5) 0;
+  padding: 0 0 0 1.6em;
+  list-style: circled;
+  font-size: var(--text-sm);
+  line-height: 1.75;
+}
+
+.c-worklist__entries li {
+  break-inside: avoid;
+  margin-block-end: var(--space-4);
+  padding-inline-start: 0.2em;
+}
+
+.c-worklist__entries li::marker {
+  color: var(--voice-strong);
+}
+
+.c-worklist__title {
+  display: inline;
+  padding-block-end: 0.1em;
+  border-block-end: var(--rule) solid var(--voice);
+  color: var(--voice-strong);
+}
+
+.c-worklist__text {
+  margin: 0.35em 0 0;
+  max-inline-size: none;
+}
+
+.c-worklist__en {
+  margin: 0;
+  padding-block: var(--space-4);
+  border-block: var(--rule) solid var(--voice);
+  max-inline-size: none;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-text-2);
+}
+
+@media (max-width: 47.99em) {
+  .c-worklist__photos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .c-worklist__entries {
+    columns: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CV: 年｜事項。2 段は縦罫で分ける
+   -------------------------------------------------------------------------- */
+.c-cv {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.35em var(--space-4);
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.c-cv dt {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+}
+
+.c-cv dd {
+  margin: 0;
+}
+
+.c-cv__heading {
+  grid-column: 1 / -1;
+  margin-block: var(--space-4) var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--voice-strong);
+}
+
+.c-cv__heading span {
+  padding-block-end: 0.15em;
+  border-block-end: var(--rule) solid currentColor;
+}
+
+.c-cv-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-7);
+}
+
+.c-cv-columns > * + * {
+  padding-inline-start: var(--space-6);
+  border-inline-start: var(--rule) solid var(--voice);
+}
+
+@media (max-width: 47.99em) {
+  .c-cv-columns {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .c-cv-columns > * + * {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    padding-block-start: var(--space-4);
+    border-block-start: var(--rule) solid var(--voice);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   data list: 「日時｜11月15日（土）14:00-15:30」
+   -------------------------------------------------------------------------- */
+.c-datalist {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.8;
+}
+
+.c-datalist > div {
+  display: flex;
+  gap: 0.1em;
+}
+
+.c-datalist dt {
+  flex: none;
+  color: var(--voice-strong);
+  white-space: nowrap;
+}
+
+.c-datalist dt::after {
+  content: "｜";
+  color: var(--voice);
+}
+
+.c-datalist dd {
+  margin: 0;
+}
+
+.c-datalist--en {
+  font-size: var(--text-xs);
+  color: var(--color-text-2);
+}
+
+.c-datalist--en dt::after {
+  content: ": ";
+}
+
+/* --------------------------------------------------------------------------
+   dialogue: 発言者名だけセクション色（下線付き）。本文は墨
+   <p class="c-dialogue__line" data-voice="a"><span class="c-dialogue__speaker">司</span>…</p>
+   -------------------------------------------------------------------------- */
+.c-dialogue {
+  font-size: var(--text-sm);
+  line-height: 1.9;
+}
+
+.c-dialogue__line {
+  margin: 0;
+  margin-block-end: var(--space-3);
+  max-inline-size: var(--measure-jp);
+}
+
+.c-dialogue__speaker {
+  display: inline-block;
+  min-width: 2.2em;
+  margin-inline-end: 0.6em;
+  padding-block-end: 0.05em;
+  border-block-end: var(--rule) solid var(--voice);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+  vertical-align: 0.1em;
+}
+
+/* --------------------------------------------------------------------------
+   photo grid: 2×2（狭いガター）、1 面＋2 段、余白付き 1 面
+   -------------------------------------------------------------------------- */
+.c-photo-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.c-photo-grid--2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.c-photo-grid--1-2 {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.c-photo-grid--1-2 > :first-child {
+  grid-row: 1 / -1;
+}
+
+.c-photo-grid--full {
+  grid-template-columns: 1fr;
+  padding-inline: var(--gutter);
+}
+
+.c-photo-grid figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.c-photo-grid img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.c-photo-grid--1-2 > :first-child img {
+  aspect-ratio: auto;
+}
+
+.c-photo-grid figcaption {
+  margin-block-start: 0.4em;
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+}
+
+@media (max-width: 47.99em) {
+  .c-photo-grid--1-2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .c-photo-grid--1-2 > :first-child {
+    grid-row: auto;
+  }
+
+  .c-photo-grid--1-2 > :first-child img {
+    aspect-ratio: 3 / 2;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   rule: セクション色の細罫（水平・垂直）
+   -------------------------------------------------------------------------- */
+.c-rule {
+  margin: var(--space-4) 0;
+  border: 0;
+  border-block-start: var(--rule) solid var(--voice);
+}
+
+.c-rule--a { border-color: var(--color-a); }
+.c-rule--s { border-color: var(--color-s); }
+.c-rule--m { border-color: var(--color-common); }
+.c-rule--ink { border-color: var(--color-line); }
+
+.c-rule--vertical {
+  align-self: stretch;
+  margin: 0 var(--space-4);
+  border: 0;
+  border-inline-start: var(--rule) solid var(--voice);
+}
+
+/* --------------------------------------------------------------------------
+   TOC: 点線リーダーと番号
+   -------------------------------------------------------------------------- */
+.c-toc {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.c-toc li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  padding-block: 0.35em;
+}
+
+.c-toc li.is-sub {
+  padding-inline-start: var(--space-5);
+}
+
+.c-toc__label {
+  color: var(--color-text);
+}
+
+.c-toc__sub {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-3);
+}
+
+.c-toc__leader {
+  flex: 1;
+  min-width: 1.5em;
+  border-block-end: 1px dotted var(--voice);
+  transform: translateY(-0.35em);
+}
+
+.c-toc__no {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-strong);
+}
+
+.c-toc__no--a { color: var(--color-a-text); }
+.c-toc__no--s { color: var(--color-s-text); }
+.c-toc__no--m { color: var(--color-common-text); }
+
+/* --------------------------------------------------------------------------
+   page marks: 二色の番号対（左＝S の通し、右＝A の通し）。カタログのノンブル
+   -------------------------------------------------------------------------- */
+.c-page-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.c-page-marks__s { color: var(--color-s-text); }
+.c-page-marks__a { color: var(--color-a-text); }

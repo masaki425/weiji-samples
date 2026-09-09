@@ -1,0 +1,352 @@
+/* ==========================================================================
+   W Eiji design system — base.css
+   リセット、本文組版（日英）、見出し、リンク、フォーカス、汎用ユーティリティ。
+   値はすべて tokens.css のカスタムプロパティを参照する。
+   ========================================================================== */
+
+/* --- reset ---------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+/* hidden 属性は作者の display 指定（grid / flex）に負けるので明示する */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--text-md);
+  line-height: var(--leading-jp);
+  letter-spacing: var(--tracking-jp);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+
+/* --- language rules ------------------------------------------------------- */
+/* 英文は行間を詰め、字間を戻す。段落幅も英文の尺度に切り替える */
+:lang(en) {
+  line-height: var(--leading-en);
+  letter-spacing: 0;
+  overflow-wrap: normal;
+}
+
+/* --- headings ------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  margin-block-end: var(--space-4); /* 論理プロパティ: 縦組みでも正しく効く */
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: var(--tracking-wide);
+  font-feature-settings: "palt" 1;
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); font-weight: 400; }
+
+/* 表示用: ポスターの「Morning Monsters / W Eiji」の組み方 */
+.t-display {
+  font-size: var(--text-4xl);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-display);
+  font-feature-settings: "palt" 1;
+}
+
+.t-display-sm {
+  font-size: var(--text-2xl);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: var(--tracking-display);
+}
+
+/* --- text ----------------------------------------------------------------- */
+p {
+  margin: 0;
+  margin-block-end: var(--space-4);
+  max-inline-size: var(--measure-jp);
+}
+
+:lang(en) p {
+  max-inline-size: var(--measure-en);
+}
+
+small,
+.t-small {
+  font-size: var(--text-sm);
+}
+
+.t-xs {
+  font-size: var(--text-xs);
+}
+
+.t-muted {
+  color: var(--ink-3);
+}
+
+.t-light {
+  font-weight: 300;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+:lang(en) strong,
+:lang(en) b {
+  font-weight: 500;
+}
+
+/* 数字は等幅・ライニング（年表、日付、時刻） */
+.u-num,
+time {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 縦書き（タグライン「知覚と認識をめぐる散策」） */
+.u-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.6;
+}
+
+/* --- links & focus -------------------------------------------------------- */
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--ink-3);
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- media ---------------------------------------------------------------- */
+img,
+svg,
+video,
+iframe {
+  max-width: 100%;
+  display: block;
+}
+
+img,
+video {
+  height: auto;
+}
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+/* --- tables --------------------------------------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+th,
+td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+/* --- misc ----------------------------------------------------------------- */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: var(--space-8) 0;
+}
+
+::selection {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- voice: セクションの色を見出し・ラベル・番号に付ける（本文には付けない） ---- */
+/* 祖先の data-voice="a|s|m" が --voice-* を決める（tokens.css）。既定は墨 */
+.t-voice {
+  color: var(--voice-strong);
+}
+
+/* 24px 以上の表示文字だけに使う（500 段階は本文サイズでは AA を満たさない） */
+.t-voice-display {
+  color: var(--voice);
+}
+
+/* 下線付きラベル（カタログのセクションラベル） */
+.t-underline {
+  display: inline-block;
+  padding-block-end: 0.15em;
+  border-block-end: var(--rule) solid currentColor;
+}
+
+/* --- separators: カタログの全角記号 -------------------------------------- */
+.u-slash::before {
+  content: "／";
+}
+
+.u-bar::before {
+  content: "｜";
+}
+
+/* --- circled numbers: 作品番号 ①〜㉔ ---------------------------------------- */
+@counter-style circled {
+  system: fixed;
+  symbols: "①" "②" "③" "④" "⑤" "⑥" "⑦" "⑧" "⑨" "⑩" "⑪" "⑫" "⑬" "⑭" "⑮" "⑯" "⑰" "⑱" "⑲" "⑳" "㉑" "㉒" "㉓" "㉔";
+  suffix: " ";
+  fallback: decimal;
+}
+
+.u-circled {
+  list-style: circled;
+}
+
+.u-circled > li::marker {
+  color: var(--voice-strong);
+}
+
+/* 本文中の番号。<span class="t-no">④</span> のように文字で書く */
+.t-no {
+  color: var(--voice-strong);
+  font-variant-numeric: tabular-nums;
+  margin-inline-end: 0.25em;
+}
+
+/* --- vertical writing: 英司側のテキスト（デスクトップのみ） ------------------ */
+/* 縦組みでは inline-size が「行の長さ＝高さ」。高さを制限すると行（＝段）が右から左へ増え、
+   幅が足りなければ左方向にはみ出すので、要素自身を横スクロールにする。
+   direction: rtl は付けない（縦組みでは文字の進行方向が上下逆になる） */
+.t-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--font-vertical);
+  inline-size: min(70vh, 40em);
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: var(--space-2); /* 縦組みでは左右の余白になる */
+  line-height: 2;
+  letter-spacing: 0.06em;
+  text-combine-upright: digits 2; /* 2 桁の年号を縦中横に */
+  line-break: strict;
+  overscroll-behavior-x: contain;
+}
+
+.t-vertical p {
+  max-inline-size: none;
+}
+
+/* 縦中横: 2 桁の数字を <span class="u-tcy">28</span> のように囲む
+   （text-combine-upright: digits は Firefox のみ。all は Chrome / Safari も対応） */
+.u-tcy {
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
+  letter-spacing: 0;
+}
+
+/* 丸数字や記号を縦組みの中で正立させる */
+.t-vertical .u-upright {
+  text-orientation: upright;
+}
+
+@media (max-width: 47.99em) {
+  .t-vertical {
+    writing-mode: horizontal-tb;
+    font-family: var(--font-sans);
+    inline-size: auto;
+    overflow: visible;
+    line-height: var(--leading-jp);
+    letter-spacing: var(--tracking-jp);
+    text-combine-upright: none;
+  }
+
+  .u-tcy {
+    text-combine-upright: none;
+    -webkit-text-combine: none;
+  }
+
+  .t-vertical p {
+    max-inline-size: var(--measure-jp);
+  }
+}
+
+/* --- motion --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

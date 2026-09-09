@@ -1,0 +1,351 @@
+/* sample2: 白地、墨の本文、左 A・右 S。共有 CSS の補正もこの範囲に限定。 */
+.p-sample2 { scroll-behavior: auto; }
+.p-sample2 body { color: var(--color-text); }
+.p-sample2 p { margin-block-end: var(--space-5); }
+.p-sample2 :is(strong, b) { font-weight: 500; }
+.p-sample2 :is(main, footer) a { color: var(--color-link); text-decoration: underline; }
+
+/* 共通枠。幅・余白は既存トークンに揃える。 */
+.l-shell { max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+.l-narrow { max-width: var(--container-narrow); margin-inline: auto; }
+.l-quiet-unit { margin-block-start: var(--space-10); }
+.l-more { margin-block: var(--space-5) 0; }
+.l-page-head { padding-block-start: var(--space-9); margin-block-end: var(--space-8); }
+.l-page-head h1 { color: var(--voice-strong); }
+.l-related { margin-block-start: var(--space-8); }
+.l-related p { margin: 0; }
+
+/* 既存 skip-link の意味を保ち、新しいスタイルは l- に置く。 */
+.l-skip-link { position: absolute; top: -100%; left: var(--gutter); z-index: 20; padding: var(--space-2) var(--space-3); background: var(--color-bg); color: var(--color-text); }
+.l-skip-link:focus { top: var(--space-2); }
+.p-header { position: relative; flex-wrap: wrap; padding-block: var(--space-3); }
+.p-header .c-header__logo { white-space: normal; }
+.p-header .c-lang__link { white-space: nowrap; letter-spacing: inherit; }
+.p-nav-toggle { padding: var(--space-2) 0; border: 0; border-radius: 0; background: none; color: var(--color-text); font: inherit; cursor: pointer; white-space: nowrap; text-decoration: underline; text-underline-offset: 0.18em; }
+
+/* 名前と肩書は二列。縦組みは英司の紹介だけ。 */
+.l-parallel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-7); align-items: start; }
+.l-parallel__a { grid-column: 1; min-width: 0; }
+.l-parallel__s { grid-column: 2; min-width: 0; }
+.l-parallel__common { grid-column: 1 / -1; }
+/* Home は各節・写真を同じ読み物幅に揃え、節間を gap で一定にする。 */
+.p-home #main { display: grid; row-gap: var(--space-10); }
+.p-home #main > * { width: 100%; margin-block: 0; }
+.p-home__head { padding-block-start: var(--space-9); }
+.p-home__head h1 { margin-block-end: var(--space-5); }
+.p-home__head .l-more { margin-block-end: 0; }
+.p-home__person { min-width: 0; }
+.p-home__person h2 { font-size: var(--text-3xl); color: var(--voice-strong); }
+.p-home__person p { max-inline-size: 22em; }
+.p-home__role { font-size: var(--text-md); }
+.p-home__role span { display: block; font-size: var(--text-sm); color: var(--color-text-3); }
+.p-home__vertical.t-vertical { inline-size: 24rem; max-inline-size: none; overflow: visible; padding: 0; margin-left: auto; text-align: start; }
+.p-home__vertical p { max-inline-size: none; }
+.p-home__person .l-more { margin-block-end: 0; }
+
+/* 年表の抜粋。連続した軸を引かず、短い色罫で人物を示す。 */
+.p-home__timeline > h2 { display: flex; align-items: start; }
+.l-quiet-list { margin: 0; padding: 0; list-style: none; }
+.p-home__year-row { display: grid; grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr); column-gap: var(--space-7); row-gap: var(--space-5); padding-block: var(--space-6); }
+.p-home__year { grid-column: 2; grid-row: 1; text-align: center; color: var(--voice-strong); font-size: var(--text-xl); font-weight: 300; }
+.p-home__year small { display: block; font-size: var(--text-sm); }
+.p-home__birth { grid-row: 1; align-self: center; }
+.p-home__birth--a { grid-column: 1; text-align: end; }
+.p-home__birth--s { grid-column: 3; }
+.p-home__birth::before { content: ''; display: inline-block; width: var(--space-5); margin-inline-end: var(--space-3); border-block-start: var(--rule) solid var(--voice); vertical-align: middle; }
+.p-home__birth-name { color: var(--voice-strong); }
+.p-home__common { grid-column: 1 / -1; color: var(--color-text); }
+.p-home__timeline > .l-more { margin-block-end: 0; }
+.p-home__exhibition h3 { font-weight: 300; }
+.p-home__exhibition .c-datalist { font-size: var(--text-md); }
+.p-home__exhibition .c-datalist > div + div { margin-block-start: var(--space-2); }
+.p-home__exhibition .c-datalist dt { color: var(--color-text); }
+.p-home__exhibition .c-datalist dt::after { color: var(--color-line); }
+.p-home__exhibition .p-home__note { margin-block: var(--space-5); }
+.l-photo img { width: 100%; height: auto; }
+/* Home / Eiji の対談写真。規則 (a) の読み物幅を保ち、sample1 / sample3 と同じ 2:1 に切る。
+   元画像 1600×1067 の上約45px・下約222pxを切り、下辺を机の面（y≈845）に置く。
+   縦位置17% ≈ 45 ÷ (1067 − 800)。Talk の動画用静止画は対象外。 */
+.l-photo--pano img {
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  object-position: 50% 17%;
+}
+.l-figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2) var(--space-5); margin-block-start: var(--space-2); }
+.l-figcaption .c-caption { max-inline-size: var(--measure-jp); }
+.l-figcaption a { display: inline-block; margin-inline-start: var(--space-2); }
+.p-home__news time { display: block; margin-block-end: var(--space-5); }
+.p-home__news h3 { font-weight: 300; }
+.p-home__news > .l-more, .p-home__exhibition > .l-more { margin-block-end: 0; }
+
+/* 一列のフッター。狭い画面ではリンク一行と © 一行。 */
+.p-footer { margin-block-start: var(--space-10); padding-block: var(--space-6); }
+.p-footer__inner { max-width: var(--container); margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-4) var(--space-6); }
+.p-footer .p-footer__links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+.p-footer .p-footer__links li { margin: 0; }
+.p-footer .c-footer__copy { margin: 0; }
+
+@media (max-width: 47.99em) {
+  .p-home #main { row-gap: var(--space-8); }
+  .p-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0 var(--space-3); }
+  .p-header .c-header__logo { grid-column: 1; grid-row: 1; min-width: 0; max-width: 12em; font-size: var(--text-md); letter-spacing: var(--tracking-wide); line-height: 1.25; }
+  .p-header .c-nav { display: contents; }
+  .p-header .c-nav__toggle { grid-column: 2; grid-row: 1; display: none; }
+  .p-header .c-nav[data-ready="true"] .c-nav__toggle { display: inline-flex; }
+  .p-header .c-lang { grid-column: 3; grid-row: 1; }
+  .p-header .c-nav__list { position: static; inset: auto; grid-column: 1 / -1; grid-row: 2; display: flex; padding: var(--space-4) 0 0; border: 0; }
+  .p-header .c-nav[data-ready="true"][data-open="false"] .c-nav__list { display: none; }
+  .l-quiet-unit { margin-block-start: var(--space-8); }
+  .l-page-head, .p-home__head { padding-block-start: var(--space-8); }
+  .l-page-head { margin-block-end: var(--space-7); }
+  .l-parallel { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
+  .l-parallel__a, .l-parallel__s { grid-column: 1; }
+  .p-home__vertical.t-vertical { inline-size: auto; margin: 0; }
+  .p-home__person p { max-inline-size: var(--measure-jp); }
+  .p-home__year-row { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); }
+  .p-home__year, .p-home__birth, .p-home__common { grid-column: 1; grid-row: auto; text-align: start; justify-self: start; }
+  .p-home__year small { display: inline; margin-inline-start: var(--space-2); }
+  .p-home__timeline > h2 { align-items: start; }
+  .p-home__timeline > .l-more { text-align: start; }
+  .l-figcaption a { display: block; margin: var(--space-2) 0 0; }
+  .p-footer { margin-block-start: var(--space-8); }
+}
+
+/* 段階2: 読み物と人物ページ。名前・見出し・ラベルだけに声の色を使う。 */
+.p-name { color: var(--voice-strong); }
+.l-page-head__en { display: block; margin-block-start: var(--space-3); font-size: var(--text-md); color: var(--color-text-3); }
+.l-prose-unit + .l-prose-unit { margin-block-start: var(--space-10); }
+.p-about .c-quote { border-inline-start: var(--rule) solid var(--voice); }
+.p-about .c-quote__source { margin-block-end: 0; }
+.l-subnav { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); padding-block: var(--space-5); border-block-end: var(--rule) solid var(--color-line); font-size: var(--text-sm); }
+.l-subnav [aria-current="page"] { font-weight: 500; }
+.l-related { padding-block-start: var(--space-6); border-block-start: var(--rule) solid var(--color-line); }
+.l-related ul { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-6); list-style: none; margin: 0; padding: 0; font-size: var(--text-sm); }
+
+/* 左セルは全幅を保ち、縦組み自身の物理 margin-left で右へ寄せる。
+   セルの justify-self は Safari の直交フローで幅が 0 になるため使わない。 */
+.p-eiji .l-page-head { margin-block-end: var(--space-10); }
+.p-eiji .l-related { margin-block-start: var(--space-10); }
+.p-eiji__person { min-width: 0; }
+.p-eiji__person h2 { font-size: var(--text-3xl); }
+.p-eiji__role span { display: block; font-size: var(--text-sm); color: var(--color-text-3); }
+.p-eiji__vertical.t-vertical { inline-size: 32rem; max-inline-size: none; overflow: visible; padding: 0; margin-left: auto; }
+.p-eiji__person > p { max-inline-size: 22em; }
+.p-eiji__person .l-more { margin-block-end: 0; }
+.p-eiji__timeline-link { margin-block-end: 0; }
+
+/* 768〜1024px は二列の横組み。inline-size は縦組みの高さであり横位置ではない。 */
+@media (min-width: 48em) and (max-width: 64em) {
+  .p-home__vertical.t-vertical, .p-eiji__vertical.t-vertical {
+    writing-mode: horizontal-tb; font-family: var(--font-sans);
+    inline-size: auto; max-inline-size: 100%; margin: 0;
+    line-height: var(--leading-jp); letter-spacing: var(--tracking-jp);
+    text-combine-upright: none;
+  }
+}
+
+/* 個人ページは名前・作品・全一覧を本人の側に置く。写真は自然比率。 */
+.p-profile { min-width: 0; }
+.p-profile__head .c-text-header { display: block; margin: 0; }
+.p-profile__head .c-text-header__title { font-size: var(--text-3xl); font-weight: 300; }
+.p-profile__head .c-text-header__title-en { color: var(--voice-strong); }
+.p-profile__head .c-text-header__author { text-align: start; margin: var(--space-5) 0 0; }
+.p-profile__intro.t-vertical { inline-size: 40rem; max-inline-size: none; overflow: visible; padding: 0; margin-left: auto; }
+.p-profile__intro p:last-child { margin-block-end: 0; }
+.p-profile .c-datalist { font-size: var(--text-md); }
+.p-profile .c-datalist > div { display: block; padding-block: var(--space-6); }
+.p-profile .c-datalist dt { white-space: normal; margin-block-end: var(--space-3); }
+.p-profile .c-datalist dt::after { content: none; }
+.p-profile .c-datalist dd { color: var(--color-text); }
+.p-profile .c-datalist + p, .p-profile .c-cv + p { margin-block-start: var(--space-5); }
+.p-profile > .t-small { margin-block-start: var(--space-8); }
+/* 年と事項は同じ行。最小行高は設けず、上下の余白で読みやすさを保つ。 */
+.p-profile .c-cv, .p-eiji__milestones { grid-auto-rows: auto; gap: 0 var(--space-4); font-size: var(--text-md); line-height: var(--leading-jp); }
+.p-profile .c-cv > *, .p-eiji__milestones > * { min-width: 0; padding-block: var(--space-6); }
+.p-profile .c-cv dd, .p-eiji__milestones dd { color: var(--color-text); overflow-wrap: anywhere; }
+.p-profile .c-cv + .c-cv { margin-block-start: var(--space-8); }
+
+/* c-timeline を土台にした全28行。中央の軸とグラデーションを外し、点を短い罫へ。 */
+.p-timeline__legend { display: grid; grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr); column-gap: var(--space-7); margin-block-end: var(--space-6); font-size: var(--text-sm); }
+.p-timeline__legend-a { grid-column: 1; text-align: end; }
+.p-timeline__legend-s { grid-column: 3; }
+.p-timeline__legend-common { grid-column: 1 / -1; text-align: center; }
+.p-timeline__list::before { content: none; }
+.p-timeline__list .c-timeline__item { grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr); gap: var(--space-5) var(--space-7); min-block-size: 0; padding-block: var(--space-6); border: 0; }
+.p-timeline__list .c-timeline__year { grid-row: 1; padding: 0; background: none; color: var(--voice-strong); font-size: var(--text-xl); }
+.p-timeline__list .c-timeline__a, .p-timeline__list .c-timeline__s { grid-row: 1; font-size: var(--text-md); line-height: var(--leading-jp); color: var(--color-text); }
+.p-timeline__list .c-timeline__a::before, .p-timeline__list .c-timeline__s::before { width: var(--space-5); height: 0; border: 0; border-block-start: var(--rule) solid var(--voice); border-radius: 0; background: none; margin-block-start: var(--space-4); margin-inline: var(--space-3); }
+.p-timeline__list .c-timeline__common { grid-row: 2; max-width: var(--container-narrow); margin: 0; padding: 0; font-size: var(--text-md); color: var(--color-text); background: none; border: 0; border-image: none; }
+.p-timeline__list .c-timeline__common::before { content: ''; display: block; width: var(--space-5); margin: 0 auto var(--space-5); border-block-start: var(--rule) solid var(--voice); }
+
+@media (max-width: 47.99em) {
+  .l-prose-unit + .l-prose-unit { margin-block-start: var(--space-8); }
+  .p-eiji .l-page-head { margin-block-end: var(--space-8); }
+  .p-eiji .l-related { margin-block-start: var(--space-8); }
+  .p-eiji__vertical.t-vertical, .p-profile__intro.t-vertical { writing-mode: horizontal-tb; inline-size: auto; max-inline-size: 100%; margin: 0; overflow: visible; }
+  .p-eiji__person > p { max-inline-size: var(--measure-jp); }
+  .p-eiji__timeline-link { text-align: start; }
+  .p-timeline__legend { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .p-timeline__legend > p { grid-column: 1; text-align: start; margin: 0; }
+  .p-timeline__list .c-timeline__item { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-5); }
+  .p-timeline__list .c-timeline__year, .p-timeline__list .c-timeline__a, .p-timeline__list .c-timeline__s, .p-timeline__list .c-timeline__common { grid-column: 1; grid-row: auto; text-align: start; justify-self: start; }
+  .p-timeline__list .c-timeline__a::before, .p-timeline__list .c-timeline__s::before { float: left; margin-inline: 0 var(--space-3); }
+  .p-timeline__list .c-timeline__common::before { margin-inline: 0; }
+}
+
+/* 段階3: 記録は一段。行の余白は32px、狭い画面は24px。最小行高を設けない。 */
+.l-record-list, .l-link-list { margin: 0; padding: 0; list-style: none; }
+.l-record-list.u-circled { list-style: circled; padding-inline-start: 1.6em; }
+.l-record-row, .l-record-list > li, .l-link-list > li,
+.l-data-rows > div, .p-event, .p-sample2 .c-news,
+.p-sample2 .c-chapters > li, .p-sample2 .c-toc > li { padding-block: var(--space-6); }
+.l-record-row > p:last-child, .p-event > div > p:last-child,
+.p-sample2 .c-news p:last-child { margin-block-end: 0; }
+.l-record-row h3, .p-event__title { color: var(--voice-strong); }
+.p-event__title { font-size: var(--text-xl); }
+.p-event { border-block-start: var(--rule) solid var(--color-line); }
+.p-event .c-datalist { margin-block-end: var(--space-5); }
+.p-event .c-datalist > div + div { margin-block-start: var(--space-2); }
+.p-event .l-photo { margin-block: var(--space-6); }
+.l-data-rows > div { flex-wrap: wrap; }
+.l-data-rows dt { white-space: normal; }
+.l-data-rows dd { min-width: 0; }
+.l-data-rows + p, .l-data-rows + .c-quote { margin-block-start: var(--space-5); }
+.l-link-list > li { border-block-start: var(--rule) solid var(--color-line); }
+.p-record-head .c-text-header { display: block; margin: 0; }
+.p-record-head .c-text-header__title { font-size: var(--text-3xl); }
+.p-record-head .c-text-header__author { text-align: start; margin-block: var(--space-5) 0; }
+.p-record-head .c-text-header__name { font-size: var(--text-md); }
+.p-record-head .c-text-header__title-en { font-size: var(--text-md); }
+.p-exhibition__closed { font-size: var(--text-sm); }
+
+/* 作品の本文・英題・年は墨。番号と作品名だけ人物の色。写真は該当する番号に1枚。 */
+.l-work-entries.c-worklist__entries { columns: 1; max-width: var(--container-narrow); margin: var(--space-8) auto 0; font-size: var(--text-md); line-height: var(--leading-jp); }
+.l-work-entries.c-worklist__entries > li { padding-block: var(--space-6); margin-block-end: 0; border-block-start: var(--rule) solid var(--color-line); }
+.l-work-entries .c-worklist__title { border: 0; font-weight: 300; font-size: var(--text-lg); }
+.p-work__en { display: inline; margin-inline-start: var(--space-2); font-size: var(--text-sm); color: var(--color-text); overflow-wrap: anywhere; }
+.p-work__year { display: inline; margin-inline-start: var(--space-2); font-size: var(--text-sm); color: var(--color-text); font-variant-numeric: tabular-nums lining-nums; }
+.l-work-entries .c-worklist__text { margin-block: var(--space-3) 0; color: var(--color-text); }
+.l-work-entries .l-photo { margin-block: var(--space-6); }
+.p-works-a__intro.t-vertical { inline-size: 24rem; max-inline-size: none; overflow: visible; padding: 0; margin-left: auto; }
+.p-works-a__intro p { margin: 0; }
+.l-photo-sequence { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
+.l-photo--portrait { width: fit-content; max-width: 100%; margin-inline: auto; }
+.l-photo--portrait img { max-height: 40rem; width: auto; max-width: 100%; object-fit: contain; }
+.l-photo--portrait figcaption { max-width: 30rem; }
+.p-sample2 .c-quote { margin-block: var(--space-6); border-width: var(--rule); }
+.p-sample2 .c-quote__text { color: var(--color-text); }
+.p-sample2 .c-quote__source { margin-block-end: 0; }
+
+/* 質問箱は平文で1組ずつ。質問者は匿名、英訳も原稿どおり残す。 */
+.p-qa { padding-block: var(--space-6); }
+.p-qa + .p-qa { margin-block-start: var(--space-6); }
+.p-qa__label { display: block; margin-block-end: var(--space-3); color: var(--voice-strong); font-size: var(--text-sm); }
+.p-qa__en { display: block; margin-block-start: var(--space-3); color: var(--color-text); font-size: var(--text-sm); }
+.p-qa__answer { margin-block-end: 0; }
+
+/* 動画の写真は操作領域の外。文字の操作を押した時だけ16:9のプレイヤーを開く。 */
+.p-talk__player.c-video { aspect-ratio: auto; background: none; overflow: visible; margin-block-start: var(--space-5); }
+.p-talk__play.c-video__facade { position: static; inset: auto; display: inline; width: auto; height: auto; border: 0; border-radius: 0; padding: var(--space-2) 0; background: none; color: var(--color-link); font: inherit; text-decoration: underline; text-underline-offset: 0.18em; }
+.p-talk__embed { position: relative; aspect-ratio: 16 / 9; }
+.p-talk__player iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+.p-talk__chapter-no { color: var(--voice-strong); font-variant-numeric: tabular-nums lining-nums; }
+.p-talk__chapter-summary { display: block; margin-block-start: var(--space-2); font-size: var(--text-sm); color: var(--color-text); }
+.p-talk__excerpt { margin-block-start: var(--space-8); }
+.p-talk__excerpt h3 { color: var(--color-text); font-weight: 300; }
+.p-talk__excerpt .c-dialogue__line { color: var(--color-text); }
+.p-sample2 .c-chapters > li { grid-template-columns: 2.5rem minmax(0, 1fr); }
+.p-sample2 .c-news { grid-template-columns: 7rem minmax(0, 1fr); font-size: var(--text-md); }
+.p-sample2 .c-news__title { font-weight: 300; font-size: var(--text-lg); }
+
+/* 見開きの右半分が表紙。誌面自体の色は原資料のまま。目次の番号はすべて朱赤。 */
+.p-catalogue__cover-figure { max-width: 20rem; margin-block-end: var(--space-8); }
+.p-catalogue .c-catalogue__cover { aspect-ratio: 600 / 840; background: none; overflow: hidden; display: block; }
+.p-catalogue .c-catalogue__cover img { width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+.p-catalogue .c-toc > li { justify-content: space-between; border-block-start: var(--rule) solid var(--color-line); }
+.p-catalogue .c-toc__label { min-width: 0; }
+.p-catalogue .c-toc__no { flex: none; color: var(--color-s-strong); }
+
+@media (max-width: 47.99em) {
+  .p-home__year-row, .p-profile .c-cv > *, .p-eiji__milestones > *,
+  .p-profile .c-datalist > div, .p-timeline__list .c-timeline__item,
+  .l-record-row, .l-record-list > li, .l-link-list > li, .l-data-rows > div,
+  .p-event, .p-sample2 .c-news, .p-sample2 .c-chapters > li,
+  .p-sample2 .c-toc > li, .l-work-entries.c-worklist__entries > li { padding-block: var(--space-5); }
+  .p-works-a__intro.t-vertical { writing-mode: horizontal-tb; inline-size: auto; max-inline-size: 100%; margin: 0; overflow: visible; }
+  .p-sample2 .c-news { grid-template-columns: minmax(0, 1fr); }
+  .l-data-rows > div { display: block; }
+  .l-data-rows dt { margin-block-end: var(--space-2); }
+  .l-data-rows dt::after { content: none; }
+}
+
+/* 段階4: 英語文書だけを補正する。日本語の縦組みセルと配置規則は変更しない。 */
+html[lang="en"] .u-slash::before { content: " / "; white-space: pre; }
+html[lang="en"] .u-bar::before { content: " | "; white-space: pre; }
+html[lang="en"] .c-datalist dt::after { content: ": "; white-space: pre; }
+html[lang="en"] .p-profile .c-datalist dt::after { content: none; }
+
+/* base.css の言語セレクタに勝ち、見出しの行間・字間を復元する。 */
+html[lang="en"] :is(h1, h2, h3, h4):not([class*="c-"]) {
+  line-height: 1.3;
+  letter-spacing: var(--tracking-wide);
+}
+html[lang="en"] .t-display { line-height: 1.15; letter-spacing: var(--tracking-display); }
+html[lang="en"] .l-subnav a { letter-spacing: inherit; }
+html[lang="en"] .c-lang__link { letter-spacing: inherit; }
+html[lang="en"] .c-worklist__text,
+html[lang="en"] .p-qa__question,
+html[lang="en"] .p-qa__answer { max-inline-size: none; }
+html[lang="en"] .l-work-entries,
+html[lang="en"] .p-profile .c-cv,
+html[lang="en"] .p-eiji__milestones,
+html[lang="en"] .p-timeline__list :is(.c-timeline__a, .c-timeline__s) {
+  line-height: var(--leading-en);
+  letter-spacing: 0;
+}
+html[lang="en"] .l-figcaption .c-caption { max-inline-size: var(--measure-en); }
+
+/* 英語が先・下線、日本語は小さな副題。要素の lang も内容に合わせる。 */
+html[lang="en"] .c-section-label__en {
+  font-size: inherit;
+  padding-block-end: 0.2em;
+  border-block-end: var(--rule) solid currentColor;
+}
+html[lang="en"] .c-section-label__ja {
+  padding-block-end: 0;
+  border-block-end: 0;
+  font-size: var(--text-xs);
+}
+html[lang="en"] :is(.p-name__ja, .p-title__ja, .l-page-head__ja) {
+  display: block;
+  margin-block-start: var(--space-3);
+  font-size: var(--text-md);
+  font-weight: 300;
+  color: var(--color-text-3);
+  letter-spacing: var(--tracking-wide);
+}
+html[lang="en"] .p-work__ja {
+  display: inline;
+  margin-inline-start: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+html[lang="en"] .p-qa__ja {
+  display: block;
+  margin-block-start: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+html[lang="en"] .p-name__qualification {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+html[lang="en"] .p-book__note {
+  display: block;
+  margin-block-start: var(--space-3);
+  font-size: var(--text-sm);
+}
+@media (max-width: 47.99em) {
+  html[lang="en"] .l-data-rows dt::after { content: none; }
+}

@@ -1,0 +1,491 @@
+/* sample1/css/site.css — W Eiji サイト用の補助スタイル
+   規則:
+   - 原色トークン（blue / red / green のランプ）を直接書かない。使うのは --color-*、--voice-*、
+     --a-* / --s-* / --m-*、無彩色（--ink*、--paper*、--line）だけ。grep で検査する
+   - ブレークポイントは components.css と同じ 47.99em（768px 未満）だけ
+   - フォーカスリングは base.css に任せる（ここに outline は書かない）
+   - 接頭辞: (a) は components.css への昇格候補（c- の穴埋め）、.l-* はサイト共通の補助、
+     .p-<page> は body のクラスで限定した単一ページ用 */
+
+/* ===================== (a) デザインシステムの穴埋め ===================== */
+
+/* モバイルの .c-nav__list は absolute（inset: 64px 0 auto 0）。基準になる祖先を明示する */
+.c-header {
+  position: relative;
+}
+
+/* c-photo-grid の img は height:100% で figure いっぱいに伸びる。figcaption があると画像が
+   キャプション分まで伸び、キャプションが figure の外へはみ出す（狭い画面で次の罫線に重なった）。
+   キャプション付きの figure では画像の高さを内容に戻す */
+.c-photo-grid figure:has(figcaption) img {
+  height: auto;
+}
+
+/* ロゴを「Morning Monsters / W Eiji」に伸ばしたので、狭い画面ではロゴ側を縮めて折り返し、
+   Menu と言語切替は折り返さない（そのままだとボタンの文字が 1 字ずつ縦に折れる） */
+@media (max-width: 47.99em) {
+  .c-header {
+    gap: var(--space-3);
+  }
+
+  .c-header__logo {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-wide);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .c-nav {
+    flex: none;
+  }
+
+  .c-nav__toggle,
+  .c-lang__link {
+    white-space: nowrap;
+  }
+}
+
+/* site.js が参照するが components.css に規則がない */
+.c-lightbox__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 元の 44vh は上限なし。縦長画面や全ページ撮影で面が巨大化するのを防ぐ。
+   鏡像タイトル（装飾）は狭い画面では説明文に重なるので隠す */
+@media (max-width: 47.99em) {
+  .c-split-hero__pane {
+    min-height: min(44vh, 400px);
+  }
+
+  .c-split-hero__mirror {
+    display: none;
+  }
+}
+
+/* 鏡像タイトルが面の下辺に絶対配置されるので、その分の余白を S 面に足す */
+.c-split-hero__pane--s {
+  padding-block-end: calc(var(--space-7) + var(--text-2xl));
+}
+
+/* 展示リストの英題（c-worklist に英題の要素がない）。-ja は英語ページで従になる和題 */
+.c-worklist__title-en,
+.c-worklist__title-ja {
+  display: inline-block;
+  margin-inline-start: 0.5em;
+  font-size: var(--text-xs);
+  letter-spacing: 0;
+  color: var(--color-text-3);
+}
+
+/* 展示作品リストの制作年（発行版カタログの表記に倣う） */
+.c-worklist__year {
+  margin-inline-start: 0.5em;
+  font-size: var(--text-xs);
+  letter-spacing: 0;
+  color: var(--color-text-3);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 対談の章番号と要約（タイムスタンプ未定の間、time の代わりに第 1 列に置く） */
+.c-chapters__no {
+  color: var(--color-text-3);
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--tracking-wide);
+}
+
+.c-chapters__summary {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+}
+
+/* ニュースの本文と画像 */
+.c-news p {
+  margin-block-end: var(--space-2);
+}
+
+.c-news__media {
+  max-width: 20rem;
+  margin-block: var(--space-2) 0;
+}
+
+/* イベント写真を figure で包み、キャプションとクレジットを付ける。
+   components.css の auto-fill minmax(120px, 1fr) は、写真が 1 枚でも空のトラックが幅を分け合い、
+   写真が 128px の豆粒になってキャプションが 2 行に折れていた（2026-09-09）。1 枚 18rem
+   （縦位置のフライヤーは 12rem）で並べ、狭い画面では折り返す */
+.c-event__photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.c-event__photos figure {
+  flex: 0 1 18rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.c-event__photos figure.l-figure--contain {
+  flex-basis: 12rem;
+}
+
+.c-event__photos img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  object-fit: cover;
+}
+
+.c-event__photos figcaption {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
+}
+
+/* 見開き画像の右半分（＝表紙）を表示する */
+.c-catalogue__cover {
+  overflow: hidden;
+}
+
+.c-catalogue__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+
+/* 言語切替: base.css の :lang(en) は要素ごとに効くので、英語ページでは .c-lang の字間が
+   a / span に継承されない。明示して継承させる。相手言語のリンクは hover で墨に */
+.c-lang__link {
+  letter-spacing: inherit;
+}
+
+a.c-lang__link:hover {
+  color: var(--color-text);
+}
+
+/* 本文へのスキップリンク（フォーカス時だけ現れる） */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--gutter);
+  z-index: 20;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+/* ===================== (b) サイト共通の補助 ===================== */
+
+/* 読み物の幅（--container-narrow はトークンだけでクラスが無い） */
+.l-narrow {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ページ見出しのブロック: c-section-label + h1 (+ 英題 + リード) */
+.l-page-head {
+  padding-block: var(--space-7) var(--space-6);
+  margin-block-end: var(--space-7);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.l-page-head h1 {
+  margin-block-end: var(--space-2);
+}
+
+.l-page-head .c-text-header__title {
+  font-size: var(--text-3xl);
+}
+
+.l-page-head .c-text-header {
+  margin-block-end: 0;
+}
+
+.l-page-head__en,
+.l-page-head__ja {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text-3);
+}
+
+.l-page-head__lead {
+  max-inline-size: var(--measure-jp);
+  margin-block-end: 0;
+  font-size: var(--text-lg);
+  font-weight: 300;
+}
+
+/* 3:2 に切りそろえる写真（人物欄や二列の中） */
+.l-cover img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+/* 節の中の案内（展覧会配下、経歴配下のページ上部に 1 本）。UI なので無彩色、現在地は下線 */
+.l-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-5);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.l-subnav__label {
+  margin-inline-end: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text-3);
+}
+
+.l-subnav a {
+  display: inline-block;
+  padding-block: var(--space-1);
+  color: var(--color-text-2);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  letter-spacing: var(--tracking-wide); /* 英語ページでは :lang(en) が継承に勝つので明示 */
+}
+
+.l-subnav a:hover,
+.l-subnav a[aria-current="page"] {
+  color: var(--color-text);
+  border-bottom-color: currentColor;
+}
+
+/* 関連（各ページ末尾に 1 か所、最大 3 件の文字リンク） */
+.l-related {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-line);
+}
+
+.l-related ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+/* 3:2 に収まらない写真（魚眼、縦位置など） */
+.l-figure--contain img {
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: var(--color-bg-2);
+}
+
+/* キャプションとクレジットを左右に振る */
+.l-figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+}
+
+/* 写真の大きさの上限（2026-09-09、制作者「いくつかの写真が大きめでバランスが悪い」）。
+   画面幅いっぱい（.c-photo-grid--full）や 72rem の格子は大きすぎるので、単独の写真と格子は
+   48rem までにし、本文と同じ左端（コンテナの内側）に置く。二列の中（.l-two）では列幅が先に効く。
+   --full はコンテナの外に置かれることがあるので、幅と余白を .container と同じにしてから絞る */
+.c-photo-grid--full {
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.c-photo-grid--full > figure,
+figure.c-photo-grid--full,
+.c-photo-grid--1-2,
+.c-photo-grid--2x2 {
+  max-width: 48rem;
+}
+
+/* 例外: 見出し下の罫線と同じ幅（コンテナの内側いっぱい）に広げる写真。Eiji × Eiji の二人の写真は
+   すぐ下に二列が同じ幅で並ぶので、写真だけ狭いと段が揃わない（2026-09-09、制作者の指摘） */
+.l-photo--wide > figure {
+  max-width: none;
+}
+
+/* 同じ写真を上下を切って 2:1 に（制作者「手前の帽子の頭が邪魔。上部と下部を切ってパノラマ感を少し」）。
+   元画像（1600×1067）の上 45px（暗い鴨居）と下 222px を切る。下辺は机の面（y≈845）に置き、
+   手前の帽子（y≈875 から下）が消え、器と二人の膝までが残る。object-position の縦 17% は
+   45 ÷（1067 − 800）。切り抜きは CSS だけで、画像ファイルと記録写真の一覧（原寸）は変えない */
+.l-photo--wide > figure > img {
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  object-position: 50% 17%;
+}
+
+/* 節の区切り */
+.l-section + .l-section {
+  border-top: 1px solid var(--color-line);
+}
+
+/* 経歴の見出し行（dt.c-cv__heading の下に余白） */
+.c-cv__heading {
+  margin-top: var(--space-5);
+}
+
+/* ===================== (c) ページ専用 ===================== */
+
+/* Home: 二つの面の「ラベル・名前・英名・説明」を同じ高さに揃える。
+   面をサブグリッドにして親の行を共有する（行 1 は余白、2〜5 が内容）。
+   subgrid 非対応の環境では各面の中で下寄せになるだけで崩れない。
+   S 面は右寄せにして二人が向かい合う。線画は左上、鏡像タイトルは下辺 */
+.p-home .c-split-hero {
+  grid-template-rows: 1fr auto auto auto auto;
+}
+
+.p-home .c-split-hero__pane {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: 1 / -1;
+  align-content: end;
+  row-gap: var(--space-3);
+}
+
+.p-home .c-split-hero__pane--a {
+  grid-column: 1;
+}
+
+.p-home .c-split-hero__pane--s {
+  grid-column: 2;
+  justify-items: end;
+  text-align: end;
+}
+
+.p-home .c-split-hero__pane > .c-label { grid-row: 2; }
+.p-home .c-split-hero__pane > .c-split-hero__title { grid-row: 3; }
+.p-home .c-split-hero__pane > .c-split-hero__sub { grid-row: 4; }
+.p-home .c-split-hero__pane > .c-split-hero__meta { grid-row: 5; }
+
+.p-home .c-split-hero__pane > p,
+.p-home .c-split-hero__title {
+  margin: 0;
+}
+
+.p-home .c-split-hero__pane--s .c-split-hero__shape {
+  right: auto;
+  left: var(--gutter);
+}
+
+.p-home .c-split-hero a {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+/* 鏡像タイトルは面の幅に合わせて縮め、折り返さない（1 行を超えると説明文に重なる） */
+.p-home .c-split-hero__mirror {
+  font-size: clamp(1rem, 2vw, 2rem);
+  white-space: nowrap;
+}
+
+/* 768px 未満は面が縦に積まれるので、行の共有をやめて各面が自分の行を持つ */
+@media (max-width: 47.99em) {
+  .p-home .c-split-hero {
+    grid-template-rows: none;
+  }
+
+  .p-home .c-split-hero__pane,
+  .p-home .c-split-hero__pane--a,
+  .p-home .c-split-hero__pane--s {
+    grid-column: 1;
+    grid-row: auto;
+    grid-template-rows: 1fr auto auto auto auto;
+  }
+}
+
+/* ===================== (d) 英語ページ（en/） ===================== */
+/* html[lang="en"] で限定する。:lang(en) にすると日本語ページ内の lang="en" 断片にも効いて、
+   カタログ由来の全角記号（日本語ページの約束）が崩れる */
+
+/* 全角記号 → 欧文の記号。content の末尾の空白は行末で消えるので white-space: pre で残す
+   （components.css の .c-datalist--en は 1px しか空かない） */
+html[lang="en"] .u-slash::before,
+html[lang="en"] .c-qa-card__who::before {
+  content: " / ";
+  white-space: pre;
+}
+
+html[lang="en"] .u-bar::before {
+  content: " | ";
+  white-space: pre;
+}
+
+html[lang="en"] .c-datalist dt::after,
+html[lang="en"] .c-event__facts dt::after {
+  content: ": ";
+  white-space: pre;
+}
+
+/* base.css の :lang(en)（0,1,0）は英語文書の全要素に一致し、h1–h4（0,0,1）の行間 1.3・
+   字間 0.08em に勝つ。素の見出しだけ戻す（c- の見出しは自分の指定を持つ）。
+   本筋は base.css 側で :where(:lang(en)) にすること（design v0.3 の課題） */
+html[lang="en"] :is(h1, h2, h3, h4):not([class*="c-"]) {
+  line-height: 1.3;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* :lang(en) p（0,1,1）が components.css の max-inline-size: none（0,1,0）に勝つ副作用を戻す */
+html[lang="en"] .c-qa-card__q,
+html[lang="en"] .c-qa-card__a,
+html[lang="en"] .c-worklist__text,
+html[lang="en"] .c-worklist__en {
+  max-inline-size: none;
+}
+
+/* セクションラベル: 英語が主（下線）、日本語が従（小）。DOM も英語（__en）が先 */
+html[lang="en"] .c-section-label__en {
+  font-size: inherit;
+  padding-block-end: 0.2em;
+  border-block-end: var(--rule) solid currentColor;
+}
+
+html[lang="en"] .c-section-label__ja {
+  padding-block-end: 0;
+  border-block-end: 0;
+  font-size: var(--text-xs);
+}
+
+/* 副題の日本語版（components.css に -ja が無い。v0.3 で昇格したら消す）。宣言は各 -en と同じ */
+.c-text-header__title-ja {
+  display: block;
+  font-size: var(--text-md);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  color: var(--voice-text);
+}
+
+.c-qa-card__ja {
+  display: block;
+  margin-block-start: 0.3em;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: var(--voice-text);
+}
+
+.c-qa-card__a .c-qa-card__ja {
+  color: var(--color-text-2);
+}
+
+.c-eiji__name-ja {
+  display: block;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text-3);
+}

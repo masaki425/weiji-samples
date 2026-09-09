@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+  <!-- 紙飛行機 / 飛行機の線画。ポスター左上のモチーフの近似。色は currentColor -->
+  <path d="M100 12
+           C 105 34, 107 54, 107 74
+           L 176 118
+           C 182 122, 182 130, 175 130
+           L 107 114
+           L 105 150
+           L 129 170
+           C 133 174, 131 180, 126 179
+           L 100 170
+           L 74 179
+           C 69 180, 67 174, 71 170
+           L 95 150
+           L 93 114
+           L 25 130
+           C 18 130, 18 122, 24 118
+           L 93 74
+           C 93 54, 95 34, 100 12 Z" />
+</svg>
