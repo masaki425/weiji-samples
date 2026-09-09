@@ -244,7 +244,8 @@
 .p-qa__en { display: block; margin-block-start: var(--space-3); color: var(--color-text); font-size: var(--text-sm); }
 .p-qa__answer { margin-block-end: 0; }
 
-/* 動画の写真は操作領域の外。文字の操作を押した時だけ16:9のプレイヤーを開く。 */
+/* 写真または文字の操作で、同じ読み物幅の16:9プレイヤーへ切り替える。 */
+.p-talk__facade { display: block; }
 .p-talk__player.c-video { aspect-ratio: auto; background: none; overflow: visible; margin-block-start: var(--space-5); }
 .p-talk__play.c-video__facade { position: static; inset: auto; display: inline; width: auto; height: auto; border: 0; border-radius: 0; padding: var(--space-2) 0; background: none; color: var(--color-link); font: inherit; text-decoration: underline; text-underline-offset: 0.18em; }
 .p-talk__embed { position: relative; aspect-ratio: 16 / 9; }

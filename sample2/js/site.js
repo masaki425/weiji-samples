@@ -43,26 +43,54 @@
 
   /* 2. 動画ファサード */
   function initVideo() {
+    // Local files cannot supply the referrer YouTube requires; keep the photo link.
+    if (location.protocol === 'file:') {
+      $$('.p-talk__video').forEach(function (video) {
+        var figure = $('figure', video);
+        if (!figure || $('.p-talk__note', video)) return;
+        var note = document.createElement('p');
+        note.className = 'c-credit p-talk__note';
+        note.textContent = document.documentElement.lang === 'en'
+          ? 'This page is opened directly as a file, so the video cannot play in this frame (a YouTube restriction). Clicking the photo opens YouTube. To play it here, open the site with sample2/open-local.command.'
+          : 'このページをファイルとして直接開いているため、この枠では再生できません（YouTube の制限）。写真をクリックすると YouTube で開きます。枠内で再生するには sample2/open-local.command で開いてください。';
+        figure.insertAdjacentElement('afterend', note);
+      });
+      return;
+    }
+    if (location.origin === 'null') return;
     $$('.c-video[data-video-id]').forEach(function (wrap) {
+      var facade = $('.p-talk__facade', wrap);
+      var figure = $('figure', wrap);
       var btn = $('.p-talk__play', wrap);
       var target = $('.p-talk__embed', wrap);
-      if (!btn || !target) return;
-      btn.hidden = false;
-      btn.addEventListener('click', function () {
+      if (!facade || !figure || !btn || !target) return;
+      var loaded = false;
+      function play() {
+        if (loaded) return;
         var id = encodeURIComponent(wrap.getAttribute('data-video-id'));
         var start = wrap.getAttribute('data-start');
         var iframe = document.createElement('iframe');
         iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0' +
           (start ? '&start=' + encodeURIComponent(start) : '');
         iframe.title = btn.getAttribute('aria-label') || 'YouTube video';
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.allowFullscreen = true;
         target.replaceChildren(iframe);
+        loaded = true;
+        figure.hidden = true;
         target.hidden = false;
         btn.hidden = true;
         iframe.tabIndex = 0;
         iframe.focus();
-      }, { once: true });
+      }
+      facade.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e.button && e.button !== 0)) return;
+        e.preventDefault();
+        play();
+      });
+      btn.addEventListener('click', play);
+      btn.hidden = false;
     });
   }
 
