@@ -1082,3 +1082,14 @@ a.c-lang__link:hover {
     max-inline-size: none;
   }
 }
+
+/* 対の行（交差点）の狭い画面: 題 → A → S → 写真 → 共通 の順に縦に流す。
+   .x-row--pair .x-cell { grid-row: 2 }、.x-row--pair .x-figure { grid-row: 3 }、.x-row--pair .x-common { grid-row: 4 } は
+   .x-cell { grid-row: auto } より詳細度が高く、同じ詳細度なら後勝ちなので、ファイル末尾で auto に戻す（2026-09-11、スマホでの重なりの修正） */
+@media (max-width: 47.99em) {
+  .x-row--pair .x-cell,
+  .x-row--pair .x-figure,
+  .x-row--pair .x-common {
+    grid-row: auto;
+  }
+}
