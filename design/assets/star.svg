@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">
-  <!-- 六芒星の線画（三角形 2 つの重なり）。ポスター右のモチーフの近似。色は currentColor -->
-  <path d="M50 4 L90 72 L10 72 Z" />
-  <path d="M50 96 L10 28 L90 28 Z" />
-</svg>
