@@ -69,16 +69,31 @@
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* 見開き画像の右半分（＝表紙）を表示する */
+/* カタログ: 表紙の見開き（表紙と裏表紙）を読み物幅で上に置き、書誌の表を下に置く */
+.c-catalogue {
+  grid-template-columns: 1fr;
+}
+
 .c-catalogue__cover {
-  overflow: hidden;
+  aspect-ratio: auto;
+  background: transparent;
+  display: block;
 }
 
 .c-catalogue__cover img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: right center;
+  height: auto;
+}
+
+.c-catalogue__cover figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-3);
 }
 
 /* ===================== (b) サイト共通の補助（l-） ===================== */
