@@ -1,8 +1,8 @@
-現在の画像使用は玄関ポスターと管理棟S08《蛇の回転錯視》の2件です。S08は提供された紫・黄の版を暫定表示しており、記録写真の青・黄の横長版とは異なります。錯視画像：北岡明佳。詳しくは末尾のS08更新をご覧ください。
+現在の画像使用は玄関ポスター、管理棟S08《蛇の回転錯視》、S12《エデンの海、錯視から解放された魚》の3件です。S08は提供された紫・黄の版を暫定表示し、S12は彩色の試作プリント写真を補正して暫定位置へ掲示しています。S12：写真提供：渡辺英治／錯視画像：北岡明佳。詳細は末尾の各更新をご覧ください。
 
 # 大倉公園の二棟 — 内外をつないだ入館・回遊モデル
 
-2025年の展覧会記録写真と大府市・文化財の公開情報から作った、寸法推定を含む建築・展示モデルです。追加版は作品リスト40項目の配置を調べ、37項目を概形で室内へ配置しています。庭を加えた版では、中庭のA24《変身もんどり庵》も屋外に配置しました。計画と40項目の配置表は [PLAN.md](PLAN.md#10-追加依頼作品を含む展示内装)、写真との比較と限界は [REVIEW.md](REVIEW.md) です。
+2025年の展覧会記録写真と大府市・文化財の公開情報から作った、寸法推定を含む建築・展示モデルです。追加版は作品リスト40項目の配置を調べ、現在は38項目を室内へ配置しています（S12は暫定掲示）。庭を加えた版では、中庭のA24《変身もんどり庵》も屋外に配置しました。計画と40項目の配置表は [PLAN.md](PLAN.md#10-追加依頼作品を含む展示内装)、写真との比較と限界は [REVIEW.md](REVIEW.md) です。
 
 
 
@@ -14,23 +14,23 @@
 
 ブラウザでは、ZIPをすべて展開し、[viewer/index.html](viewer/index.html) をダブルクリックしてください。`viewer` フォルダ内の `assets`・`vendor`・各スクリプトは一緒に置きます。サーバー起動は不要な構成で、選択した棟だけデータを読み込みます。「棟」と「視点」を選び、ドラッグで見回し、WASD・矢印キーまたは画面の矢印で移動できます。
 
-一つのファイルだけで渡す場合は [viewer/展示室を歩く.html](viewer/展示室を歩く.html) を使えます。約99MBで、両棟のデータを含む単体版です。旧 `index.html` のローカル読込で使っていたfetchを廃止し、どちらの入口も同じ読込処理を使います。更新時は古い版にファイルを混ぜず、ZIPを新しいフォルダへすべて展開してください。
+一つのファイルだけで渡す場合は [viewer/展示室を歩く.html](viewer/展示室を歩く.html) を使えます。約100MBで、両棟のデータを含む単体版です。旧 `index.html` のローカル読込で使っていたfetchを廃止し、どちらの入口も同じ読込処理を使います。更新時は古い版にファイルを混ぜず、ZIPを新しいフォルダへすべて展開してください。
 
 **修正後の読込・切替・操作コードはNodeで検査済みです。ブラウザの実描画はCodexでは未検証で、Chromeの再確認手順を後述しています。Safari・Firefoxも未検証です。** Claudeの引き継ぎにある「単体版のfile://とindexのHTTPがChromeで描画できた」という結果は、修正前の外部確認です。
 
 読込が失敗すると「もう一度読み込む」と「単体版を開く」を表示します。ファイル不足やローカル読込の制限、データ破損、WebGLの利用不可を分けて案内します。単体版でも問題が続く場合は、下記のHTTP配信、またはBlender版を使えます。
 
-`out/rest.blend` と `out/management.blend` に、屋根・外壁・天井を表示した連続カメラ巡回を保存しています。ファイルを開くと玄関前の視点です。カメラ表示でタイムラインを再生すると、入口の段差から廊下を通り、各室の鑑賞位置を巡ります。途中で停止できます。タイムライン上の日本語マーカーが部屋の位置です。休憩棟は17視点、管理棟は14視点です。追加した庭と窓の鑑賞点を含み、巡回は室内から屋外へ続きます。時間と停止フレームは `out/walkthrough_viewpoints.json` と検証結果に記録しています。
+`out/rest.blend` と `out/management.blend` に、屋根・外壁・天井を表示した連続カメラ巡回を保存しています。ファイルを開くと玄関前の視点です。カメラ表示でタイムラインを再生すると、入口の段差から廊下を通り、各室の鑑賞位置を巡ります。途中で停止できます。タイムライン上の日本語マーカーが部屋の位置です。休憩棟は17視点、管理棟は15視点です。追加した庭と窓の鑑賞点を含み、巡回は室内から屋外へ続きます。時間と停止フレームは `out/walkthrough_viewpoints.json` と検証結果に記録しています。
 
 自由に動く場合は、`Cameras_Lights` の `rest_free_walk` / `management_free_walk` をアクティブカメラにして、3Dビューの「ビュー → ナビゲーション → ウォークナビゲーション」（F3で `Walk Navigation` を検索）を使います。WASDとマウスで移動・見回し、左クリックで確定、Escで開始位置へ戻れます。日本語キーボードでショートカットが合わない場合もメニューから開始できます。標準の自由移動は壁をすり抜けることがあります。保存した巡回カメラの経路は、別途モデルの形状と照合しています。
 
-まず `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` で全31視点を確認できます。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
+まず `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` で全32視点を確認できます。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
 
 ## モデル・画像の構成
 
 `out/weiji_buildings.zip` は、二棟のモデル、画像、計画・検証結果、再生成スクリプト、必要な参照画像をまとめたものです。
 
-まず `out/exhibition_overview.jpg` で主要な展示内装を、`out/room_views.jpg` で部屋別・作品別の視点を確認できます。写真との比較は `out/*_comparison.jpg`。元の建築初版は `archive/weiji_buildings_architecture_v1.zip` に保管しています（新しいZIPには含めません）。
+`out/exhibition_overview.jpg` と `out/room_views.jpg` は主要な内装をまとめた以前の一覧です。S12追加後の確認には `out/eden_science_overview.jpg` と最新の `out/management_walkthrough_overview.jpg` を使ってください。写真との比較は `out/*_comparison.jpg`。元の建築初版は `archive/weiji_buildings_architecture_v1.zip` に保管しています（新しいZIPには含めません）。
 
 `out/rest_layout.jpg` と `out/management_layout.jpg` は、作品番号をモデルのXY座標へ載せた作業用配置図です。実測図や正確な方位を示す図ではありません。
 
@@ -48,7 +48,7 @@ Blender 5.2.1 LTSで作成。数値の単位はメートルです。最初のカ
 
 作品は `Artworks`、展示台・椅子・キャプション等は `Exhibit_Furniture` にあります。`A01`〜`A24` は英司のリスト、`S01`〜`S16` は英治のリストで、発行版の番号に統一しました。各番号のEmptyを親として、その作品のパーツと専用什器をまとめて移動できます。親の `room`、`placement`、`placement_confidence`、`evidence`、`status` を確認してください。
 
-A24は `Artworks` 内の屋外作品です。窓から見える中庭に、写真から推定した位置・向きで置いています。`Unverified` 内のS16（園路の蝶）、S12（新作錯視の掲出場所未確認）は非表示の台帳オブジェクトだけです。A23は室内の陶器4点を実装し、庭の別構成は省略しています。A01・A09・A18・S15は正確な位置が未確認のため、表に記録した暫定位置へ配置しています。
+A24は `Artworks` 内の屋外作品です。窓から見える中庭に、写真から推定した位置・向きで置いています。`Unverified` 内のS16（園路の蝶）は非表示の台帳オブジェクトだけです。S12は制作者の展示指示により、S09付近の合板壁へ暫定掲示しました。A23は室内の陶器4点を実装し、庭の別構成は省略しています。A01・A09・A18・S15は正確な位置が未確認のため、表に記録した暫定位置へ配置しています。
 
 ## 再生成
 
@@ -74,7 +74,7 @@ python3 3d-modeling/tools/submit_job.py verify
 
 コマンドは `.py` を書き終えた後に `.go` を作り、ジョブ名とログの保存先を表示します。処理終了は `queue/done/ジョブ名.log` の `exit=0`、完了マーカー、Python例外がないことを併せて確認してください。ランナーが停止していればキューは実行されません。3分以上開始応答がない場合は、ランナーの状態を確認する必要があります。
 
-モデルの再生成にはBlender付属Python、同梱の `reference/details/*_artworks_before.json`・`placements.json` と `reference/entrance-poster.jpg`・`reference/entrance-poster.json` を使います。材質はノードで作成し、ポスターとS08以外の作品写真・錯視画像・ドレス写真は使用していません。初版の襖の写真材質も、追加版では淡い色調の手続き材質へ置換しました。展覧会ポスターとS08はユーザーの指定画像をパックし、GLBにも内蔵しています。S08には `reference/snakes/rotating-snakes.png` と `reference/snakes/texture.json`、文字の生成にはmacOSのヒラギノ角ゴシックW3を使います。別OSでは対応する日本語フォントのパスを指定してください。保存モデルの閲覧は画像の外部リンクに依存しません。星丸は指定の確認視点で、手前が丸・鏡像が六角星になるよう上縁を計算しています。他の錯視図版・原図・作品本文は概形による代理表現です。
+モデルの再生成にはBlender付属Python、同梱の `reference/details/*_artworks_before.json`・`placements.json` と `reference/entrance-poster.jpg`・`reference/entrance-poster.json` を使います。材質はノードで作成し、ポスター・S08・S12以外の作品写真・錯視画像・ドレス写真は使用していません。初版の襖の写真材質も、追加版では淡い色調の手続き材質へ置換しました。展覧会ポスター・S08・S12はユーザーの指定画像をパックし、GLBにも内蔵しています。S08には `reference/snakes/rotating-snakes.png` と `reference/snakes/texture.json`、文字の生成にはmacOSのヒラギノ角ゴシックW3を使います。別OSでは対応する日本語フォントのパスを指定してください。保存モデルの閲覧は画像の外部リンクに依存しません。星丸は指定の確認視点で、手前が丸・鏡像が六角星になるよう上縁を計算しています。他の錯視図版・原図・作品本文は概形による代理表現です。
 
 配置台帳を編集する場合は `tools/placement_catalog.py` を変更して `python3 3d-modeling/tools/placement_catalog.py` を実行すると、`placements.json` とPLANの作品表が同じ内容に更新されます。比較画像を作るときだけ、原本の記録写真とPillowが必要です:
 
@@ -255,3 +255,18 @@ Claude側の確認：file://とHTTPのindex、単体版のfile://で、1440×900
 通常ビルドは `tools/watanabe_window.py` の `apply(name)` を自動で呼びます。修正対象だけの既存モデル更新にも同関数を使います。巡回の更新は `assemble_walkthrough.py` に `BUILD_ONLY='management'`、`RENDER_TOUR=False` を渡せば休憩棟を保存し直しません。すべてキュー経由で実行します。S13の検査は `watanabe_window.py` の単独実行または `verify_models.py`、比較は `compare_watanabe.py`。標準GLB読戻しには `verify_glb_import.py` の `BUILD_ONLY='management'`、`DETAIL_RENDER_ONLY=True`、`DETAIL_CAMERA='management_watanabe_detail'`、`DETAIL_OUTPUT='management_watanabe_glb_import.png'` を指定します。最終同期・配布の手順はS08と同じです。
 
 Claude側の実描画確認：file://とHTTPでindex、file://で単体版を開き、1440×900・390×844の両方で管理棟の14番を選びます。紙が窓台の上の厚い板ではなくガラスに貼られ、黒い円と斜線、紙の右上から上方へ色シールが見えること、枠への埋まりやちらつきがないことを確認してください。ドラッグで見回し、WASDで前後移動し、玄関・他視点・休憩棟へ切り替えて戻れることも確認します。`window.weiji.state.view === 'watanabe'` と `walkable === true` は状態検査で、画像の目視確認とは別です。実ブラウザ描画・Safari・Firefoxは未検証です。
+
+
+## 錯視側のエデンの海を見る（PLAN §17）
+
+ビューアで **管理棟 → 15 錯視側のエデンの海（暫定掲示）** を選んでください。S09の合板壁の端に、道路と2台の白い車に色つきの魚を重ねた《エデンの海、錯視から解放された魚》を表示しています。薄いA2相当の白紙と小さなキャプション札を添えました。掲出場所と実寸は制作者の確認待ちです。
+
+[試作写真・整形画像・Blender・GLBの比較](out/eden_science_overview.jpg)、[洋室への追加前後](out/management_gallery_rear_eden_science_comparison.jpg)、[鑑賞視点](out/management_walk_eden_science.png) を確認できます。Blenderの近接カメラは `management_eden_science_detail`、鑑賞カメラは `management_walk_eden_science`。連続巡回にも追加しました。既存の14番《渡辺錯視》、S08、他の作品の配置は保っています。
+
+作品・魚：渡辺英治。**写真提供：渡辺英治／錯視画像：北岡明佳。** 今回の制作者指示による第3の画像例外です。左側の彩色プリントだけを切り出し、四隅から射影補正して2048×1536pxにしました。右の黒い版は使用していません。印刷と撮影による色・反りは残り、正面原図や会場の最終掲示そのものの復元ではありません。4:3の比率も仮定です。
+
+再生成は `tools/eden_science.py` を通常ビルドから自動適用します。画像の作り直しだけは `/opt/homebrew/bin/python3.10 3d-modeling/tools/prepare_eden_science.py`（元写真が必要）。補正の四隅・変換行列・原本と出力のハッシュは `reference/eden-science/texture.json`。配布モデルの再生成には同梱の `eden-science.jpg` とJSONを使えます。
+
+管理棟だけの巡回更新は `assemble_walkthrough.py` に `BUILD_ONLY='management', RENDER_TOUR=False`。関連撮影は `render_models.py` の `CAMERA_FILTER` に `management_walk_rear`、`management_gallery_rear`、上記2カメラを指定します。標準GLB読戻しは `verify_glb_import.py` に `BUILD_ONLY='management', DETAIL_RENDER_ONLY=True, DETAIL_CAMERA='management_eden_science_detail', DETAIL_OUTPUT='management_eden_science_glb_import.png'`。Blender関連はすべてキュー経由です。`eden_science.py` の単独実行で保存モデルのS12検査、`compare_eden_science.py` で比較画像と管理棟の配置図を更新します。最終同期・再生成検査・ZIPの手順はS08と同じです。
+
+Claude側の実描画確認：file://とHTTPのindex、file://の単体版を1440×900・390×844で開き、管理棟15番を選びます。紙の表に彩色の魚と2台の車が正立し、端が切れず、机・椅子・別のプリントが混ざらないことを確認してください。S09と重ならず、札が下にあり、移動とドラッグで見回せることも確認します。管理棟の `window.weiji.state.edenTextures === 1`、休憩棟では0です。3つの許可画像、棟切替、S13、樽の梯子が保たれることを確認してください。Nodeの状態検査はWebGL描画・JPEG復号・ブラウザ互換性・実機速度の確認ではありません。
