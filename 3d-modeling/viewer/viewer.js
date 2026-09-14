@@ -1,5 +1,5 @@
-/* Static GLB reader with one authorized poster texture and first-person viewer. Vendored Three r102.
-   Only this exporter's triangle subset and embedded JPEG poster are accepted. */
+/* Static GLB reader with authorized poster and S08 textures and first-person viewer. Vendored Three r102.
+   Only this exporter's triangle subset and embedded approved JPEG/PNG images are accepted. */
 'use strict';
 const $=id=>document.getElementById(id);
 function showLoading(message, failed=false){
@@ -30,35 +30,46 @@ function readGLB(buffer){
  const dv=new DataView(buffer);if(dv.getUint32(0,true)!==0x46546c67||dv.getUint32(4,true)!==2)throw Error('GLBヘッダーが不正です');
  const len=dv.getUint32(12,true),json=JSON.parse(new TextDecoder().decode(new Uint8Array(buffer,20,len))),start=20+len+8;
  const images=json.images||[],textures=json.textures||[],maps=[];
- if(images.length!==1||textures.length!==1||images[0].uri||images[0].mimeType!=='image/jpeg'||textures[0].source!==0)throw Error('ポスターの内蔵画像形式が不正です');
- const posterMaterials=json.materials.filter(m=>m.pbrMetallicRoughness.baseColorTexture);
- if(posterMaterials.length!==1||posterMaterials[0].name!=='Authorized exhibition poster - front'||posterMaterials[0].doubleSided)throw Error('ポスターの前面材質が不正です');
- const texture=new THREE.Texture();texture.flipY=false;texture.encoding=THREE.sRGBEncoding;
- texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;texture.minFilter=texture.magFilter=THREE.LinearFilter;texture.generateMipmaps=false;maps.push(texture);
- const group=new THREE.Group();
+ const approved={
+  'Authorized exhibition poster - front':{flag:'authorized_poster',mime:'image/jpeg',pixels:[724,1024]},
+  'Authorized S08 rotating snakes - front':{flag:'authorized_s08',mime:'image/png',pixels:[2048,2048]}
+ };
+ const texturedMaterials=json.materials.filter(m=>m.pbrMetallicRoughness.baseColorTexture);
+ const expected=json.extras.building==='management'?2:1;
+ if(images.length!==expected||textures.length!==expected||texturedMaterials.length!==expected)throw Error('内蔵画像の数が不正です');
+ const seen=new Set();
+ for(const m of texturedMaterials){
+  const spec=approved[m.name],i=m.pbrMetallicRoughness.baseColorTexture.index,t=textures[i],im=t&&images[t.source];
+  if(!spec||m.doubleSided||!m.extras||!m.extras[spec.flag]||seen.has(m.name)||!im||im.uri||im.mimeType!==spec.mime||t.source!==i||!im.extras||im.extras.authorization!==spec.flag||im.extras.pixels.join(',')!==spec.pixels.join(','))throw Error('許可画像の前面材質が不正です');
+  seen.add(m.name);
+ }
+ for(const im of images){const texture=new THREE.Texture();texture.flipY=false;texture.encoding=THREE.sRGBEncoding;
+  texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;texture.minFilter=texture.magFilter=THREE.LinearFilter;texture.generateMipmaps=false;maps.push(texture);}
+ const group=new THREE.Group();group.userData.cancelTextures=[];
  function attribute(i){const a=json.accessors[i],v=json.bufferViews[a.bufferView];const size=a.type==='VEC2'?2:a.type==='VEC3'?3:0;if(a.componentType!==5126||!size)throw Error('未対応の形状形式');return new THREE.BufferAttribute(new Float32Array(buffer,start+(v.byteOffset||0)+(a.byteOffset||0),a.count*size),size);}
  for(const n of json.nodes){if(n.mesh===undefined)continue;const m=json.meshes[n.mesh];for(const p of m.primitives){
   const g=new THREE.BufferGeometry();g.addAttribute('position',attribute(p.attributes.POSITION));g.addAttribute('normal',attribute(p.attributes.NORMAL));g.addAttribute('color',attribute(p.attributes.COLOR_0));if(p.indices!==undefined){const a=json.accessors[p.indices],v=json.bufferViews[a.bufferView];g.setIndex(new THREE.BufferAttribute(new Uint32Array(buffer,start+(v.byteOffset||0),a.count),1));}if(p.attributes.TEXCOORD_0!==undefined)g.addAttribute('uv',attribute(p.attributes.TEXCOORD_0));g.computeBoundingSphere();
   const a=json.materials[p.material],b=a.pbrMetallicRoughness,c=b.baseColorFactor;
   const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(c[0],c[1],c[2]),roughness:b.roughnessFactor,metalness:Math.min(b.metallicFactor,.6),vertexColors:THREE.VertexColors,side:a.doubleSided?THREE.DoubleSide:THREE.FrontSide,transparent:a.alphaMode==='BLEND',opacity:c[3],depthWrite:a.alphaMode!=='BLEND',emissive:new THREE.Color(...(a.emissiveFactor||[0,0,0]))});
-  if(b.baseColorTexture){if(b.baseColorTexture.index!==0||!g.attributes.uv)throw Error('ポスターのUVがありません');mat.map=maps[0];}
+  if(b.baseColorTexture){if(!maps[b.baseColorTexture.index]||!g.attributes.uv)throw Error('画像のUVがありません');mat.map=maps[b.baseColorTexture.index];}
   const mesh=new THREE.Mesh(g,mat);mesh.name=n.name;if(n.name.endsWith('S02 optical mirror'))mesh.visible=false;group.add(mesh);
  }}
  // GLB bytes -> data URL. No fetch, Blob URL or file:// cross-origin image request.
- const ready=new Promise((resolve,reject)=>{
-  const view=json.bufferViews[images[0].bufferView];
-  if(!view||view.buffer!==0||view.byteOffset+view.byteLength>buffer.byteLength-start){reject(Object.assign(Error('Invalid poster buffer'),{code:'MODEL_TEXTURE'}));return;}
+ const ready=Promise.all(images.map((record,index)=>new Promise((resolve,reject)=>{
+  const texture=maps[index],view=json.bufferViews[record.bufferView];
+  if(!view||view.buffer!==0||view.byteOffset+view.byteLength>buffer.byteLength-start){reject(Object.assign(Error('Invalid approved image buffer'),{code:'MODEL_TEXTURE'}));return;}
   const bytes=new Uint8Array(buffer,start+(view.byteOffset||0),view.byteLength);let binary='';
   for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
   const im=new Image();let finished=false;
   const timer=setTimeout(()=>fail(),15000);
-  function fail(){if(finished)return;finished=true;clearTimeout(timer);im.onload=im.onerror=null;reject(Object.assign(Error('Poster JPEG decode failed'),{code:'MODEL_TEXTURE'}));}
-  im.onerror=fail;im.onload=()=>{if(finished)return;if(im.naturalWidth!==724||im.naturalHeight!==1024){fail();return;}finished=true;clearTimeout(timer);im.onload=im.onerror=null;texture.image=im;texture.needsUpdate=true;resolve();};
-  im.src='data:image/jpeg;base64,'+btoa(binary);
- });
+  function fail(){if(finished)return;finished=true;clearTimeout(timer);im.onload=im.onerror=null;reject(Object.assign(Error('Approved image decode failed'),{code:'MODEL_TEXTURE'}));}
+  group.userData.cancelTextures.push(fail);
+  im.onerror=fail;im.onload=()=>{if(finished)return;if(im.naturalWidth!==record.extras.pixels[0]||im.naturalHeight!==record.extras.pixels[1]){fail();return;}finished=true;clearTimeout(timer);im.onload=im.onerror=null;texture.image=im;texture.needsUpdate=true;resolve();};
+  im.src='data:'+record.mimeType+';base64,'+btoa(binary);
+ }))); 
  return {group,meta:json.extras,ready};
 }
-function disposeGroup(group){const maps=new Set();group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)maps.add(o.material.map);o.material.dispose();}});for(const map of maps)map.dispose();}
+function disposeGroup(group){for(const cancel of group.userData.cancelTextures||[])cancel();const maps=new Set();group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)maps.add(o.material.map);o.material.dispose();}});for(const map of maps)map.dispose();}
 function disposeModel(){if(model){scene.remove(model);disposeGroup(model);}if(mirror){scene.remove(mirror);mirror.geometry.dispose();mirror.material.dispose();}if(reflection)reflection.dispose();model=mirror=reflection=null;}
 function addMirror(m){
  if(!m)return;const point=new V(...m.point),normal=new V(...m.normal).normalize();reflection=new THREE.WebGLRenderTarget(1024,1024,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
@@ -136,7 +147,7 @@ $('lookleft').onclick=()=>{yaw+=Math.PI/6;camera.rotation.set(pitch,yaw,0);dirty
 $('mapbox').addEventListener('toggle',drawMap);window.addEventListener('resize',resize);
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);advanceStation(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const length=Math.hypot(fw,side);fw/=length;side/=length;move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.15,(-Math.cos(yaw)*fw-Math.sin(yaw)*side)*dt*1.15);}if(dirty)render();if(performance.now()-lastMap>400&&$('mapbox').open){drawMap();lastMap=performance.now();}}
 // Read-only state is useful for reviewing routes and browser verification.
-window.weiji={get state(){return {building,station:station?{id:station.id,mode:station.mode}:null,position:camera.position.toArray(),view: $('viewpoint').value,direction:camera.getWorldDirection(new V()).toArray(),loading:!$('loading').hidden,frameCount,meshes:model?model.children.length:0,mirror:!!mirror,posterTextures:model?model.children.filter(o=>o.material&&o.material.map&&o.material.map.image).length:0,cell:nav?cell(camera.position.x,-camera.position.z):null,walkable:nav?ground(camera.position.x,-camera.position.z)!==null:false};}};
+window.weiji={get state(){return {building,station:station?{id:station.id,mode:station.mode}:null,position:camera.position.toArray(),view: $('viewpoint').value,direction:camera.getWorldDirection(new V()).toArray(),loading:!$('loading').hidden,frameCount,meshes:model?model.children.length:0,mirror:!!mirror,posterTextures:model?model.children.filter(o=>o.name==='Authorized exhibition poster - front'&&o.material.map&&o.material.map.image).length:0,snakesTextures:model?model.children.filter(o=>o.name==='Authorized S08 rotating snakes - front'&&o.material.map&&o.material.map.image).length:0,cell:nav?cell(camera.position.x,-camera.position.z):null,walkable:nav?ground(camera.position.x,-camera.position.z)!==null:false};}};
 resize();load('rest');animate();
 
 } catch(error) { showFailure(error);$('retry').onclick=()=>window.location.reload(); }

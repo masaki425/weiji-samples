@@ -79,7 +79,7 @@
     const code = error && error.code;
     if (code === 'WEBGL') return '3D表示を開始できません。WebGLが利用できないか、描画用のメモリが不足しています。ほかの3D画面を閉じて再読み込みするか、別のブラウザをお試しください。';
     if (code === 'DEPENDENCY') return '表示に必要なスクリプトを読み込めません。ZIPをすべて展開し、viewerフォルダの中のファイルを一緒に置いて開き直してください。';
-    if (code === 'MODEL_TEXTURE') return 'ポスター画像を表示できません。もう一度読み込み、改善しなければ更新版ZIPを新しいフォルダにすべて展開してください。';
+    if (code === 'MODEL_TEXTURE') return '展示画像（ポスター・蛇の回転）を表示できません。もう一度読み込み、改善しなければ更新版ZIPを新しいフォルダにすべて展開してください。';
     if (code === 'MODEL_DATA') return 'モデルデータが不完全か、異なる版が混在しています。更新版ZIPを新しいフォルダにすべて展開して開き直してください。';
     if (code === 'MODEL_SCRIPT' || code === 'MODEL_TIMEOUT') {
       const detail = code === 'MODEL_TIMEOUT' ? 'モデルの読込が時間内に終わりませんでした。' : 'モデルファイルを読み込めませんでした。';
