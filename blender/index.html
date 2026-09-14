@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>大倉公園 管理棟・休憩棟の 3D モデル（検討用）</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../site/design/tokens.css">
+  <link rel="stylesheet" href="../site/design/fonts.css">
+  <link rel="stylesheet" href="../site/design/base.css">
+  <style>
+    .hub { max-width: 44rem; margin: 0 auto; padding: 4rem 1.25rem 5rem; }
+    .hub h1 { font-size: 1.5rem; font-weight: 400; margin: 0 0 0.5rem; }
+    .hub .lead { color: var(--color-text-2); margin: 0 0 3rem; }
+    .hub h2 { font-size: 1.125rem; font-weight: 400; margin: 2.5rem 0 0.75rem; padding-top: 1.5rem; border-top: 1px solid var(--color-line); }
+    .hub p { margin: 0 0 0.75rem; }
+    .hub ul { margin: 0 0 0.75rem; padding-left: 1.25rem; }
+    .hub li { margin: 0.25rem 0; }
+    .hub .note { color: var(--color-text-2); font-size: 0.9375rem; }
+    .hub img { display: block; max-width: 100%; height: auto; margin: 0.75rem 0 0.25rem; }
+    .hub figcaption { color: var(--color-text-3); font-size: 0.875rem; margin-bottom: 1.25rem; }
+    .hub footer { margin-top: 4rem; color: var(--color-text-3); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <main class="hub">
+    <p><a href="../index.html">← W Eiji サイト（検討用）</a></p>
+    <h1>大倉公園 管理棟・休憩棟の 3D モデル</h1>
+    <p class="lead">ワタナベエイジ展「Morning Monsters / W Eiji」（2025）の会場だった大倉公園の管理棟と休憩棟を、記録写真と大府市・文化財の公開情報から推定して Blender で復元したものです。寸法・庭の配置・室の接続には推定が含まれ、実測図に基づくものではありません。検討のために期間を限って置いています。</p>
+
+    <h2>ブラウザで歩く</h2>
+    <p><a href="viewer/index.html">展示室を歩く（ブラウザ版）</a></p>
+    <p class="note">棟と視点を選び、ドラッグで見回し、WASD・矢印キーか画面の矢印で移動します。休憩棟の視点「梯子から樽の中」で梯子を上って《空の夢／空の上》の中を覗けます。休憩棟は約 70MB のデータを読むので、表示まで少し待ちます。パソコンの Chrome で確認しています。</p>
+
+    <h2>Blender で開く</h2>
+    <ul>
+      <li><a href="models/rest.blend">rest.blend</a>（休憩棟、約 10MB）</li>
+      <li><a href="models/management.blend">management.blend</a>（管理棟、約 4MB）</li>
+    </ul>
+    <p class="note">Blender 5.2 で作成。単位はメートル。開くと玄関前の視点で、タイムラインを再生すると玄関から各室を巡ります。屋根は Roof、天井は Ceilings のコレクションにあり、非表示にすると上から中を見られます。作品は Artworks、庭は Site にまとめてあります。</p>
+
+    <h2>確認画像</h2>
+    <figure><img src="images/site_overview.jpg" alt="庭と室内をつないだ 6 視点" loading="lazy"><figcaption>庭と室内をつないだ視点</figcaption></figure>
+    <figure><img src="images/exhibition_overview.jpg" alt="作品を配置した内装 9 視点" loading="lazy"><figcaption>作品を配置した内装</figcaption></figure>
+    <figure><img src="images/rest_walkthrough_overview.jpg" alt="休憩棟の巡回視点" loading="lazy"><figcaption>休憩棟：玄関から室内を巡る</figcaption></figure>
+    <figure><img src="images/management_walkthrough_overview.jpg" alt="管理棟の巡回視点" loading="lazy"><figcaption>管理棟：玄関から室内を巡る</figcaption></figure>
+    <figure><img src="images/details_overview.jpg" alt="建物と庭の細部" loading="lazy"><figcaption>建物・庭の細部と、梯子から樽の中</figcaption></figure>
+    <figure><img src="images/poster_overview.jpg" alt="両棟の玄関ポスター" loading="lazy"><figcaption>玄関のポスター（制作：渡辺英司 / courtesy office SONO）</figcaption></figure>
+    <figure><img src="images/rest_layout.jpg" alt="休憩棟の作品配置図" loading="lazy"><figcaption>休憩棟：作品の配置図（作業用）</figcaption></figure>
+    <figure><img src="images/management_layout.jpg" alt="管理棟の作品配置図" loading="lazy"><figcaption>管理棟：作品の配置図（作業用）</figcaption></figure>
+
+    <h2>記録</h2>
+    <ul>
+      <li><a href="docs/README.md">README</a>（開き方と操作）</li>
+      <li><a href="docs/PLAN.md">PLAN</a>（根拠資料、推定の範囲、作品配置表、未決事項）</li>
+      <li><a href="docs/REVIEW.md">REVIEW</a>（写真との照合と限界）</li>
+    </ul>
+    <p class="note">作品は概形と色で表し、錯視図版や作品写真は貼っていません。玄関のポスターだけ実物の画像を使っています。記録写真との比較画像は、掲載許諾の確認前のため含めていません。</p>
+
+    <footer>2026 年 9 月　渡部匡己</footer>
+  </main>
+</body>
+</html>
