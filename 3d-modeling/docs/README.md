@@ -1,3 +1,5 @@
+管理棟の最新版は、制作者の `OKURAOBU.pptx` を間取り・作品配置の正本にした§20です。[見取り図との重ね図](out/management_okuraobu_overlay.jpg)・[写真とモデルの11組](out/management_photo_constraints.jpg)・[全55視点](out/management_all_views.jpg)で確認できます。休憩棟は変更していません。
+
 現在の画像使用は玄関ポスター、管理棟S08《蛇の回転錯視》、S12《エデンの海、錯視から解放された魚》の3件です。S08は提供された紫・黄の版を暫定表示し、S12は彩色の試作プリント写真を補正して暫定位置へ掲示しています。S12：写真提供：渡辺英治／錯視画像：北岡明佳。詳細は末尾の各更新をご覧ください。
 
 # 大倉公園の二棟 — 内外をつないだ入館・回遊モデル
@@ -20,11 +22,11 @@
 
 読込が失敗すると「もう一度読み込む」と「単体版を開く」を表示します。ファイル不足やローカル読込の制限、データ破損、WebGLの利用不可を分けて案内します。単体版でも問題が続く場合は、下記のHTTP配信、またはBlender版を使えます。
 
-`out/rest.blend` と `out/management.blend` に、屋根・外壁・天井を表示した連続カメラ巡回を保存しています。ファイルを開くと玄関前の視点です。カメラ表示でタイムラインを再生すると、入口の段差から廊下を通り、各室の鑑賞位置を巡ります。途中で停止できます。タイムライン上の日本語マーカーが部屋の位置です。休憩棟は17視点、管理棟は15視点です。追加した庭と窓の鑑賞点を含み、巡回は室内から屋外へ続きます。時間と停止フレームは `out/walkthrough_viewpoints.json` と検証結果に記録しています。
+`out/rest.blend` と `out/management.blend` に、屋根・外壁・天井を表示した連続カメラ巡回を保存しています。ファイルを開くと玄関前の視点です。カメラ表示でタイムラインを再生すると、入口の段差から廊下を通り、各室の鑑賞位置を巡ります。途中で停止できます。タイムライン上の日本語マーカーが部屋の位置です。休憩棟は17視点、管理棟は18視点です。追加した庭と窓の鑑賞点を含み、巡回は室内から屋外へ続きます。時間と停止フレームは `out/walkthrough_viewpoints.json` と検証結果に記録しています。
 
 自由に動く場合は、`Cameras_Lights` の `rest_free_walk` / `management_free_walk` をアクティブカメラにして、3Dビューの「ビュー → ナビゲーション → ウォークナビゲーション」（F3で `Walk Navigation` を検索）を使います。WASDとマウスで移動・見回し、左クリックで確定、Escで開始位置へ戻れます。日本語キーボードでショートカットが合わない場合もメニューから開始できます。標準の自由移動は壁をすり抜けることがあります。保存した巡回カメラの経路は、別途モデルの形状と照合しています。
 
-まず `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` で全32視点を確認できます。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
+まず `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` で全35視点を確認できます。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
 
 ## モデル・画像の構成
 
@@ -48,7 +50,7 @@ Blender 5.2.1 LTSで作成。数値の単位はメートルです。最初のカ
 
 作品は `Artworks`、展示台・椅子・キャプション等は `Exhibit_Furniture` にあります。`A01`〜`A24` は英司のリスト、`S01`〜`S16` は英治のリストで、発行版の番号に統一しました。各番号のEmptyを親として、その作品のパーツと専用什器をまとめて移動できます。親の `room`、`placement`、`placement_confidence`、`evidence`、`status` を確認してください。
 
-A24は `Artworks` 内の屋外作品です。窓から見える中庭に、写真から推定した位置・向きで置いています。`Unverified` 内のS16（園路の蝶）は非表示の台帳オブジェクトだけです。S12は制作者の展示指示により、S09付近の合板壁へ暫定掲示しました。A23は室内の陶器4点を実装し、庭の別構成は省略しています。A01・A09・A18・S15は正確な位置が未確認のため、表に記録した暫定位置へ配置しています。
+A24は `Artworks` 内の屋外作品です。窓から見える中庭に、写真から推定した位置・向きで置いています。`Unverified` 内のS16（園路の蝶）は非表示の台帳オブジェクトだけです。S12は制作者の展示指示により、S09付近の合板壁へ暫定掲示しました。A23は室内の陶器4点を実装し、庭の別構成は省略しています。A01・A09・A18は正確な位置が未確認のため、表に記録した暫定位置へ配置しています。
 
 ## 再生成
 
@@ -158,7 +160,7 @@ python3 3d-modeling/tools/serve_viewer.py --port 8768
 
 ## 庭と窓越しの内外を見る
 
-休憩棟は「庭の園路から休憩棟」「中庭・変身もんどり庵」「庭から奥座敷の中へ」「庭からエデンの海へ」「広縁から中庭の小屋へ」「窓辺から庭木と竹垣へ」を追加しました。管理棟は「前庭から管理棟へ」「庭から研究ノートの広間へ」「窓の錯視箱と前庭」「西の窓から和室の中へ」を追加しています。窓と屋根を表示したまま、内外の同じ立体を見ます。
+休憩棟は「庭の園路から休憩棟」「中庭・変身もんどり庵」「庭から奥座敷の中へ」「庭からエデンの海へ」「広縁から中庭の小屋へ」「窓辺から庭木と竹垣へ」を追加しました。管理棟は「前庭から管理棟へ」「庭から研究ノートの広間へ」「広間の窓から前庭」「西の窓から和室の中へ」を追加しています。窓と屋根を表示したまま、内外の同じ立体を見ます。
 
 外構の根拠・推定範囲はPLAN §12。二棟の正確な距離・高低差が未確認なので、公園全体は接続していません。前庭の木や石の座標、庭側入口の絶対位置、A24と窓の距離は推定です。管理棟の窓外の軒は見える一部だけを表し、S04の実物の投影関係までは再現していません。A23の庭部分、S16の個々の蝶は位置を確定できず、省略しています。
 
@@ -166,7 +168,7 @@ python3 3d-modeling/tools/serve_viewer.py --port 8768
 
 季節（11月の紅葉／公式写真の新緑）は制作者の確認待ちです。現在は11月を暫定採用しています。再生成コマンドの `--season november` または `--season green` で、落葉樹の葉色を切り替えられます（例：`python3 3d-modeling/tools/submit_job.py build --target both --season green`）。内部では `site_environment.py` の `SEASON` パラメータへ渡します。樹木の位置、常緑樹の色、作品は変わりません。季節変更後も下記と同じ書出し・検証・配布を行ってください。
 
-既存の建物へ外構だけを再適用する場合は、`tools/site_environment.py` → `entrance_posters.py` の `apply(name)` → `apply_details.py` の `apply(name)` → `snakes_panel.py` の `apply(name)` → `watanabe_window.py` の `apply(name)` → `assemble_walkthrough.py` → `render_models.py` → `verify_models.py` → `verify_glb_import.py` を順に呼ぶキュースクリプトを作ります。Blenderを直接起動しません。通常の `submit_job.py build` には外構の生成を組み込み済みです。元の室内作品はA04の承認済み詳細化、S08の画像表示、S13の紙・シールへの訂正を除き、位置とメッシュのハッシュを `out/*_site_indoor_baseline.json` と照合します。制作者が後日作品を変更するときは、今回の不変検査を無断で上書きせず、新しい変更範囲と照合基準を計画に記録してください。
+通常の再生成は `build_models.py` を使います。管理棟では、従来の展示生成を行った後、`management_layout.py` が§19の間取り・位置・向きへ一括変換します。`placements.json` の `construction_position` は旧生成工程専用で、表示位置は `position` と `management_layout_data.py` が正本です。旧版への単独の外構・作品パスの再適用はせず、空のシーンから対象棟を再生成してください。管理棟は形状・材質・UVの保持と新座標を検査し、休憩棟には従来の不変検査を適用します。
 
 庭を含む比較画像の作成には `tools/compare_walkthrough.py`、`tools/compare_site.py`、`tools/placement_diagrams.py` を使います。`out/site_overview.jpg` に窓越しの代表画像、`out/site_verification.json` に両方向の視線・外構・作品保持の検査をまとめます。
 
@@ -174,7 +176,7 @@ Claude側のブラウザ確認では、上記file://・HTTP、1440×900・390×8
 
 - 休憩棟の「広縁から中庭の小屋へ」で、透明な窓の向こうに小屋、竹垣、庭木が見える。
 - 「庭からエデンの海へ」では、窓越しに針金で立つ魚、畳、襖、天井が見える。「庭から奥座敷の中へ」では座卓と床の間が見える。
-- 管理棟の「窓の錯視箱と前庭」で、窓外に植込み・柵・樹林・軒の一部が見える。「庭から研究ノートの広間へ」ではノート机と室内が見える。
+- 管理棟の「広間の窓から前庭」で、窓外に植込み・柵・樹林が見える。「庭から研究ノートの広間へ」ではノート机と室内が見える。
 - 庭から入口へ移動して段を上り、室内へ入れる。幹・竹垣・小屋・作品の中を通り抜けない。庭側入口と既存入口を確認する。
 - 両棟の切替後も庭が欠落しない。管理棟の星丸の確認視点、休憩棟の魚の支持も保持される。
 
@@ -250,7 +252,7 @@ Claude側の確認：file://とHTTPのindex、単体版のfile://で、1440×900
 
 [写真・近接・GLBの比較](out/watanabe_overview.jpg)、[鑑賞視点](out/management_walk_watanabe.png) を確認できます。Blenderは `management_watanabe_detail` が近接、`management_walk_watanabe` が鑑賞位置です。連続巡回にも14番を追加しました。既存の「窓辺の展示」（east）は別の窓を向くので、S13には新しい14番を使用してください。
 
-紙とシールはガラスの内側表面に置いた薄いメッシュで、写真テクスチャは追加していません。紙280×198mm・シール径約8mm、既存北窓の左側ガラスへの割当は推定です。写真の庭木はこの窓の外構には再現できておらず、窓の厳密な同定も未確認です。緑の説明板・参加用の額と、別窓のシールは所在が確定できないため追加していません。
+紙とシールはガラスの内側表面に置いた薄いメッシュで、写真テクスチャは追加していません。紙280×198mm・シール径約8mm、§19で洋室MGの右側、S14の凹部に隣接するガラスへ移しました。窓枠の絶対座標は推定です。窓背景の庭木は概形で配置し、実際の枝ぶり・位置と窓の厳密な同定は未確認です。緑の説明板・参加用の額と、別窓のシールは所在が確定できないため追加していません。
 
 通常ビルドは `tools/watanabe_window.py` の `apply(name)` を自動で呼びます。修正対象だけの既存モデル更新にも同関数を使います。巡回の更新は `assemble_walkthrough.py` に `BUILD_ONLY='management'`、`RENDER_TOUR=False` を渡せば休憩棟を保存し直しません。すべてキュー経由で実行します。S13の検査は `watanabe_window.py` の単独実行または `verify_models.py`、比較は `compare_watanabe.py`。標準GLB読戻しには `verify_glb_import.py` の `BUILD_ONLY='management'`、`DETAIL_RENDER_ONLY=True`、`DETAIL_CAMERA='management_watanabe_detail'`、`DETAIL_OUTPUT='management_watanabe_glb_import.png'` を指定します。最終同期・配布の手順はS08と同じです。
 
@@ -270,3 +272,75 @@ Claude側の実描画確認：file://とHTTPでindex、file://で単体版を開
 管理棟だけの巡回更新は `assemble_walkthrough.py` に `BUILD_ONLY='management', RENDER_TOUR=False`。関連撮影は `render_models.py` の `CAMERA_FILTER` に `management_walk_rear`、`management_gallery_rear`、上記2カメラを指定します。標準GLB読戻しは `verify_glb_import.py` に `BUILD_ONLY='management', DETAIL_RENDER_ONLY=True, DETAIL_CAMERA='management_eden_science_detail', DETAIL_OUTPUT='management_eden_science_glb_import.png'`。Blender関連はすべてキュー経由です。`eden_science.py` の単独実行で保存モデルのS12検査、`compare_eden_science.py` で比較画像と管理棟の配置図を更新します。最終同期・再生成検査・ZIPの手順はS08と同じです。
 
 Claude側の実描画確認：file://とHTTPのindex、file://の単体版を1440×900・390×844で開き、管理棟15番を選びます。紙の表に彩色の魚と2台の車が正立し、端が切れず、机・椅子・別のプリントが混ざらないことを確認してください。S09と重ならず、札が下にあり、移動とドラッグで見回せることも確認します。管理棟の `window.weiji.state.edenTextures === 1`、休憩棟では0です。3つの許可画像、棟切替、S13、樽の梯子が保たれることを確認してください。Nodeの状態検査はWebGL描画・JPEG復号・ブラウザ互換性・実機速度の確認ではありません。
+
+
+## 写真の見通しから組み直した管理棟（PLAN §19）
+
+[更新した配置図](out/management_layout.jpg) には、部屋ID・開口・窓・合板壁・作品番号を入れました。[写真／変更前／変更後](out/management_layout_overview.jpg) と [管理棟の全視点](out/management_all_views.jpg) で照合できます。MGFとMGRは一つの洋室の展示区画です。非展示の事務室MOも図に記載しています。
+
+広間の受付と戸口を同じ壁にまとめ、板床の廊下を経て和室へ通じる開口を作りました。和室2室を敷居で直接つなぎ、星丸の部屋の右に体験コーナーを置きました。S08とS09は同じ合板壁の表裏、S14はその脇の凹部です。S11とS13は対向する側壁の窓へ移しました。S01の階段と星丸の鑑賞位置の間には歩行の余地を設けています。作品15項目の位置・向きは更新し、メッシュの局所形状、材質割当、UV、3件の許可済み画像は保持しています。S16は引き続き未配置です。
+
+**建物の実測図はありません。** 体験コーナーから洋室への戸口、建物全体の輪郭、玄関方位・寸法は暫定案です。S04の窓の同定、S12の掲出場所、S15の位置も確認待ちです。根拠と残る推定はPLAN §19の表をご覧ください。写真で確認できた局所関係から建物全体の外形を確定したものではありません。
+
+ブラウザは `viewer/index.html` を開き、管理棟で次の視点を確認してください。
+
+|視点|見るところ|
+|---|---|
+|6 洋室・合板壁の表|S08の合板壁と左右の通り抜け|
+|7 和室に隣接する体験コーナー|窓台のS07、窓のS04、机のS06と壁際のS05|
+|8 洋室・合板壁の裏|S09と床のS10、側壁の窓|
+|14 渡辺錯視|S14の凹部の隣の窓に白紙とシール|
+|15 錯視側のエデンの海|S09脇に掲示した許可画像。位置は暫定|
+|16 和室2室のつながり|板床の隙間がなく、共通敷居を挟んで畳が続く|
+|17 星丸の部屋から緑の机|開口越しに緑脚の机が見える|
+|18 洋室奥の庭窓と壁面図|左右を見回すとS11とS13の窓、正面には長い解説図の壁|
+
+Claudeによる実描画確認は、file://のindex・単体版とHTTPのindexで、1440×900と390×844の両方を使います。上の視点を切り替え、両脇の通路を歩き、ドラッグで窓と隣室を見回してください。5番の星丸の位置から移動を始められること、鏡の丸／星、ポスター、S08/S12の画像、休憩棟の樽の梯子も確認します。Chrome・Safari・Firefoxの実描画と1分以内の実機読込は未検証です。Nodeの検査は描画・JPEG復号・ブラウザ互換性を検証しません。
+
+Blenderの管理棟だけを作り直すキューでは、`build_models.py` に `BUILD_ONLY='management', CAMERA_FILTER=['__skip__']`、次に `assemble_walkthrough.py` に `BUILD_ONLY='management', RENDER_TOUR=False`、最後に `render_models.py` に `BUILD_ONLY='management', SAMPLES=12` を渡します。`.py`を書き終えてから同名の`.go`を作り、ログの完了印・例外なし・exit=0を確認してください。直接Blenderを起動しません。
+
+検査は `verify_photo_constraints.py`、`management_layout.py`、`verify_management_layout_navigation.py`、`verify_models.py`、`verify_glb_import.py`、Nodeの2本です。前者のPythonだけの歩行検査は書き出された実形状のグリッドを使い、各開口を横切れることを個別に確認します。最終同期は `finalize_site.py` に `NOTES_TARGET='management'` を渡します。比較は `compare_photo_constraints.py`、`draw_management_layout.py`、`compare_management_layout.py`、同梱は `package_results.py` と `verify_package.py` です。`reference/management-layout/local_artwork_geometry.json` が今回の作品形状の照合基準です。
+
+§19は管理棟55静止視点・18鑑賞点、GLB約33.24MBです。写真対応の11視点は `management_photo_写真番号`。同じシーンで原本EXIFの焦点距離を使い、位置・姿勢は推定しました。写真側は全画面・反転なしです。原本写真の撮影：青木兼治。
+
+写真6467では受付→廊下→畳、6463では星丸の右の緑机、6474と6479では合板の表裏と凹部、6478では窓→凹部→閉じた襖を確認できます。一方、6467の大窓と玄関位置、6460・6464の小室の開口概形、6483の窓割当と屋根を使う錯視は未解決です。建物全体の平面を確定したモデルではありません。
+
+追加のブラウザ確認では、管理棟の3番「広間」から受付右の戸口→廊下→和室へ入り、16番から隣の畳室、17番から緑机へ通じることを確認してください。6・8番では同じ合板の左右を歩いて回り込み、14番では紙とシールの背後に庭木が見えることを確認します。写真対応11枚のカメラはBlender用で、ブラウザの18視点は歩行用です。対応写真の11枚を確認するときは比較シートを併用してください。
+
+最終保存検査、28項目の写真カメラ検査、10開口の通過、18点の到達、GLB標準読戻し、Node読込、再生成照合の結果は [今回の検証記録](out/management_layout_release_verification.json) と [保存モデル検査](out/verification.json) にまとめます。休憩棟.blend・GLBは更新前のSHA-256と照合します。最新ZIPを別フォルダに展開し、上記file://・HTTP手順でClaudeによる実描画確認を行ってください。Chrome・Safari・Firefoxの実描画はこの検査の対象外です。
+
+§19の保存検査は管理棟112/112・休憩棟82/82、間取り12項目と写真カメラ28項目が合格しました。巡回は9711フレーム・404.625秒。管理棟1866メッシュ、休憩棟5155メッシュを別出力先で再生成し、確認済みモデルと一致しました。これらの合格は、未解決とした写真4組や建物全体の平面を確定するものではありません。
+
+比較画像をまとめて作り直す場合は、S08・S13・S12やポスターの比較を先に生成し、最後に `draw_management_layout.py` → `compare_management_layout.py` → `compare_photo_constraints.py` の順で現行の配置図・一覧を出力してください。過去の作品別比較ツールが出す配置図を§19の図で更新します。
+
+
+## §20 制作者の見取り図を反映した管理棟
+
+`files/OKURAOBU.pptx` の4スライドを読み、スライド3の外形・2本の司壁・未使用部分・赤線の端点を原本XMLから再抽出しました。管理棟の配置はこの見取り図を優先し、写真は窓・建具・材質・掲示高を補う資料にしています。スライド4の手描き図も洋室の対向窓と壁の両面の補助根拠です。
+
+[重ね図](out/management_okuraobu_overlay.jpg)の左が原本の輪郭と矩形、右が実装した間取りです。赤線がモデル外形、茶が司壁、青緑が窓、白抜きが開口です。図中のS番号と写真番号で修正箇所を指定できます。灰色の元輪郭との数cmの差は壁を直交させた補正です。縮尺は約53坪を輪郭面積に合わせた推定で、実測ではありません。
+
+ブラウザでは管理棟を選び、「玄関・廊下」「右側の広間・研究ノート」「玄関左・不思議な部屋」「和室2室のつながり」「中央・体験コーナー」「司壁の右面・蛇の回転」「司壁の左面・四角と丸」「渡辺錯視・図上側の窓」を確認してください。「星丸・床の間」は固定の光学鑑賞位置です。S04は中央くぼみ側の窓、S15はその下に続く壁、S12はS09と同じ司壁左面の暫定掲示です。古い節の視点番号より、最新の視点名を使ってください。
+
+既存の作品15項目は局所形状・材質・UVを保ち、親の位置と向きを変更しました。ポスター・S08・S12の画像使用とクレジット、魚の針金・樽の支持線・星丸の訂正は継承しています。S16は屋外の非表示登録のままです。休憩棟の.blendとGLBは変更前のSHA-256と照合します。
+
+写真6463の「床の間右の開口越しに緑の机」は、今回の見取り図を優先した配置では同じ見通しになっていません。6460/6464の小室の開口、6483の屋根を使う錯視も既存概形の限界が残ります。図の正本化を、全写真・実寸の完全一致とは扱っていません。詳しくはPLAN §20と比較シートを参照してください。
+
+現行の構築順は `build_models.py` の初期建築・作品作成後に `management_layout.py` が管理棟の建築を置換し、`management_layout_data.py` と `management_views.py` で配置・視点を確定する形です。`construction_position` は既存作品の生成用なので、表示位置を直す目的で上書きしません。
+
+原本を再抽出するときだけPillow・NumPy・OpenCVのあるPythonを使います:
+
+```sh
+/opt/homebrew/bin/python3.10 3d-modeling/tools/parse_okuraobu.py
+/opt/homebrew/bin/python3.10 3d-modeling/tools/placement_catalog.py
+```
+
+通常のBlender再生成には、同梱した `reference/okuraobu/source_geometry.json` と `before/management_layout_data.py` を使います。原本PPTXは書き換えません。管理棟だけのキュージョブでは `build_models.py` に `BUILD_ONLY='management'`、続く `assemble_walkthrough.py` に同じ指定と `RENDER_TOUR=False` を渡してください。管理棟55枚は `render_models.py` の同じ棟指定で再出力します。
+
+比較画像の順序はS08・S13・S12・ポスター → `draw_management_layout.py` → `compare_management_layout.py` → `compare_photo_constraints.py` です。最後に `package_viewer.py`、Node検査2本、`verify_management_release.py`、`package_results.py`、`verify_package.py` で配布物を確認します。モデル・歩行・GLB・再生成の必須検査を先に済ませてください。
+
+Claudeによる実描画の確認手順：新しいZIPを別フォルダへ全展開し、Chromeでindex.htmlをfile://とHTTPの両方から開き、両棟の切替・視点選択・見回し・移動を確認します。管理棟は玄関から上記の室を巡り、司壁の両端、S13の紙とシール、S12の画像、星丸の鏡像を確認してください。期待結果は読込エラーがなく、窓越しに内外が見え、壁と展示物を突き抜けずに移動できることです。実ブラウザの描画・1分以内の読込はCodex側では未検証です。Safari・Firefoxも確認待ちです。
+
+写真11組は全画面の一致ではなく、各組に構図や概形の差が残ります。とくに6467・6464の窓の写り方、6471の雲形黒板、6536の紙の画角も未一致です。比較シートとPLAN §20.7に各組の確認範囲を記録しています。
+
+管理棟は55静止視点・18鑑賞地点、GLB約32.76MBです。保存モデル112項目、歩行の全9741フレーム、標準GLB読み戻し8項目を確認しました。検証の集約は [§20の検証記録](out/management_layout_release_verification.json)、再生成は [メッシュ照合結果](out/site_regeneration_verification.json) を参照してください。これらは写真の全画面一致や実測寸法の確定を意味しません。
