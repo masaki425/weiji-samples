@@ -38,10 +38,29 @@ function readGLB(buffer){
   'Authorized evolution vision - front':{flag:'authorized_evolution',mime:'image/png',pixels:[4096,618]},
   'Authorized evolution adventure - front':{flag:'authorized_evolution',mime:'image/png',pixels:[4096,629]},
   'Authorized S09 moon - front':{flag:'authorized_s09_photo',mime:'image/png',pixels:[2048,1755]},
-  'Authorized S09 logvinenko - front':{flag:'authorized_s09_photo',mime:'image/png',pixels:[2048,1755]}
+  'Authorized S09 logvinenko - front':{flag:'authorized_s09_photo',mime:'image/png',pixels:[2048,1755]},
+  "Authorized rest A03-drawing - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [1445, 2048]},
+  "Authorized rest A05-newspaper - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [1686, 2048]},
+  "Authorized rest A06-book1-left - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [671, 1024]},
+  "Authorized rest A06-book1-right - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [671, 1024]},
+  "Authorized rest A06-book2-left - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [671, 1024]},
+  "Authorized rest A06-book2-right - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [671, 1024]},
+  "Authorized rest A07-left - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [704, 1024]},
+  "Authorized rest A07-right-upper - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [1408, 1065]},
+  "Authorized rest A08-board1 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [2048, 799]},
+  "Authorized rest A08-board2 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [2048, 799]},
+  "Authorized rest A08-board3 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [2048, 799]},
+  "Authorized rest A08-board4 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [2048, 799]},
+  "Authorized rest A10-backdrop-upper - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [2048, 1068]},
+  "Authorized rest A19-cloth - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [1241, 2048]},
+  "Authorized rest A20-spine1 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [384, 1536]},
+  "Authorized rest A20-spine2 - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [384, 1536]},
+  "Authorized rest A21-junior - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [620, 2048]},
+  "Authorized rest A21-carton-upper - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [512, 553]},
+  "Authorized rest A21-carton-lower - front":{"flag": "authorized_rest_photo", "mime": "image/jpeg", "pixels": [512, 696]}
  };
  const texturedMaterials=json.materials.filter(m=>m.pbrMetallicRoughness.baseColorTexture);
- const expected=json.extras.building==='management'?8:1;
+ const expected=json.extras.building==='management'?8:20;
  if(images.length!==expected||textures.length!==expected||texturedMaterials.length!==expected)throw Error('内蔵画像の数が不正です');
  const seen=new Set();
  for(const m of texturedMaterials){
@@ -153,7 +172,7 @@ $('lookleft').onclick=()=>{yaw+=Math.PI/6;camera.rotation.set(pitch,yaw,0);dirty
 $('mapbox').addEventListener('toggle',drawMap);window.addEventListener('resize',resize);
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);advanceStation(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const length=Math.hypot(fw,side);fw/=length;side/=length;move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.15,(-Math.cos(yaw)*fw-Math.sin(yaw)*side)*dt*1.15);}if(dirty)render();if(performance.now()-lastMap>400&&$('mapbox').open){drawMap();lastMap=performance.now();}}
 // Read-only state is useful for reviewing routes and browser verification.
-window.weiji={get state(){return {building,station:station?{id:station.id,mode:station.mode}:null,position:camera.position.toArray(),view: $('viewpoint').value,direction:camera.getWorldDirection(new V()).toArray(),loading:!$('loading').hidden,frameCount,meshes:model?model.children.length:0,mirror:!!mirror,posterTextures:model?model.children.filter(o=>o.name==='Authorized exhibition poster - front'&&o.material.map&&o.material.map.image).length:0,snakesTextures:model?model.children.filter(o=>o.name==='Authorized S08 rotating snakes - front'&&o.material.map&&o.material.map.image).length:0,edenTextures:model?model.children.filter(o=>o.name==='Authorized S12 Eden fish - front'&&o.material.map&&o.material.map.image).length:0,s09PhotoTextures:model?model.children.filter(o=>o.name.startsWith('Authorized S09 ')&&o.material.map&&o.material.map.image).length:0,evolutionTextures:model?model.children.filter(o=>o.name.startsWith('Authorized evolution ')&&o.material.map&&o.material.map.image).length:0,cell:nav?cell(camera.position.x,-camera.position.z):null,walkable:nav?ground(camera.position.x,-camera.position.z)!==null:false};}};
+window.weiji={get state(){return {building,station:station?{id:station.id,mode:station.mode}:null,position:camera.position.toArray(),view: $('viewpoint').value,direction:camera.getWorldDirection(new V()).toArray(),loading:!$('loading').hidden,frameCount,meshes:model?model.children.length:0,mirror:!!mirror,restPhotoTextures:model?model.children.filter(o=>o.name.startsWith('Authorized rest ')&&o.material.map&&o.material.map.image).length:0,posterTextures:model?model.children.filter(o=>o.name==='Authorized exhibition poster - front'&&o.material.map&&o.material.map.image).length:0,snakesTextures:model?model.children.filter(o=>o.name==='Authorized S08 rotating snakes - front'&&o.material.map&&o.material.map.image).length:0,edenTextures:model?model.children.filter(o=>o.name==='Authorized S12 Eden fish - front'&&o.material.map&&o.material.map.image).length:0,s09PhotoTextures:model?model.children.filter(o=>o.name.startsWith('Authorized S09 ')&&o.material.map&&o.material.map.image).length:0,evolutionTextures:model?model.children.filter(o=>o.name.startsWith('Authorized evolution ')&&o.material.map&&o.material.map.image).length:0,cell:nav?cell(camera.position.x,-camera.position.z):null,walkable:nav?ground(camera.position.x,-camera.position.z)!==null:false};}};
 resize();load('rest');animate();
 
 } catch(error) { showFailure(error);$('retry').onclick=()=>window.location.reload(); }
