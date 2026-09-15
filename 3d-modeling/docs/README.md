@@ -1,6 +1,6 @@
-管理棟の最新版は、S12のある司壁を4枚から3枚へ直した§23です。[今回の比較画像](out/three_panel_wall_comparison.jpg)で確認できます。16作品と質問箱・研究ノート・壁面図を収録しています。[作品ごとの比較](out/management_science_comparisons.jpg)、[見取り図との重ね図](out/management_okuraobu_overlay.jpg)、[写真11組](out/management_photo_constraints.jpg)、[全87視点](out/management_all_views.jpg)で確認できます。S12・S16の位置や原図未提供の内容には推定が残ります。休憩棟は変更していません。
+管理棟の最新版は、蛇の回転を写真の青・黄2003年版へ差し替えた§25です。[今回の比較画像](out/snakes_2003_comparison.jpg)で確認できます。16作品と質問箱・研究ノート・壁面図を収録しています。[作品ごとの比較](out/management_science_comparisons.jpg)、[見取り図との重ね図](out/management_okuraobu_overlay.jpg)、[写真11組](out/management_photo_constraints.jpg)、[全89視点](out/management_all_views.jpg)も更新しています。S12・S16の位置や原図未提供の内容には推定が残ります。休憩棟は変更していません。
 
-現在の画像使用は玄関ポスター、管理棟S08《蛇の回転錯視》、S12《エデンの海、錯視から解放された魚》、進化ストリーム3図、月の錯視、ログビネンコ錯視の6件です。管理棟には8枚の画像を内蔵しています。S08は提供された紫・黄の版を暫定表示し、S12は彩色の試作プリント写真を補正して暫定位置へ掲示しています。S12：写真提供：渡辺英治／錯視画像：北岡明佳。詳細は末尾の各更新をご覧ください。
+現在の画像使用は玄関ポスター、管理棟S08《蛇の回転錯視》、S12《エデンの海、錯視から解放された魚》、進化ストリーム3図、月の錯視、ログビネンコ錯視の6件です。管理棟には8枚の画像を内蔵しています。S08は会場写真の青・黄2003年版（作者名・英文クレジットを含む）を転写し、S12は彩色の試作プリント写真を補正して暫定位置へ掲示しています。S12：写真提供：渡辺英治／錯視画像：北岡明佳。詳細は末尾の各更新をご覧ください。
 
 # 大倉公園の二棟 — 内外をつないだ入館・回遊モデル
 
@@ -76,7 +76,7 @@ python3 3d-modeling/tools/submit_job.py verify
 
 コマンドは `.py` を書き終えた後に `.go` を作り、ジョブ名とログの保存先を表示します。処理終了は `queue/done/ジョブ名.log` の `exit=0`、完了マーカー、Python例外がないことを併せて確認してください。ランナーが停止していればキューは実行されません。3分以上開始応答がない場合は、ランナーの状態を確認する必要があります。
 
-モデルの再生成にはBlender付属Python、同梱の `reference/details/*_artworks_before.json`・`placements.json` と `reference/entrance-poster.jpg`・`reference/entrance-poster.json` を使います。材質はノードで作成し、ポスター・S08・S12・進化ストリーム3図以外の作品写真・錯視画像・ドレス写真は使用していません。初版の襖の写真材質も、追加版では淡い色調の手続き材質へ置換しました。展覧会ポスター・S08・S12・進化ストリーム3図はユーザーが指定した画像をパックし、GLBにも内蔵しています。S08には `reference/snakes/rotating-snakes.png` と `reference/snakes/texture.json`、文字の生成にはmacOSのヒラギノ角ゴシックW3を使います。別OSでは対応する日本語フォントのパスを指定してください。保存モデルの閲覧は画像の外部リンクに依存しません。星丸は指定の確認視点で、手前が丸・鏡像が六角星になるよう上縁を計算しています。他の錯視図版・原図・作品本文は概形による代理表現です。
+モデルの再生成にはBlender付属Python、同梱の `reference/details/*_artworks_before.json`・`placements.json` と `reference/entrance-poster.jpg`・`reference/entrance-poster.json` を使います。材質はノードで作成し、画像の使用はポスター・S08・S12・進化ストリーム3図・月・ログビネンコの6用途に限ります。初版の襖の写真材質も、追加版では淡い色調の手続き材質へ置換しました。展覧会ポスター・S08・S12・進化ストリーム3図はユーザーが指定した画像をパックし、GLBにも内蔵しています。S08には `reference/snakes-2003/rotating-snakes-2003.jpg` と同ディレクトリの `texture.json`、文字の生成にはmacOSのヒラギノ角ゴシックW3を使います。別OSでは対応する日本語フォントのパスを指定してください。保存モデルの閲覧は画像の外部リンクに依存しません。星丸は指定の確認視点で、手前が丸・鏡像が六角星になるよう上縁を計算しています。他の錯視図版・原図・作品本文は概形による代理表現です。
 
 配置台帳を編集する場合は `tools/placement_catalog.py` を変更して `python3 3d-modeling/tools/placement_catalog.py` を実行すると、`placements.json` とPLANの作品表が同じ内容に更新されます。比較画像を作るときだけ、原本の記録写真とPillowが必要です:
 
@@ -233,18 +233,17 @@ Claude側ではfile://とHTTPの両方で視点4を選び、機体から上へ�
 <!-- END SUPPORT README -->
 
 
-## S08の画像表示（PLAN §15）
+## S08の画像表示（PLAN §15 → §25）
 
-管理棟の視点 **6 洋室・錯視展示**（id: `gallery`）から、合板壁の大判パネルを見られます。ドラッグで壁の正面を向き、近づいて図柄を確認してください。Blenderの近接カメラは `management_snakes_detail`。室内の確認画像は `management_interior`・`management_walk_gallery`・`management_detail_gallery` です。
+[元写真・補正画像・モデルの比較](out/snakes_2003_comparison.jpg)と[GLB読み戻しを含む一覧](out/snakes_overview.jpg)を確認してください。青・黄の横長「Rotating snakes, 2003」を記録写真6542から射影補正し、印刷された作者名・英文クレジットを含めて貼っています。蛇の回転（Rotating snakes, 2003）：北岡明佳／記録写真：青木兼治。
 
-[写真・モデル・GLBの比較](out/snakes_overview.jpg) と [変更前後の比較](out/management_detail_gallery_snakes_comparison.jpg) を確認してください。錯視画像：北岡明佳《蛇の回転》。指定の `rotsnak4L.png` を2048pxへ縮小した紫・黄の版を暫定表示しています。写真の青・黄の横長版と一致する原図は未確認で、配色・環の数・余白が異なります。左右の端末は別配色・映像のため変更していません。
+鑑賞視点は「司壁の右面・蛇の回転」。Blenderでは `management_snakes_detail` がパネルの近接、`management_work_s08` が左右の架台を含む全景です。パネル寸法1.41×0.90mは写真からの推定です。6501の左タブレットと6540の右iMacは別の内容なので、今回のパネル画像は貼らず、既存の画面表現を保っています。
 
-`snakes_panel.py` がパネル前面と作者名の文字メッシュを生成し、通常ビルドからも呼ばれます。`approved_images.py` はポスターとS08の画像・作者・ハッシュを限定します。GLBには休憩棟のJPEG1枚、管理棟のJPEG1枚とPNG1枚を内蔵し、ビューアで追加のfetchやネット接続は行いません。`prepare_snakes.py` は指定原本から縮小画像を再作成するときだけ使います。
+`prepare_snakes.py` で四隅の射影補正を再現し、PNGの保存用原本とJPEG品質96・色差間引きなしの配布用画像を作ります。`snakes_2003.py` が通常ビルドの最終段階で前面全体へ適用し、初期版の作者名メッシュを除きます。文字や図は生成・補完しません。旧 `rotsnak4L.png` と `reference/snakes/` は履歴として保存し、現行の許可画像レジストリから外しています。
 
-今回の最終同期はキューで `finalize_site.py` に `NOTES_TARGET='management'` を渡します。S08の保存モデル検査は `snakes_panel.py` の `__main__`、関連画像の再撮影は `render_models.py` の `BUILD_ONLY='management'` と上記4カメラの `CAMERA_FILTER`、比較は `compare_snakes.py` を使用します。GLB読戻しのあと、`package_viewer.py` → Node検査2本 → `package_results.py` → `verify_package.py` で配布を更新します。
+画像は.blendにパックし、GLB内に格納します。ビューアはdata URLから復号するため、file://でも追加の画像fetchはありません。管理棟は8画像、休憩棟はポスター1画像です。
 
-Claude側の確認：file://とHTTPのindex、単体版のfile://で、1440×900と390×844の両方を使います。管理棟の視点6で錯視の図柄が正立し、パネルの裏や側面には出ないこと、ポスターと共存することを確認してください。管理棟では `window.weiji.state.posterTextures === 1` かつ `snakesTextures === 1`、休憩棟では後者が0です。表示準備が終わったことを示す値で、スクリーンショットによる描画確認の代わりにはしません。棟を往復して、視点切替・移動・見回し・星丸の鏡・樽の梯子が保たれることも確認します。Chrome・Safari・Firefoxの実描画と実機読込時間は未検証です。
-
+最終同期はキューで `finalize_site.py` に `NOTES_TARGET='management'`。検査は `snakes_2003.py`、`verify_models.py`、標準GLB読戻し。関連撮影は `reference/snakes-2003/render_selection.json` の8視点です。比較は `compare_snakes.py`、配布は `package_viewer.py` → Node検査2本 → `verify_snakes_2003_release.py` → `package_results.py` → `verify_package.py` の順で更新します。
 
 ## 渡辺錯視を見る（PLAN §16）
 
@@ -360,7 +359,7 @@ Claudeによる実描画の確認手順：新しいZIPを別フォルダへ全�
 
 §21時点のBlender静止視点は84点でした。§22で近接3点を追加し、現在は87点、歩行の鑑賞地点は27点です。作品だけを詳しく見るカメラは `management_work_s01`〜`management_work_s16`、付随展示は `management_work_s_x01`・`s_x03`・`s_x04`・`s_x05` です。近接画像は[作品比較フォルダ](out/science_comparisons)、棚卸しは[PLAN §21](PLAN.md)と[一覧JSON](reference/science-faithful/inventory.json)を参照してください。各作品の存在・個数・図上の基準位置・可視性と、作品の完全再現を区別しています。
 
-S03・端末画面は原図未提供のため、構成を形と色で近似しています。進化ストリームは§22で実物の手描き図へ更新しました。S08は提供画像と写真の版が異なります。S12の掲出場所、S16の園路位置、作品の実寸、Q&Aカードの最終配置は確認待ちです。ドレスはPPTXの写真に合わせて1枚の服と4つの投票欄にしましたが、服写真そのものは権利未確認のため使っていません。§21時点の画像使用はポスター・S08・S12の3件でした。§22では進化ストリームを加えた4用途となり、現在は§24の月とログビネンコを加えた6用途です。
+S03・端末画面は原図未提供のため、構成を形と色で近似しています。進化ストリームは§22で実物の手描き図へ更新しました。S08の版違いは§25で記録写真の2003年版へ更新しました。S12の掲出場所、S16の園路位置、作品の実寸、Q&Aカードの最終配置は確認待ちです。ドレスはPPTXの写真に合わせて1枚の服と4つの投票欄にしましたが、服写真そのものは権利未確認のため使っていません。§21時点の画像使用はポスター・S08・S12の3件でした。§22では進化ストリームを加えた4用途となり、現在は§24の月とログビネンコを加えた6用途です。
 
 再生成は従来どおりキュー経由です。`build_models.py` と `assemble_walkthrough.py` に `BUILD_ONLY='management'` を渡し、後者に `RENDER_TOUR=False`、静止画は `render_models.py` の同じ棟指定と `SAMPLES=12` を渡します。`science_fidelity_data.py` が寸法・図上位置・写真の一覧、`science_fidelity.py` が形状と鑑賞点です。詳細検査は `verify_science_views.py`、形状変更範囲は `verify_science_scope.py`、最終集約は[検証記録](out/science_release_verification.json)です。
 
@@ -416,3 +415,15 @@ Claudeの実描画確認：新しいZIPを全展開し、Chromeのfile://とHTTP
 Claude側の確認手順：file:// と HTTP の双方で `viewer/index.html` を開き、休憩棟→管理棟と切り替え、上記の司壁視点を選択します。主図が3枚で、中央の実景写真と右の菱形模様が正立し、月の下に補助札があることを確認してください。ドラッグ・移動・再切替、単体版でも同じ表示を確認し、初回読み込み秒数を記録してください。Node検査は実描画・実機速度の確認ではありません。Chrome・Safari・Firefoxでの実描画はClaude側の確認待ちです。
 
 §24の検査結果：管理棟140/140、休憩棟82/82、図と変更範囲15/15、3枚構成18/18、GLB読み戻し8/8、Node読み込み25/25が合格しました。2図を含む8画像の画素がGLBと.blendで一致し、ソースからの再生成も一致しています。管理棟GLBは約50.6MB、管理棟JSは約68.1MBです。関連11視点を更新し、対象の写らない78視点と休憩棟の.blend・GLBは変更前と一致しています。検証の詳細は [§24リリース検査](out/s09_photo_release_verification.json)、ZIPの照合結果は `out/package_verification.txt` を参照してください。
+
+## 蛇の回転を写真の青・黄の版へ更新（§25）
+
+[元写真／補正画像／モデル](out/snakes_2003_comparison.jpg)で差し替えを確認できます。右端の縦書きと右下の英文も写真から転写しました。図の描き直しや色の補完はしていません。紙面の照明・反射は元写真に由来します。
+
+Claudeによる実描画確認：file://で `viewer/index.html` と `viewer/展示室を歩く.html`、HTTPでindexを開き、管理棟の「司壁の右面・蛇の回転」を選択してください。青・黄の横長パネル、作者名、英文が正立して表示され、見回し・移動・棟切替後も表示されることを確認します。休憩棟のポスターと梯子、管理棟の他7画像も確認対象です。1440×900と390×844で検査してください。Chrome・Safari・Firefoxの実描画と実機読込速度は未検証です。Nodeは読込経路・画像バイト・操作の検査で、GPU描画を保証しません。
+
+実寸・照明・左右端末の原映像は未確認事項として残します。パネルの版違いは解消しました。
+
+.blend内の計画文は生成時点のスナップショットです。その後の検査・配布記録は同梱の `PLAN.md` §25と `REVIEW.md`、`out/snakes_2003_release_verification.json` を参照してください。
+
+§25の検査結果：管理棟154/154、休憩棟82/82の全体検査が合格。S08専用14/14、標準GLB読み戻し8/8、Node読み込み25/25も合格した。ソース再生成は管理棟2158・休憩棟5155メッシュ（ポスター別検査）が一致。管理棟の8視点を再出力し、対象外81視点は変更前のSHAと照合する。管理棟GLBは54,118,052 bytes（約54.1MB）、配布JSは72,792,092 bytes（約72.8MB）、単体HTMLは143,338,406 bytes。両棟合計44の歩行鑑賞視点を維持。休憩棟の.blend・GLBは変更前とバイト一致。実ブラウザ描画・実機速度は未検証。 [検証記録](out/snakes_2003_release_verification.json)、[配布ZIP](out/weiji_buildings.zip)。ZIPの照合結果は `out/package_verification.txt`。

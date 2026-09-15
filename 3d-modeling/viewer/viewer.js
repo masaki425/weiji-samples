@@ -32,7 +32,7 @@ function readGLB(buffer){
  const images=json.images||[],textures=json.textures||[],maps=[];
  const approved={
   'Authorized exhibition poster - front':{flag:'authorized_poster',mime:'image/jpeg',pixels:[724,1024]},
-  'Authorized S08 rotating snakes - front':{flag:'authorized_s08',mime:'image/png',pixels:[2048,2048]},
+  'Authorized S08 rotating snakes - front':{flag:'authorized_s08',mime:'image/jpeg',pixels:[4096,2614]},
   'Authorized S12 Eden fish - front':{flag:'authorized_s12',mime:'image/jpeg',pixels:[2048,1536]},
   'Authorized evolution neuron - front':{flag:'authorized_evolution',mime:'image/png',pixels:[4096,542]},
   'Authorized evolution vision - front':{flag:'authorized_evolution',mime:'image/png',pixels:[4096,618]},
