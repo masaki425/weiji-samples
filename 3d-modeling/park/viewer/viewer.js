@@ -8,6 +8,7 @@ const converted=p=>new V(p[0],p[2],-p[1]);
 scene.add(new THREE.HemisphereLight(0xe9eef3,0x6f7357,1.05));scene.add(new THREE.AmbientLight(0xffffff,.24));const sun=new THREE.DirectionalLight(0xfff1d7,.95);sun.position.set(30,70,-50);scene.add(sun);
 const loaded={},pending={},keys=new Set(),moves=new Set();let yaw=0,pitch=0,drag=null,busy=false,selected=null,request=0,station=null;
 const pointers=new Map();let orbit=null,pinchDistance=null;
+const minimap=window.OkuraMinimap.mount(document,nav,window.OKURA_MAPS);
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 function applyOrbit(){
  const spec=nav.orbit;
@@ -122,7 +123,8 @@ function render(){
    mirror.visible=false;renderer.clippingPlanes=[new THREE.Plane(normal,-normal.dot(point)+.001)];renderer.setRenderTarget(reflection);renderer.render(scene,reflectedCam);renderer.setRenderTarget(null);renderer.clippingPlanes=[];mirror.visible=true;
   }
  }
- renderer.render(scene,camera);frameCount++;dirty=false;
+ renderer.render(scene,camera);frameCount++;
+ minimap.update({position:[camera.position.x,-camera.position.z,camera.position.y],direction:camera.getWorldDirection(new V()).toArray(),view:selected&&selected.id,area:$('area').value,orbit,station});dirty=false;
 }
 
 function areaOf(v){return v.chunk||'park';}
@@ -182,4 +184,4 @@ window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if([
 for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{if(busy)return;canvas.focus();moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
 let previous=0;function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.05);previous=now;advanceLadder(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const len=Math.hypot(fw,side);fw/=len;side/=len;if(orbit){const speed=clamp(orbit.distance*.18,12,65),az=orbit.azimuth;translateOrbit((-Math.sin(az)*fw+Math.cos(az)*side)*dt*speed,(Math.cos(az)*fw+Math.sin(az)*side)*dt*speed);}else move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.4,(Math.cos(yaw)*fw+Math.sin(yaw)*side)*dt*1.4);}if(dirty)render();}
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.gammaOutput=true;renderer.gammaFactor=2.2;renderer.toneMapping=THREE.ReinhardToneMapping;renderer.toneMappingExposure=1.5;resize();window.addEventListener('resize',resize);requestAnimationFrame(animate);select('park_overview');}catch(e){status('WebGLを開始できません。ブラウザのハードウェアアクセラレーション設定をご確認ください。 '+e.message);}
-window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,orbit:orbit?{...orbit,target:orbit.target.slice()}:null,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,far:camera.far,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};
+window.okura={select,move,get minimap(){return minimap.state;},get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,orbit:orbit?{...orbit,target:orbit.target.slice()}:null,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,far:camera.far,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};

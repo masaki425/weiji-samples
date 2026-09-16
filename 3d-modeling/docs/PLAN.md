@@ -2182,3 +2182,38 @@ sekkeiを実読。既往のユーザー指定GPT-6 Astraに対し、このター
 469の接写も目視し、読戻しGLBで平らな上面と丸い縁を確認。微細Bumpの省略差は記録する。最終工程466〜469はexit=0・Python例外なし。462の不合格と468の確認用カメラ失敗は上記の履歴を保存した。
 
 配布判定はtools/finalize_paving42.py、正本はout/paving42/verification.jsonとpark/out/release_verification.json revision42。単一の最新公開置換表はout/paving42/publish_manifest.json（§36〜42、26ファイル、各現行SHA）。旧節の置換表は履歴として残す。ZIPはpark/tools/package_park.pyで全件CRC/SHA照合後に置換し、結果はZIP外のpark/out/package_verification.jsonへ保存する。実ブラウザ・タッチ・公開反映はClaude担当で未実施。
+
+
+## 43. 公園と棟内の現在位置ミニマップ（2026-09-16）
+
+### 43.1 対象・実行環境
+公園ビューアの右上に、現在位置・向きが分かる小地図を追加する。棟別ビューア、Blender原本、GLB、配布チャンク、navigation、カメラ・歩行・梯子・回転・パンは保持。書込みは3d-modelingのみ、git不使用。実ブラウザと公開側への反映は依頼の分担どおりClaudeが行う。§36〜42は2026-09-16 21:48公開済みとの引継ぎを受領。今回の置換表は§43のUI差分のみとする。
+
+sekkei・references/ui.mdを実読。runtime_model.pyはgpt-6-astra／xhigh、turn 01a0aa53-56b9-78a2-965a-967d97537a41を観測。公式資料は2026-09-13確認済みメモを再利用：[モデル](https://developers.openai.com/api/docs/models/gpt-6-astra)、本文Using GPT-6 Astra確認済み[ガイド](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)。本文再取得・設定変更なし。Instruction following＝指定ビューアに限定、Testing and verification＝座標・操作・不変ファイルの照合、Initiative and follow-through＝配布と引継ぎまで実行。
+
+### 43.2 UIメモ・採用案
+参照：[Make granular UI changes](https://learn.chatgpt.com/use-cases/make-granular-ui-changes)（2026-09-13確認済み）。対象はpark/viewer/index.html、デスクトップ1200pxとスマホ390px。現状はエリアと視点の選択のみで現在位置が見えない。期待状態は右上の地図で位置と向きを確認でき、既存の移動操作を妨げないこと。
+
+- main内の右上へ独立したSVGパネルを置き、ヘッダーの前／次／全体ボタンとは重ねない。既存の白・緑灰色と標準select/buttonを用い、大幅な再設計はしない。
+- 「自動／公園全体／休憩棟／管理棟」で地図だけを切替。自動は建物内の実位置を優先し、それ以外は選択中のエリアを基本とする。ただし建物から離れた園路は公園へ戻す。全体の軌道視点は公園図。棟内からも手動で全体図を表示可能。
+- 公園は外周・園路・池／流れ・二棟・門、棟内は部屋・廊下・開口・司壁・鑑賞点を簡略表示。部屋境界と建具の細部は案内用の略図で、既存モデルの推定を継承。第三者の案内図画像を貼らない。地図のクリックによる移動は今回は追加しない。
+- 全図を北が上になるよう描く。棟の局所座標はsite.buildingsの回転・並進を使って公園座標へ変換。現在位置の逆変換も同じ変換対で扱う。state.directionはThree座標なので公園方向へ変換する。
+- 現在位置は朱色の点と方向、軌道時の注視中心は別の十字。地図外の視点は枠の端に中空の印と「地図の外」と表示し、注視中心を現在位置とは呼ばない。ほぼ真下を見る場合は向きの矢印を隠す。
+- 歩行・見回し・梯子・回転・パン・視点変更後の描画と同期。地図データは小さなclassic scriptとして同梱し、fetch・追加の画像・GLB再生成は不要。スマホは小型表示、ボタンで折りたたみ可能。地図の選択・折りたたみでカメラを動かさない。
+
+### 43.3 工程・完成条件
+基準のコード・記録・保護ファイルSHAをreference/minimap43へ保存。既存の建築定義から地図用の輪郭を生成し、SVGと現在位置を実装。Nodeで座標往復・北向き・3エリアの自動／手動切替・地図外・真下・歩行／梯子／回転の追従・折りたたみと既存の操作を検査する。データ再生成の同一性、原本・GLB・既存navigation・棟別ビューア不変を照合。文書・置換表・ZIPを更新する。
+
+実ブラウザの描画、390pxでの見やすさ、タッチ、file://／HTTPはClaudeが確認する。Nodeの擬似DOM検査を実描画の確認とは記載しない。残る推定は部屋の略図と元モデルの寸法・方位であり、測量値ではない。
+
+
+### 43.4 実装・検証記録
+`park/tools/build_minimap.py`で小さな間取りデータ（3,052バイト）を生成し、`park/viewer/assets/minimap-data.js`として同梱。管理棟の輪郭・部屋・開口は既存management_layout_data.py、休憩棟はbuild_models.py・integrate_navigation.py・corrections31.pyの床区画・主開口を元にした。部屋名は地図用に短縮。庭の視点も位置関係を見られるよう棟別略図の表示範囲に含めた。幾何の生成元のSHAをデータに残す。地図の基図の新規画像は使っていない。
+
+SVGの地図描画・変換をminimap.jsへ分け、viewer.jsの描画時に現在位置と方向を渡す。自動判定は建物外形内を優先し、選択中の棟から4m以内の庭は同じ棟の略図、離れた園路と軌道視点は公園図。これは案内の切替距離の暫定値で、実際の敷地境界を意味しない。朱色の点と三角が位置・向き、青い十字が軌道の注視中心。真下に近い視線では方向表示を省く。
+
+Node54項目が合格。既存38項目に16項目を追加し、公園座標と局所座標を全44棟別視点で往復照合。既存navigationの世界座標とも最大1e-5m以内で一致することを確認。北向き・Three方向の変換、手動切替でカメラ不変、歩行・見回し・梯子の上下・パン・ズーム・真上・全体への復帰・折りたたみをfile://／HTTP相当の擬似DOMで検査した。既存62視点、3チャンクと画像の一致、20,940園路標本も合格。検査の正本はpark/out/node_verification.json revision43。
+
+out/minimap43の3枚は、実装と同じSVGをrsvg-convertで静止画化して目視したもの。ブラウザ画面の証跡ではない。管理棟の部屋名の重複を改行と位置調整で軽減した。地図データの再生成ハッシュも一致。実ブラウザの390px配置・タッチ・WebGL描画は未検証としてBROWSER_CHECK.mdに操作と期待結果を列挙した。
+
+配布前照合はpark/tools/finalize_minimap.py、正本はout/minimap43/verification.jsonとpark/out/release_verification.json revision43。今回の公開置換表はout/minimap43/publish_manifest.json（§43の5ファイル）。§36〜42の旧置換表は履歴で、公開済みとの引継ぎにより今回は再適用しない。ZIPは既存package_park.pyで全件CRC／SHAを照合する。原本・GLB・承認画像・navigation・棟別ビューアは基準ハッシュで不変を確認し、Blenderは実行しない。

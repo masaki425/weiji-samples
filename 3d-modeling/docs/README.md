@@ -1,3 +1,5 @@
+公園ビューアの右上に、現在位置と向きを示す地図を追加しました（PLAN §43）。「地図：自動／公園全体／休憩棟／管理棟」で切替でき、「たたむ」で小さくできます。[公園ビューア](park/viewer/index.html)／[ブラウザ確認と公開引継ぎ](out/minimap43/BROWSER_CHECK.md)。§36〜42はClaudeから公開済みと連絡を受けています。今回の公開置換表は [out/minimap43/publish_manifest.json](out/minimap43/publish_manifest.json) です。以下の旧節の公開待ち・最新表記は当時の記録です。
+
 植栽を実寸の葉へ更新しました（PLAN §36・§37）。[植物の比較](out/vegetation36/comparisons.jpg)／[逆光の透け](out/vegetation36/backlight_comparison.jpg)／[公園ビューア](park/viewer/index.html)。建物・作品・歩行範囲とカメラは保持しています。
 
 公開案内ページ用の一覧6枚と休憩棟の配置図を、植栽更新後の保存モデルで再出力しました（PLAN §33・§36）。[東側玄関からの巡回](out/rest_walkthrough_overview.jpg)／[玄関ポスター](out/poster_overview.jpg)／[休憩棟配置図](out/rest_layout.jpg)。公開側への差替えはClaudeが行います。
@@ -634,3 +636,14 @@ Claudeへの確認：公園ビューアの「茅葺門・錯視の暖簾」「�
 **Claude向け最新置換表は `out/paving42/publish_manifest.json` の1本です。** 未公開の§36〜42をすべて含み、旧節の置換表を順番に適用する必要はありません。表内の現行SHAで全ファイルを確認し、file://／HTTP・デスクトップ／390pxで公園の石敷と俯瞰、両棟の展示・梯子、全体の回転・ズーム・パンを確認してから公開してください。比較シートには記録写真を含むため、公開案内ページは記録写真を含まない一覧画像を使ってください。ZIPは `park/out/package_verification.json` のCRC/SHA合格を確認して別途置換します。Codexはshare/を書き換えていません。
 
 §42の最終モデル検査18項目、Node38項目、GLB3チャンクの読戻しが合格しました。石12,366点・目地882点の位置と色、石12,366点の法線が原本とGLBで全点一致。通行面1,325点の欠落0、公園全体の再生成差0、対象外11,021物体と材質・画像は保持。公園18視点と公開一覧を更新し、読戻し接写も目視済みです。公園GLBは54.87MB。最終判定は `out/paving42/verification.json`、ZIP全件照合結果は `park/out/package_verification.json`。公開反映には§36〜42をまとめた `out/paving42/publish_manifest.json` だけを使ってください。実ブラウザ確認と公開はClaudeへ引き継ぎます。
+
+
+## 現在位置の地図（PLAN §43）
+
+右上の朱色の点と三角が現在位置と向きです。地図は北が上で、自動では居場所に合わせて公園・棟内へ切り替わります。地図だけを「公園全体」にすると棟内から公園内の位置も確認できます。全体を回すときの青い十字は見ている中心、枠の中空の印は地図外のカメラ位置です。歩行・梯子・回転・パンに追従し、折りたたんでいる間も位置を保ちます。地図を押しての移動はありません。
+
+略図はモデルの外形・部屋・主な開口・鑑賞点から作り、案内図の画像は使用していません。元モデルの推定寸法と方位を引き継ぎます。Blender・GLB・棟別ビューア・既存navigationは不変です。
+
+再生成は `python3 park/tools/build_minimap.py`、検査は `node park/tools/verify_viewer.cjs`（3d-modeling内から実行）。Node54項目と園路20,940標本、地図データの再生成一致を確認済み。実ブラウザのCSS配置・タッチはClaudeが [確認手順](out/minimap43/BROWSER_CHECK.md) に沿ってfile://／HTTP、1200×800／390×844で確認します。静止した略図は [公園](out/minimap43/park.png)／[休憩棟](out/minimap43/rest.png)／[管理棟](out/minimap43/management.png) で確認できます（実画面のスクリーンショットではありません）。
+
+最新版のUIの配布判定は `out/minimap43/verification.json`。公開置換は `out/minimap43/publish_manifest.json` の5ファイル、ZIPの照合は `park/out/package_verification.json` を使います。share/は変更していません。
