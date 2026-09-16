@@ -97,14 +97,28 @@
   function jump(v,pointer=false){
    if(!eligible())return;
    if(!v){feedback.textContent='近くに視点がありません';return;}
-   feedback.textContent='';actions.select(v.id,{focusScene:pointer});
+   const walkPoint=current.name==='park'&&(v.chunk||'park')==='park'?(v.walkPoint||v.position):null;
+   const landing=walkPoint&&root.OkuraCore.nearestWalkable(nav,walkPoint,MAX_DISTANCE.park,!pointer);
+   if(walkPoint&&!landing){feedback.textContent='近くに歩ける園路・広場がありません';return;}
+   feedback.textContent='';actions.select(v.id,{focusScene:pointer,walkPoint:landing?landing.position:null});
   }
-  const atEvent=e=>{const p=clientPoint(svg.getBoundingClientRect(),e.clientX,e.clientY);return p&&current?nearest(current,nav,p.point,p.scale):null;};
+  const atEvent=e=>{
+   const p=clientPoint(svg.getBoundingClientRect(),e.clientX,e.clientY);if(!p||!current)return null;
+   const v=nearest(current,nav,p.point,p.scale);if(current.name!=='park')return v;
+   const world=current.map.unproject(p.point);
+   // The two entrance targets retain their original building selection.
+   if(v&&(v.chunk||'park')!=='park'&&Math.hypot(world[0]-v.position[0],world[1]-v.position[1])*current.map.scale*p.scale<=HIT_RADIUS_PX)return v;
+   const hit=v&&Math.hypot(world[0]-v.position[0],world[1]-v.position[1])*current.map.scale*p.scale<=HIT_RADIUS_PX;
+   const landing=root.OkuraCore.nearestWalkable(nav,world,MAX_DISTANCE.park,!!hit);if(!landing)return null;
+   const anchor=current.views.filter(v=>(v.chunk||'park')==='park').reduce((best,v)=>!best||Math.hypot(world[0]-v.position[0],world[1]-v.position[1])<Math.hypot(world[0]-best.position[0],world[1]-best.position[1])?v:best,null);
+   return anchor&&{...anchor,position:landing.position,walkPoint:landing.position};
+  };
   function targetView(e){const t=e.target.closest&&e.target.closest('[data-view]');return t&&current&&current.views.find(v=>v.id===t.dataset.view);}
   const draw=state=>{
    if(!state||!state.view)return;
    if(last&&last.view!==state.view){reset();epoch++;feedback.textContent='';}last=state;
    const name=area(nav,data,state,choice.value||'auto');
+   get('map-hint').textContent=name==='park'?'地図を押すと近くの園路・広場へ':'地図を押すと近くの視点へ';
    if(!current||current.name!==name){
     const heldFocus=svg.contains(doc.activeElement);reset();epoch++;
     current=cache[name]||(cache[name]=scene(nav,data,name));get('map-drawing').innerHTML=current.svg;get('map-title').textContent=current.label;get('minimap').dataset.area=name;
