@@ -535,3 +535,14 @@ Claudeへの差替え指示は `out/frontpage33/publish_manifest.json` に、コ
 
 
 §33の検査は18項目すべて合格しました。54枚を再レンダー、11枚を再利用し、ポスター読戻し2枚を更新しています。6一覧と配置図の目視確認、モデル・ビューア30ファイルのSHA一致も完了。細部一覧の小屋だけは、背面の板壁が写る旧視点から、§31で撮影済みの東向きカウンター視点へ差し替えました。モデルやカメラは変更していません。
+
+
+## 入口・板の廊下の視点調整（§35）
+
+休憩棟の2番「入口・板の廊下」を、壁から離して広縁方向が見える構図へ調整しました。棟別・単体HTMLでは休憩棟→入口・板の廊下、公園ではエリア「休憩棟」→同じ場所を選びます。Blenderの `rest_walk_entry` と巡回内の該当鑑賞点、公園の `rest::rest_walk_entry` にも反映しています。板床の奥行き、左の窓、右の和室への開口が見えることを確認してください。
+
+[変更前後](out/entry35/before_after.jpg)／[最新の休憩棟17視点](out/rest_walkthrough_overview.jpg)。位置と向きだけの調整で、24mmレンズ、他の鑑賞点、建物・作品は保持しました。公開側への差替えは `out/entry35/publish_manifest.json`。一覧は同じファイル名・寸法で、2枠目と見出しを更新しています。
+
+再生成用の位置定義は `tools/entry_view35.py`。通常のbuild_models.pyが§31の後に適用します。今回の既存モデルへの差分ジョブ350〜353は、reference/entry35の§34基準から対象カメラだけを更新する専用手順です。今後モデルを変更した後に古い基準で差分ジョブを再実行しないでください。図の再合成は `/opt/homebrew/bin/python3.10 3d-modeling/tools/compose_entry35.py`、配布は `tools/package_viewer.py` と `park/tools/package_park_viewer.py`、Nodeは棟別 `tools/verify_viewer_loading.cjs` と公園 `park/tools/verify_viewer.cjs`。配布前は `tools/finalize_entry35.py`、梱包は `park/tools/package_park.py` です。GLBの形状は不変で、`tools/package_entry35.py` は保存元の署名だけを更新します。
+
+実ブラウザ確認はClaude担当。ZIPを全展開しfile://とHTTPで上の両視点を開き、390px幅とデスクトップで廊下を確認してください。前後の場所へ切り替え、歩行・樽の梯子、公園全体のパンも確認します。実描画は未検証です。

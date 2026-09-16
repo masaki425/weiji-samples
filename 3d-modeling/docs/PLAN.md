@@ -1825,3 +1825,30 @@ sekkeiを実読して適用。ユーザー指定gpt-6-astraに対し、runtime_m
 Node38項目が合格。file://とHTTP、390×844／1200×800のイベント環境で、移した地面点の投影位置、右／Shift／2指、全8キー／全4矢印、複合操作、外周辺への制限、地平線処理、初期化・切替・blurを検査。園路20,940点、全62視点、3チャンクと内蔵画像、梯子・鏡の検査も維持した。right-dragではcontextmenuを抑え、歩行時には従来どおり。farは全景900m／歩行600m。コードと案内以外の変更はなく、Blenderジョブなし。
 
 §32の「中心固定・キー無効・矢印非表示」は本節で置換。§33の公開用一覧更新はそのまま保持。基準はpark/reference/pan34/baseline.json（138ファイル）。配布前検査・保護ファイル照合はpark/out/release_verification.json、ZIP全エントリのCRC/SHA照合は循環を避けZIP外のpark/out/package_verification.jsonに保存する。公開反映・コミットは行わず、Claudeへの引継ぎをpark/out/pan34_publish.jsonに保存する。実ブラウザとタッチの未確認は継続し、READMEに確認手順を明記した。
+
+
+## 35. 休憩棟「入口・板の廊下」の視点を引く（2026-09-16）
+
+### 35.1 範囲と方針
+対象はid=entry／rest_walk_entryだけ。現在の位置(16.76,7.40,2.05)、注視点(15.9,6.05,1.6)では、近い壁と窓が画面を占めていた。廊下内で後退する位置を低解像度で試し、板床と広縁方向の見通しが分かる構図を選ぶ。通行可能セル上に置き、建具・壁と干渉しないことを検査する。レンズだけの広角化には頼らない。他の視点、建物、作品、庭は保持。
+
+sekkeiを実読。最新turn_context.modelはgpt-6-astra／xhigh、turn 01a0a7df-e225-72b0-bf06-360cfa4af486（2026-09-16、runtime_model.py）。ユーザー指定と一致、設定変更なし。公式資料は台帳2026-09-13の[GPT-6 Astra個別資料](https://developers.openai.com/api/docs/models/gpt-6-astra)と[Using GPT-6 Astra](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)を期限内再利用。Instruction following→視点1件の限定、Testing→構図の描画・カメラ／経路照合、follow-through→ZIP更新。UIメモと[granular UI changes](https://learn.chatgpt.com/use-cases/make-granular-ui-changes)の確認済み記録を使い、同じ視点の前後で比較。ボタン・レイアウトは変えず、実ブラウザは依頼どおりClaude担当。
+
+### 35.2 工程・完成条件
+350以降のランナーで変更前のカメラと形状を記録→候補を描画→採用位置を再生成用スクリプト・休憩棟カメラ・巡回鑑賞点・棟別navigationへ反映。公園内の対応カメラとnavigationも同じ剛体変換で合わせる。変更はカメラと巡回／関連メタデータに限定し、GLBは形状・画像のバイナリが同一であることを照合する。
+
+視点2のPNGと休憩棟一覧だけを再出力。列数・寸法・他16枠を維持。棟別rest.js、単体HTML、公園navigation、必要なソース署名を更新する。歩行グリッドと建物の形状保持、鑑賞点の接続、巡回全フレーム、Node操作、ZIPのCRC/SHAを検査。旧画像の監査記録はreference/entry35に保持し、最新画像の根拠をout/entry35へ記録する。実寸の推定は維持し、構図の改善を実測精度の向上とはしない。share/公開はClaude担当。
+
+### 35.3 採用した構図と反映
+4候補を900×630で描画。元の向きに沿った後退（A/B）や玄関の外へ引いたCは、壁と展示ケースが視界を占めた。Dの(16.68,5.96,2.05)から(12.4,6.6,1.50)を見る構図を採用。元の位置から約1.44m移動し、東側玄関から板の廊下を曲がった地点で広縁方向へ向ける。単純な後退だけでは改善しなかったため位置と向きを合わせて調整した。24mmレンズと目の高さは保持。板床、左のガラス戸、右の畳室への開口が確認できる。樽の中は従来の専用視点を使う。
+
+休憩棟原本の5,340オブジェクト、公園の11,536オブジェクトを照合し、対象スナップショットと巡回カメラ以外に差分なし。新位置の構造物までの距離は約0.399mで、身体半径0.18m＋余裕0.018mより大きい。歩行グリッドは同一で、新鑑賞点への接続を同じグリッドから取り直した。公園のカメラは既存の親変換・方位・標高を保持し、休憩棟原本と対応する2台だけ同期する。
+
+GLBは形状・UV・全画像のバイナリをそのまま保持し、保存blendの変更に伴うextras.source_blend_sha256のみ更新する。公園3チャンクは同じ公園blendを参照しているため、管理棟を含む3GLBと配布JSのソース署名が更新されるが、管理棟自体のblend・棟別GLB・JSと全作品は不変。
+
+1200×840・20サンプルでrest_walk_entry.pngを再描画。休憩棟一覧1620×2600の2枠目だけを変更し、他16枠の入力PNG・配置・順序を保持（見出しに§35を追記）。前後比較out/entry35/before_after.jpgと一覧を目視確認。§33の該当画像の監査は本節が上書きし、旧記録はreference/entry35/before/に保存。その他の§33一覧はそのまま。
+
+### 35.4 検証完了
+350〜353はexit=0、例外なし。Blenderの18項目で巡回全7,500フレーム、グリッド、他16視点、原本／公園カメラの一致、壁との離隔を検査し合格。棟別Node27項目、公園Node38項目（園路20,940点を含む）も合格。公園全体のパン機能は保持。管理棟原本・棟別データと対象外PNGはSHA一致を配布前に確認する。
+
+§35の配布前判定はout/entry35/verification.json、統合版はpark/out/release_verification.json revision35。GLBはJSONのソース署名だけの差分としてout/entry35/glb_provenance.jsonに記録。ZIPのCRC／各ファイルSHAは外部park/out/package_verification.jsonに保存する。実ブラウザ・タッチ・公開側share/は未実施で、確認・差替え手順とコピー元のSHAをout/entry35/publish_manifest.jsonに用意する。
