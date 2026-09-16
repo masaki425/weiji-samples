@@ -2252,3 +2252,31 @@ minimap.jsに候補抽出・SVGの余白を含む座標逆変換・最寄り選�
 Node71項目が合格（既存54＋追加17）。3地図の実座標からの最寄り、休憩棟入口の同一XYの優先、遠距離・地図外、24pxの範囲、SVGの拡縮と余白、マウス／タッチのイベント順序、ドラッグ・複数指・キャンセル・右クリック、折りたたみと地図変更中の古い入力、キーボード／支援技術からのクリック、固定鑑賞点、読み込み中・連打、梯子上り／下り途中の拒否と頂部からの移動を検査した。全62視点と3チャンク・画像、20,940園路標本も引き続き合格。検査追加はpark/tools/verify_mapjump.cjs、実行入口は従来のverify_viewer.cjs。
 
 公園／二棟のSVG静止図をout/mapjump44へ出力し目視。実ブラウザの画面配置・hover／focus・タッチは未検証で、BROWSER_CHECK.mdに引き継いだ。公開前の置換対象はindex.html・style.css・viewer.js・minimap.jsの4ファイルのみ。公開の§43までを再配布対象として混ぜない。今回の配布判定はout/mapjump44/verification.json、置換表はout/mapjump44/publish_manifest.json。モデル・GLB・画像・棟別ビューア・地図データの不変をSHAで照合し、ZIPの全件CRC／SHAはpark/out/package_verification.jsonへ記録する。
+
+
+## 45. 地図のクリック移動後も矢印キーで歩く（2026-09-16）
+
+### 45.1 指摘・適用範囲・実行根拠
+制作者の指摘は、§44の地図を押して移動した後、矢印キーで歩けなくなること。ClaudeのChrome／HTTP・1024×768での観測は、map-targetにフォーカスが残り、SVGのkeydownが矢印を止めるというもの。sceneへfocusすると歩ける。今回はpark/viewerのフォーカスの引継ぎだけを修正する。§44の公開済み連絡（2026-09-16 22:49）は引継ぎ情報として記録し、gitは使わない。Blender、GLB、チャンク、navigation、地図データ、棟別ビューアには触れない。
+
+sekkeiとreferences/ui.mdを実読。既往の指定はGPT-6 Astra、今回の実行メタデータはgpt-6-astra／xhigh、turn 01a0aa8e-d4e2-7192-b25b-5026548117be、2026-09-16T14:11:25.496Z。公式資料は2026-09-13に本文Using GPT-6 Astraを確認した台帳のメモを再利用する：[個別資料](https://developers.openai.com/api/docs/models/gpt-6-astra)、[選択済みガイド](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)。再取得や設定変更は行わない。Instruction following＝今回の入力不具合だけを直す、Testing and verification＝実際のフォーカスからキーの伝播と歩行を検査、Initiative and follow-through＝配布・文書まで完了、という対応で適用する。
+
+### 45.2 UIメモ・採用案・完成条件
+[Make granular UI changes](https://learn.chatgpt.com/use-cases/make-granular-ui-changes)の確認済みメモ（原典確認2026-09-13）を再利用。対象はpark/viewer/index.html、再現状態は地図の「石敷園路」「入口・板の廊下」をクリックした直後。期待差は追加クリックなしで矢印／WASDの歩行が続くこと。配色・サイズ・レイアウトは変更しない。
+
+採用案：ポインタのクリック／タップ経路だけでselectにフォーカス復帰を依頼し、読み込みと視点選択が成功した時点でscene.focus({preventScroll:true})を行う。失敗・上書きされた選択では移さない。地図の自動切替より前にsceneへ戻すため、drawのheldFocusが地図へ再フォーカスしない。Tab＋Enter／Spaceと支援技術の起動では従来どおり地図のフォーカスを保ち、続けて点を選べる。地図のselectでの矢印操作も保つ。読み込み中、梯子の移動途中、遠い空白、ドラッグ等の棄却条件は維持する。
+
+工程：§44の保護署名と対象コードを保存→フォーカス付きポインタとイベント伝播を再現するNode回帰検査で修正前の失敗を記録→最小差分を実装→既存71項目と追加検査→文書・今回の差分のみのpublish_manifest・ZIP全件照合。
+
+完成条件：公園図と休憩棟図の点を押した後、activeElementがsceneで、地図内には残らない。ArrowUp／KeyWのkeydownがwindowへ届き、歩行可能視点ではカメラが動く。棟へ移動して地図が自動で切り替わっても同じ。固定視点・梯子の制約は変えない。キーボードでの点選択・selectの矢印・棄却された操作でのフォーカスが維持され、62視点・園路20,940標本が引き続き合格する。
+
+実ブラウザのfile://／HTTP、1024×768／390×844、マウスと実機タッチの確認・公開は今回の指定に従いClaudeへ引き継ぐ。Nodeの擬似DOMは描画確認の代用としない。今回は表示形状の変更がないため新しいレンダーや静止図は作らない。置換表は§45の変更ファイルのみとし、share/は変更しない。
+
+### 45.3 実装・検証記録
+minimap.jsのポインタ起動だけがfocusSceneを依頼し、viewer.jsのselectが読み込み成功・最新リクエストであることを確認した後にsceneへフォーカスを戻す。キーボード／支援技術経路の既定は変更しない。地図描画のheldFocusとキー抑止は残し、点をキーボードで続けて選ぶ操作を守った。変更する公開コードはこの2ファイルだけ。
+
+従来のNode検査はクリック時のブラウザ標準のフォーカス移動を模擬していなかった。verify_viewer.cjsの擬似DOMにフォーカス起点から親SVG・windowへ伝播するキー配送を追加し、verify_mapfocus45.cjsではポインタ操作前に実際の点へフォーカスする。旧コードは「successful pointer map jump must focus #scene」で失敗（out/mapfocus45/before_failure.log）。修正後は86項目すべて合格（従来71＋今回15）。公園の石敷園路と休憩棟の入口・板の廊下で、ArrowUpとKeyWのwindow到達だけでなくカメラ座標の変化も確認した。自動切替の再描画でもsceneに残り、Enter／Space／支援技術のフォーカス、selectの矢印、空白・busy・ドラッグ・梯子の棄却、失敗や上書きされたselectの非介入も合格。固定視点の歩行禁止を保持した。
+
+Nodeはfile://（390×844）とHTTP（1200×800）相当の読込・イベント検査で、実画面の確認ではない。Claudeの再現環境1024×768を含む実ブラウザ手順をout/mapfocus45/BROWSER_CHECK.mdに記録した。62視点・園路20,940標本の既存検査は合格。保護対象382ファイルの署名で、原本・GLB・画像・navigation・地図データ・棟別ビューアの不変を照合する。
+
+配布判定はpark/tools/finalize_mapfocus45.py、正本はout/mapfocus45/verification.jsonとpark/out/release_verification.json revision45。置換表はout/mapfocus45/publish_manifest.jsonの2ファイルのみ。既存package_park.pyでZIP全件のCRC/SHAを検査して置換し、結果をpark/out/package_verification.jsonへ出す。Blender・公開側の操作はしない。未検証として残すのはClaude担当の実ブラウザ・タッチ確認と公開反映で、モデル側の追加判断はない。

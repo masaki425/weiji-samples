@@ -1,3 +1,5 @@
+地図をクリック／タップして移動した後、3D画面へフォーカスを戻し、そのまま矢印／WASDで歩けるように修正しました（PLAN §45）。Tab＋Enter／Spaceで点を選ぶ場合は地図のフォーカスを保ちます。[公園ビューア](park/viewer/index.html)／[実ブラウザ確認手順](out/mapfocus45/BROWSER_CHECK.md)／[今回の公開置換表](out/mapfocus45/publish_manifest.json)。Node86項目が合格。実ブラウザ確認と公開反映はClaude担当です。§44までは公開済みとの引継ぎがあり、以下の旧節の置換表・検証値は当時の記録です。
+
 ミニマップをクリック／タップすると、近くの登録視点へ移動できるようにしました（PLAN §44）。点をTabで選んでEnter／Spaceでも移動できます。[公園ビューア](park/viewer/index.html)／[確認手順](out/mapjump44/BROWSER_CHECK.md)／[今回の公開置換表](out/mapjump44/publish_manifest.json)。§43はClaudeから公開済みと連絡を受けています。以下の旧節の「クリック移動なし」「最新置換表」は当時の記録です。
 
 公園ビューアの右上に、現在位置と向きを示す地図を追加しました（PLAN §43）。「地図：自動／公園全体／休憩棟／管理棟」で切替でき、「たたむ」で小さくできます。[公園ビューア](park/viewer/index.html)／[ブラウザ確認と公開引継ぎ](out/minimap43/BROWSER_CHECK.md)。§36〜42はClaudeから公開済みと連絡を受けています。今回の公開置換表は [out/minimap43/publish_manifest.json](out/minimap43/publish_manifest.json) です。以下の旧節の公開待ち・最新表記は当時の記録です。

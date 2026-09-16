@@ -94,10 +94,10 @@
   const clearHover=()=>get('map-hover').setAttribute('display','none');
   function reset(){gesture=null;released=null;pointers.clear();clearHover();}
   function eligible(){return !folded&&!!current&&!!last&&typeof actions.select==='function'&&actions.canSelect();}
-  function jump(v){
+  function jump(v,pointer=false){
    if(!eligible())return;
    if(!v){feedback.textContent='近くに視点がありません';return;}
-   feedback.textContent='';actions.select(v.id);
+   feedback.textContent='';actions.select(v.id,{focusScene:pointer});
   }
   const atEvent=e=>{const p=clientPoint(svg.getBoundingClientRect(),e.clientX,e.clientY);return p&&current?nearest(current,nav,p.point,p.scale):null;};
   function targetView(e){const t=e.target.closest&&e.target.closest('[data-view]');return t&&current&&current.views.find(v=>v.id===t.dataset.view);}
@@ -139,7 +139,7 @@
   for(const type of ['lostpointercapture','pointerleave'])svg.addEventListener(type,e=>{stop(e);clearHover();if(pointers.size)reset();});
   svg.addEventListener('click',e=>{
    stop(e);e.preventDefault();const tap=released,wasPointer=pointerAttempt;released=null;pointerAttempt=false;
-   if(tap&&tap.epoch===epoch)jump(atEvent(e));
+   if(tap&&tap.epoch===epoch)jump(atEvent(e),true);
    else if(!wasPointer&&e.detail===0){const v=targetView(e);if(v)jump(v);} // Assistive activation has no pointer sequence.
   });
   svg.addEventListener('keydown',e=>{
