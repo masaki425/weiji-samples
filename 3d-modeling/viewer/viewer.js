@@ -100,7 +100,7 @@ function addMirror(m){
  if(!m)return;const point=new V(...m.point),normal=new V(...m.normal).normalize();reflection=new THREE.WebGLRenderTarget(1024,1024,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
  const textureMatrix=new THREE.Matrix4();
  const mat=new THREE.ShaderMaterial({uniforms:{map:{value:reflection.texture},textureMatrix:{value:textureMatrix}},vertexShader:'uniform mat4 textureMatrix; varying vec4 uvMirror; void main(){uvMirror=textureMatrix*modelMatrix*vec4(position,1.0);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'uniform sampler2D map; varying vec4 uvMirror; void main(){vec3 c=texture2DProj(map,uvMirror).rgb;gl_FragColor=vec4(c*.97,1.0);}',side:THREE.FrontSide});
- mirror=new THREE.Mesh(new THREE.PlaneBufferGeometry(m.width,m.height),mat);mirror.position.copy(point);mirror.quaternion.setFromUnitVectors(new V(0,0,1),normal);mirror.userData={point,normal,textureMatrix};scene.add(mirror);
+ mirror=new THREE.Mesh(new THREE.PlaneBufferGeometry(m.width,m.height),mat);mirror.position.copy(point);mirror.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new V(...m.right).normalize(),new V(...m.up).normalize(),normal));mirror.userData={point,normal,textureMatrix};scene.add(mirror);
 }
 const reflectedCam=new THREE.PerspectiveCamera(),bias=new THREE.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
 function render(){
@@ -158,12 +158,12 @@ async function load(name){
   if(n!==token){disposeGroup(r.group);return;}
   disposeModel();model=r.group;nav=data.navigation;building=name;scene.add(model);addMirror(r.meta.mirror);
   $('building').value=name;$('viewpoint').replaceChildren(...nav.views.map((v,i)=>{const o=document.createElement('option');o.value=v.id;o.textContent=(i+1)+' '+v.label;return o;}));
-  setView('entrance');$('loading').hidden=true;resize();render();window.weijiReady=true;
+  setView(nav.default_view||'entrance');$('loading').hidden=true;resize();render();window.weijiReady=true;
  }catch(error){if(n===token){showFailure(error);if(building)$('building').value=building;}}
  finally{if(n===token){$('building').disabled=false;$('viewpoint').disabled=!nav;}}
 }
 $('retry').onclick=()=>load(requestedBuilding);
-$('building').addEventListener('change',()=>load($('building').value));$('viewpoint').addEventListener('change',()=>setView($('viewpoint').value));$('entrance').onclick=()=>setView('entrance');
+$('building').addEventListener('change',()=>load($('building').value));$('viewpoint').addEventListener('change',()=>setView($('viewpoint').value));$('entrance').onclick=()=>setView(nav.default_view||'entrance');
 $('help').onclick=()=>{clearInput();$('about').showModal();};$('closehelp').onclick=()=>$('about').close();
 canvas.addEventListener('pointerdown',e=>{canvas.focus();drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.004;pitch-=(e.clientY-drag.y)*.004;pitch=Math.max(-1.3,Math.min(1.3,pitch));drag={x:e.clientX,y:e.clientY};camera.rotation.set(pitch,yaw,0);dirty=true;});canvas.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('pointercancel',()=>drag=null);
 window.addEventListener('keydown',e=>{if(e.target.matches('select,button')||$('about').open)return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',clearInput);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInput();});

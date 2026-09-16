@@ -1,0 +1,90 @@
+/* Park viewer: offline classic scripts, embedded approved photos, lazy building chunks. */
+'use strict';
+const $=id=>document.getElementById(id),manifest=window.OKURA_MANIFEST,nav=manifest.navigation,V=THREE.Vector3;
+let renderer,mirror=null,reflection=null,dirty=true,frameCount=0;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xb5c3ca);
+const camera=new THREE.PerspectiveCamera(62,1,.035,600);camera.rotation.order='YXZ';
+const converted=p=>new V(p[0],p[2],-p[1]);
+scene.add(new THREE.HemisphereLight(0xe9eef3,0x6f7357,1.05));scene.add(new THREE.AmbientLight(0xffffff,.24));const sun=new THREE.DirectionalLight(0xfff1d7,.95);sun.position.set(30,70,-50);scene.add(sun);
+const loaded={},pending={},keys=new Set(),moves=new Set();let yaw=0,pitch=0,drag=null,busy=false,selected=null,request=0,station=null;
+function status(message){$('status').textContent=message;$('status').hidden=!message;}
+function error(e){status('読み込みに失敗しました。ZIPをすべて展開し、park と viewer を同じ構成で置いてください。 '+e.message);$('retry').hidden=false;console.error(e);}
+function script(name){return new Promise((resolve,reject)=>{if(window.OKURA_DATA&&window.OKURA_DATA[name])return resolve(window.OKURA_DATA[name]);const el=document.createElement('script');let done=false;const t=setTimeout(()=>finish(Error('assets/'+name+'.js の読み込み待ちが終了しました')),30000);function finish(e){if(done)return;done=true;clearTimeout(t);el.onload=el.onerror=null;if(e){el.remove();reject(e);}else resolve(window.OKURA_DATA[name]);}el.src='assets/'+name+'.js';el.onload=()=>finish(window.OKURA_DATA&&window.OKURA_DATA[name]?null:Error('モデルデータがありません'));el.onerror=()=>finish(Error('assets/'+name+'.js がありません'));document.head.appendChild(el);});}
+async function load(name){if(loaded[name])return loaded[name];if(pending[name])return pending[name];pending[name]=(async()=>{const data=await script(name),parsed=readGLB(OkuraCore.decode(data.glb));await parsed.ready;scene.add(parsed.group);loaded[name]=parsed.group;if(parsed.meta.mirror)addMirror(parsed.meta.mirror);dirty=true;return parsed.group;})().finally(()=>delete pending[name]);return pending[name];}
+function readGLB(buffer){
+ const dv=new DataView(buffer);if(dv.getUint32(0,true)!==0x46546c67||dv.getUint32(4,true)!==2)throw Error('GLBヘッダーが不正です');
+ const len=dv.getUint32(12,true),json=JSON.parse(new TextDecoder().decode(new Uint8Array(buffer,20,len))),start=20+len+8;
+ const images=json.images||[],textures=json.textures||[],maps=[];
+ for(const im of images){const spec=manifest.approved_images[im.extras.sha256];if(!spec||spec.mime!==im.mimeType||spec.pixels.join(',')!==im.extras.pixels.join(','))throw Error('未登録の展示画像です');}
+ for(const im of images){const texture=new THREE.Texture();texture.flipY=false;texture.encoding=THREE.sRGBEncoding;
+  texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;texture.minFilter=texture.magFilter=THREE.LinearFilter;texture.generateMipmaps=false;maps.push(texture);}
+ const group=new THREE.Group();group.userData.cancelTextures=[];
+ function attribute(i){const a=json.accessors[i],v=json.bufferViews[a.bufferView];const size=a.type==='VEC2'?2:a.type==='VEC3'?3:0;if(a.componentType!==5126||!size)throw Error('未対応の形状形式');return new THREE.BufferAttribute(new Float32Array(buffer,start+(v.byteOffset||0)+(a.byteOffset||0),a.count*size),size);}
+ for(const n of json.nodes){if(n.mesh===undefined)continue;const m=json.meshes[n.mesh];for(const p of m.primitives){
+  const g=new THREE.BufferGeometry();g.addAttribute('position',attribute(p.attributes.POSITION));g.addAttribute('normal',attribute(p.attributes.NORMAL));g.addAttribute('color',attribute(p.attributes.COLOR_0));if(p.indices!==undefined){const a=json.accessors[p.indices],v=json.bufferViews[a.bufferView];g.setIndex(new THREE.BufferAttribute(new Uint32Array(buffer,start+(v.byteOffset||0),a.count),1));}if(p.attributes.TEXCOORD_0!==undefined)g.addAttribute('uv',attribute(p.attributes.TEXCOORD_0));g.computeBoundingSphere();
+  const a=json.materials[p.material],b=a.pbrMetallicRoughness,c=b.baseColorFactor;
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(c[0],c[1],c[2]),roughness:b.roughnessFactor,metalness:Math.min(b.metallicFactor,.6),vertexColors:THREE.VertexColors,side:a.doubleSided?THREE.DoubleSide:THREE.FrontSide,transparent:a.alphaMode==='BLEND',opacity:c[3],depthWrite:a.alphaMode!=='BLEND',emissive:new THREE.Color(...(a.emissiveFactor||[0,0,0]))});
+  if(b.baseColorTexture){if(!maps[b.baseColorTexture.index]||!g.attributes.uv)throw Error('画像のUVがありません');mat.map=maps[b.baseColorTexture.index];}
+  const mesh=new THREE.Mesh(g,mat);mesh.name=n.name;if(n.name.endsWith('S02 optical mirror'))mesh.visible=false;group.add(mesh);
+ }}
+ // GLB bytes -> data URL. No fetch, Blob URL or file:// cross-origin image request.
+ const ready=Promise.all(images.map((record,index)=>new Promise((resolve,reject)=>{
+  const texture=maps[index],view=json.bufferViews[record.bufferView];
+  if(!view||view.buffer!==0||view.byteOffset+view.byteLength>buffer.byteLength-start){reject(Object.assign(Error('Invalid approved image buffer'),{code:'MODEL_TEXTURE'}));return;}
+  const bytes=new Uint8Array(buffer,start+(view.byteOffset||0),view.byteLength);let binary='';
+  for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+  const im=new Image();let finished=false;
+  const timer=setTimeout(()=>fail(),15000);
+  function fail(){if(finished)return;finished=true;clearTimeout(timer);im.onload=im.onerror=null;reject(Object.assign(Error('Approved image decode failed'),{code:'MODEL_TEXTURE'}));}
+  group.userData.cancelTextures.push(fail);
+  im.onerror=fail;im.onload=()=>{if(finished)return;if(im.naturalWidth!==record.extras.pixels[0]||im.naturalHeight!==record.extras.pixels[1]){fail();return;}finished=true;clearTimeout(timer);im.onload=im.onerror=null;texture.image=im;texture.needsUpdate=true;resolve();};
+  im.src='data:'+record.mimeType+';base64,'+btoa(binary);
+ }))); 
+ return {group,meta:json.extras,ready};
+}
+function addMirror(m){
+ if(!m)return;const point=new V(...m.point),normal=new V(...m.normal).normalize();reflection=new THREE.WebGLRenderTarget(1024,1024,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+ const textureMatrix=new THREE.Matrix4();
+ const mat=new THREE.ShaderMaterial({uniforms:{map:{value:reflection.texture},textureMatrix:{value:textureMatrix}},vertexShader:'uniform mat4 textureMatrix; varying vec4 uvMirror; void main(){uvMirror=textureMatrix*modelMatrix*vec4(position,1.0);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'uniform sampler2D map; varying vec4 uvMirror; void main(){vec3 c=texture2DProj(map,uvMirror).rgb;gl_FragColor=vec4(c*.97,1.0);}',side:THREE.FrontSide});
+ mirror=new THREE.Mesh(new THREE.PlaneBufferGeometry(m.width,m.height),mat);mirror.position.copy(point);mirror.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new V(...m.right).normalize(),new V(...m.up).normalize(),normal));mirror.userData={point,normal,textureMatrix};scene.add(mirror);
+}
+const reflectedCam=new THREE.PerspectiveCamera(),bias=new THREE.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
+function render(){
+ camera.updateMatrixWorld();
+ if(mirror){const {point,normal,textureMatrix}=mirror.userData;
+  if(camera.position.clone().sub(point).dot(normal)>0){
+   const reflectPoint=p=>p.clone().sub(normal.clone().multiplyScalar(2*p.clone().sub(point).dot(normal)));
+   reflectedCam.position.copy(reflectPoint(camera.position));
+   const target=reflectPoint(camera.position.clone().add(camera.getWorldDirection(new V())));
+   reflectedCam.up.copy(camera.up).reflect(normal);reflectedCam.lookAt(target);reflectedCam.near=camera.near;reflectedCam.far=camera.far;reflectedCam.projectionMatrix.copy(camera.projectionMatrix);reflectedCam.updateMatrixWorld();
+   textureMatrix.copy(bias).multiply(reflectedCam.projectionMatrix).multiply(reflectedCam.matrixWorldInverse);
+   mirror.visible=false;renderer.clippingPlanes=[new THREE.Plane(normal,-normal.dot(point)+.001)];renderer.setRenderTarget(reflection);renderer.render(scene,reflectedCam);renderer.setRenderTarget(null);renderer.clippingPlanes=[];mirror.visible=true;
+  }
+ }
+ renderer.render(scene,camera);frameCount++;dirty=false;
+}
+
+function areaOf(v){return v.chunk||'park';}
+function fillViews(area){$('area').value=area;const select=$('view');select.textContent='';for(const v of nav.views.filter(v=>areaOf(v)===area)){const o=document.createElement('option');o.value=v.id;o.textContent=v.label.replace(/^(休憩棟|管理棟)：/,'');select.appendChild(o);}}
+function ladderData(){return nav.stations&&nav.stations.rest_barrel_ladder;}
+function clearInput(){keys.clear();moves.clear();drag=null;}
+function lookAt(target){camera.lookAt(converted(target));yaw=camera.rotation.y;pitch=camera.rotation.x;}
+function updateLadder(){const data=ladderData(),close=data&&camera.position.distanceTo(converted(data.path[0]))<1.25;$('ladder').hidden=!data||(!station&&!(selected&&areaOf(selected)==='rest'));$('ladder').disabled=busy||!!(station&&station.mode!=='top');$('ladder').textContent=station?(station.mode==='top'?'梯子を下りる':station.mode==='down'?'下りています…':'上っています…'):(close?'梯子を上る':'樽の梯子へ');}
+function beginLadder(){const data=ladderData();if(!data)return;clearInput();camera.position.copy(converted(data.path[0]));lookAt(data.target);station={mode:'up',elapsed:0};dirty=true;updateLadder();}
+function advanceLadder(dt){if(!station||station.mode==='top')return;const data=ladderData();station.elapsed=Math.min(data.duration,station.elapsed+dt);const t=station.elapsed/data.duration,p=station.mode==='down'?1-t:t,q=p*(data.path.length-1),i=Math.min(data.path.length-2,Math.floor(q));camera.position.copy(converted(data.path[i]).lerp(converted(data.path[i+1]),q-i));lookAt(data.target);dirty=true;if(t>=1){if(station.mode==='down'){station=null;selected=nav.views.find(v=>v.id==='rest_barrel');$('view').value=selected.id;$('place').textContent='樽の梯子の下';}else{station.mode='top';$('place').textContent='樽の中 — ドラッグで見回せます';}updateLadder();}}
+async function select(id){const token=++request;const v=nav.views.find(x=>x.id===id);if(!v)return;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));camera.lookAt(converted(v.target));yaw=camera.rotation.y;pitch=camera.rotation.x;dirty=true;$('place').textContent=v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();window.okuraReady=true;}catch(e){error(e);}finally{if(token===request){busy=false;updateLadder();}}}
+function resize(){const r=$('scene').parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();dirty=true;}
+function move(dx,dy){if(busy||station||!selected||selected.fixed)return false;const old=[camera.position.x,-camera.position.z,camera.position.y],next=OkuraCore.step(nav,old,dx,dy);camera.position.copy(converted(next));dirty=true;updateLadder();return old.some((v,i)=>v!==next[i]);}
+for(const credit of new Set(Object.values(manifest.approved_images).map(x=>x.credit))){const li=document.createElement('li');li.textContent=credit;$('credits').appendChild(li);}
+fillViews('park');
+$('area').addEventListener('change',()=>{const area=$('area').value;fillViews(area);const id=area==='rest'?'rest_entrance':area==='management'?'management_entrance':'park_overview';select(id);});
+$('ladder').addEventListener('click',()=>{if(station&&station.mode==='top'){clearInput();station.mode='down';station.elapsed=0;updateLadder();}else if(!station)select('rest_barrel_peek');});
+$('view').addEventListener('change',()=>select($('view').value));$('home').addEventListener('click',()=>select('park_overview'));$('retry').addEventListener('click',()=>select($('view').value||'park_overview'));
+function offset(n){const views=nav.views.filter(v=>areaOf(v)===$('area').value);const i=views.findIndex(v=>v.id===$('view').value);select(views[(i+n+views.length)%views.length].id);}
+$('previous').addEventListener('click',()=>offset(-1));$('next').addEventListener('click',()=>offset(1));
+const canvas=$('scene');canvas.addEventListener('pointerdown',e=>{canvas.focus();drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.004;pitch=Math.max(-1.53,Math.min(1.53,pitch-(e.clientY-drag.y)*.004));camera.rotation.set(pitch,yaw,0);drag={x:e.clientX,y:e.clientY};dirty=true;});for(const ev of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(ev,()=>drag=null);
+window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();moves.clear();drag=null;});
+for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
+let previous=0;function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.05);previous=now;advanceLadder(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const len=Math.hypot(fw,side);fw/=len;side/=len;move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.4,(Math.cos(yaw)*fw+Math.sin(yaw)*side)*dt*1.4);}if(dirty)render();}
+try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.gammaOutput=true;renderer.gammaFactor=2.2;renderer.toneMapping=THREE.ReinhardToneMapping;renderer.toneMappingExposure=1.5;resize();window.addEventListener('resize',resize);requestAnimationFrame(animate);select('park_overview');}catch(e){status('WebGLを開始できません。ブラウザのハードウェアアクセラレーション設定をご確認ください。 '+e.message);}
+window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};
