@@ -7,6 +7,28 @@ const camera=new THREE.PerspectiveCamera(62,1,.035,600);camera.rotation.order='Y
 const converted=p=>new V(p[0],p[2],-p[1]);
 scene.add(new THREE.HemisphereLight(0xe9eef3,0x6f7357,1.05));scene.add(new THREE.AmbientLight(0xffffff,.24));const sun=new THREE.DirectionalLight(0xfff1d7,.95);sun.position.set(30,70,-50);scene.add(sun);
 const loaded={},pending={},keys=new Set(),moves=new Set();let yaw=0,pitch=0,drag=null,busy=false,selected=null,request=0,station=null;
+const pointers=new Map();let orbit=null,pinchDistance=null;
+const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+function applyOrbit(){
+ const spec=nav.orbit;
+ orbit.distance=clamp(orbit.distance,spec.min_distance,spec.max_distance);
+ orbit.elevation=clamp(orbit.elevation,spec.min_elevation_deg*Math.PI/180,spec.max_elevation_deg*Math.PI/180);
+ orbit.azimuth=Math.atan2(Math.sin(orbit.azimuth),Math.cos(orbit.azimuth));
+ const radius=orbit.distance*Math.cos(orbit.elevation),centre=converted(spec.target);
+ camera.position.set(centre.x+radius*Math.sin(orbit.azimuth),centre.y+orbit.distance*Math.sin(orbit.elevation),centre.z+radius*Math.cos(orbit.azimuth));
+ lookAt(spec.target);dirty=true;
+}
+function startOrbit(v){
+ if(v.mode!=='orbit'){orbit=null;return;}
+ const offset=converted(v.position).sub(converted(nav.orbit.target)),distance=offset.length();
+ orbit={distance,elevation:Math.asin(offset.y/distance),azimuth:Math.atan2(offset.x,offset.z)};
+ applyOrbit();
+}
+function zoomOrbit(factor){if(!orbit||busy||!Number.isFinite(factor)||factor<=0)return;orbit.distance*=factor;applyOrbit();}
+function updateControls(){
+ $('pad').hidden=!!orbit;
+ $('controls-help').textContent=orbit?'ドラッグで公園を回転 · ホイール／2本指でズーム':'ドラッグで見回す · W/A/S/D／矢印で園路と室内を移動';
+}
 function status(message){$('status').textContent=message;$('status').hidden=!message;}
 function error(e){status('読み込みに失敗しました。ZIPをすべて展開し、park と viewer を同じ構成で置いてください。 '+e.message);$('retry').hidden=false;console.error(e);}
 function script(name){return new Promise((resolve,reject)=>{if(window.OKURA_DATA&&window.OKURA_DATA[name])return resolve(window.OKURA_DATA[name]);const el=document.createElement('script');let done=false;const t=setTimeout(()=>finish(Error('assets/'+name+'.js の読み込み待ちが終了しました')),30000);function finish(e){if(done)return;done=true;clearTimeout(t);el.onload=el.onerror=null;if(e){el.remove();reject(e);}else resolve(window.OKURA_DATA[name]);}el.src='assets/'+name+'.js';el.onload=()=>finish(window.OKURA_DATA&&window.OKURA_DATA[name]?null:Error('モデルデータがありません'));el.onerror=()=>finish(Error('assets/'+name+'.js がありません'));document.head.appendChild(el);});}
@@ -67,14 +89,14 @@ function render(){
 function areaOf(v){return v.chunk||'park';}
 function fillViews(area){$('area').value=area;const select=$('view');select.textContent='';for(const v of nav.views.filter(v=>areaOf(v)===area)){const o=document.createElement('option');o.value=v.id;o.textContent=v.label.replace(/^(休憩棟|管理棟)：/,'');select.appendChild(o);}}
 function ladderData(){return nav.stations&&nav.stations.rest_barrel_ladder;}
-function clearInput(){keys.clear();moves.clear();drag=null;}
+function clearInput(){keys.clear();moves.clear();drag=null;pointers.clear();pinchDistance=null;}
 function lookAt(target){camera.lookAt(converted(target));yaw=camera.rotation.y;pitch=camera.rotation.x;}
 function updateLadder(){const data=ladderData(),close=data&&camera.position.distanceTo(converted(data.path[0]))<1.25;$('ladder').hidden=!data||(!station&&!(selected&&areaOf(selected)==='rest'));$('ladder').disabled=busy||!!(station&&station.mode!=='top');$('ladder').textContent=station?(station.mode==='top'?'梯子を下りる':station.mode==='down'?'下りています…':'上っています…'):(close?'梯子を上る':'樽の梯子へ');}
 function beginLadder(){const data=ladderData();if(!data)return;clearInput();camera.position.copy(converted(data.path[0]));lookAt(data.target);station={mode:'up',elapsed:0};dirty=true;updateLadder();}
 function advanceLadder(dt){if(!station||station.mode==='top')return;const data=ladderData();station.elapsed=Math.min(data.duration,station.elapsed+dt);const t=station.elapsed/data.duration,p=station.mode==='down'?1-t:t,q=p*(data.path.length-1),i=Math.min(data.path.length-2,Math.floor(q));camera.position.copy(converted(data.path[i]).lerp(converted(data.path[i+1]),q-i));lookAt(data.target);dirty=true;if(t>=1){if(station.mode==='down'){station=null;selected=nav.views.find(v=>v.id==='rest_barrel');$('view').value=selected.id;$('place').textContent='樽の梯子の下';}else{station.mode='top';$('place').textContent='樽の中 — ドラッグで見回せます';}updateLadder();}}
-async function select(id){const token=++request;const v=nav.views.find(x=>x.id===id);if(!v)return;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));camera.lookAt(converted(v.target));yaw=camera.rotation.y;pitch=camera.rotation.x;dirty=true;$('place').textContent=v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();window.okuraReady=true;}catch(e){error(e);}finally{if(token===request){busy=false;updateLadder();}}}
+async function select(id){const token=++request;const v=nav.views.find(x=>x.id===id);if(!v)return;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));lookAt(v.target);startOrbit(v);updateControls();dirty=true;$('place').textContent=orbit?'全体表示では歩行キー・矢印は使いません。「全体」で角度と距離を戻せます。':v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();window.okuraReady=true;}catch(e){error(e);}finally{if(token===request){busy=false;updateLadder();}}}
 function resize(){const r=$('scene').parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();dirty=true;}
-function move(dx,dy){if(busy||station||!selected||selected.fixed)return false;const old=[camera.position.x,-camera.position.z,camera.position.y],next=OkuraCore.step(nav,old,dx,dy);camera.position.copy(converted(next));dirty=true;updateLadder();return old.some((v,i)=>v!==next[i]);}
+function move(dx,dy){if(busy||orbit||station||!selected||selected.fixed)return false;const old=[camera.position.x,-camera.position.z,camera.position.y],next=OkuraCore.step(nav,old,dx,dy);camera.position.copy(converted(next));dirty=true;updateLadder();return old.some((v,i)=>v!==next[i]);}
 for(const credit of new Set(Object.values(manifest.approved_images).map(x=>x.credit))){const li=document.createElement('li');li.textContent=credit;$('credits').appendChild(li);}
 fillViews('park');
 $('area').addEventListener('change',()=>{const area=$('area').value;fillViews(area);const id=area==='rest'?'rest_entrance':area==='management'?'management_entrance':'park_overview';select(id);});
@@ -82,9 +104,41 @@ $('ladder').addEventListener('click',()=>{if(station&&station.mode==='top'){clea
 $('view').addEventListener('change',()=>select($('view').value));$('home').addEventListener('click',()=>select('park_overview'));$('retry').addEventListener('click',()=>select($('view').value||'park_overview'));
 function offset(n){const views=nav.views.filter(v=>areaOf(v)===$('area').value);const i=views.findIndex(v=>v.id===$('view').value);select(views[(i+n+views.length)%views.length].id);}
 $('previous').addEventListener('click',()=>offset(-1));$('next').addEventListener('click',()=>offset(1));
-const canvas=$('scene');canvas.addEventListener('pointerdown',e=>{canvas.focus();drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.004;pitch=Math.max(-1.53,Math.min(1.53,pitch-(e.clientY-drag.y)*.004));camera.rotation.set(pitch,yaw,0);drag={x:e.clientX,y:e.clientY};dirty=true;});for(const ev of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(ev,()=>drag=null);
-window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();moves.clear();drag=null;});
-for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
+const canvas=$('scene');
+function pointerSpan(){const [a,b]=Array.from(pointers.values());return b?Math.hypot(a.x-b.x,a.y-b.y):null;}
+canvas.addEventListener('pointerdown',e=>{
+ if(busy||!selected||(e.button!==undefined&&e.button!==0)||pointers.size>=2)return;
+ canvas.focus();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size===1)drag={x:e.clientX,y:e.clientY};
+ pinchDistance=pointerSpan();canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove',e=>{
+ if(busy||!pointers.has(e.pointerId))return;
+ pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size===2){
+  const span=pointerSpan();
+  if(orbit&&pinchDistance>1&&span>1)zoomOrbit(pinchDistance/span);
+  pinchDistance=span;drag=null;return;
+ }
+ if(drag){
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(orbit){orbit.azimuth-=dx*.004;orbit.elevation+=dy*.004;applyOrbit();}
+  else{yaw-=dx*.004;pitch=clamp(pitch-dy*.004,-1.53,1.53);camera.rotation.set(pitch,yaw,0);dirty=true;}
+ }
+ drag={x:e.clientX,y:e.clientY};
+});
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(ev,e=>{
+ if(!pointers.delete(e.pointerId))return;
+ drag=pointers.size===1?{...pointers.values().next().value}:null;pinchDistance=pointerSpan();
+});
+canvas.addEventListener('wheel',e=>{
+ if(!orbit||busy)return;
+ e.preventDefault();
+ const unit=e.deltaMode===1?16:e.deltaMode===2?canvas.getBoundingClientRect().height:1;
+ zoomOrbit(Math.exp(clamp(e.deltaY*unit*.0015,-4,4)));
+},{passive:false});
+window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){if(!orbit&&!busy)keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',clearInput);
+for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{if(orbit||busy)return;moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
 let previous=0;function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.05);previous=now;advanceLadder(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const len=Math.hypot(fw,side);fw/=len;side/=len;move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.4,(Math.cos(yaw)*fw+Math.sin(yaw)*side)*dt*1.4);}if(dirty)render();}
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.gammaOutput=true;renderer.gammaFactor=2.2;renderer.toneMapping=THREE.ReinhardToneMapping;renderer.toneMappingExposure=1.5;resize();window.addEventListener('resize',resize);requestAnimationFrame(animate);select('park_overview');}catch(e){status('WebGLを開始できません。ブラウザのハードウェアアクセラレーション設定をご確認ください。 '+e.message);}
-window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};
+window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,orbit:orbit?{...orbit,target:nav.orbit.target.slice()}:null,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};

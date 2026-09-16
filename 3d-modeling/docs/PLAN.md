@@ -1709,3 +1709,43 @@ UIは公式記事 https://learn.chatgpt.com/use-cases/make-granular-ui-changes �
 棟別の.blend・GLB、配布用JS・単体HTML、公園の.blend・3GLB・JS、二段UI、比較画像、README、REVIEW、verificationを更新した。再生成用スクリプトは同梱する。配布直前の最新ハッシュ照合は `park/out/release_verification.json`、ZIP内の全ファイルのCRC／SHAはZIP外の `park/out/package_verification.json` と `out/package_verification.txt`。Finderの `.DS_Store` はモデル／ビューアの入力ではないため署名と配布から除く。過去版の検証記録は履歴として残し、現在の合否はrevision31を参照する。
 
 実ブラウザのWebGL画素、スマートフォンの操作感・読込時間はClaude確認待ち。写真とPPTXの完全な実測一致も未確認。東側入口と小屋の方位は制作者の訂正を採用し、壁長・部屋の細かな取り合い・机の間隔などの推定は§31.3〜4に残す。
+
+
+## 32. 公園全体の回転・ズーム（2026-09-16）
+
+### 32.1 依頼・適用資料・範囲
+
+制作者の指示：公園全体を回し、拡大縮小して様々な角度から見る。対象は `park/viewer/` の `park_overview` と `park_plan`。他の鑑賞・歩行・梯子の操作、建物・作品・地形は保持する。Blenderの変更とジョブ投入は不要。
+
+$sekkei を適用。runtime_model.py の最新 turn_context は gpt-6-astra / xhigh、turn `01a0a792-197d-7f00-b889-f237e8278075`、2026-09-16T00:18:03.866Z。実行設定は変更しない。公式資料はスキル台帳の確認済みメモを再利用（原典確認日2026-09-13）：https://developers.openai.com/api/docs/models/gpt-6-astra 、https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra 。Initiative and follow-throughを実装からZIP照合まで、Instruction followingを公園UIだけの差分、Testing and verificationを操作・モデル不変・配布一致の検査として適用する。
+
+UIは https://learn.chatgpt.com/use-cases/make-granular-ui-changes の同日確認済みメモを使用。既存の配色・レイアウト・二段選択を保持し、回転、ズーム、切替復帰を順に検査する。実ブラウザ確認は引き継ぎ指定どおりClaudeが担当する。Nodeによるイベント・カメラ計算の確認を実描画とは扱わない。書込みは3d-modeling内、git不使用。
+
+### 32.2 採用する操作と完成条件
+
+|状態・画面|変更する動作|完成条件|
+|---|---|---|
+|公園全体／真上|公園中央を注視しながらドラッグで方位・仰角を変える|カメラの位置が中心の周囲を移り、中心への注視と距離を保つ|
+|同上のズーム|ホイール／2本指ピンチで中心までの距離を変える|指を広げると近づく。ホイールのpixel／line／page単位を扱う。上限下限を超えない|
+|同上の歩行入力|画面矢印を隠し、WASD／矢印キーの歩行を止める|中心をパンしない。案内に歩行の停止と操作を明記|
+|場所切替／全体ボタン|全体ボタンで回転・距離を初期化。園路・室内は従来の歩行・見回しへ戻す|押下・ピンチの途中でも入力が残らず、梯子の昇降も維持|
+|スマートフォン幅390px|既存二段選択とボタンを保持し、キャンバスの1指回転・2指ズームを追加|pointercancel／指を離す／フォーカス喪失で跳躍・操作継続が起きない|
+
+共通中心は既存「真上」の平面座標（約x=-8.10、y=0.62m）とz=2mを使用する。距離60〜420m、仰角15〜89.5度を暫定採用。最小のカメラ高は約17.53mで地面の下へ回らず、真上は特異点を避けほぼ鉛直にする。方位は一周可能。距離は各視点の既存カメラ位置から初期化し、全体／真上の初期方向を保つ。上限距離と公園外周の合計は既存far=600m内に収まる。これらは閲覧操作の設定で、建物寸法や地形の推定を変えるものではない。
+
+### 32.3 工程・確認手順・未決事項
+
+変更前のUIとrevision31検証記録を `park/reference/orbit32/before/` に保存し、原本3blend、棟別ビューア、3GLB、配布3JS、地形データ等を baseline.json のSHAで保護する。公園ビューア実装→配布navigation再生成→Nodeの回転・距離・仰角制限・タッチ状態遷移・場所切替・従来歩行／梯子検査→README／REVIEW→配布前署名→ZIP内全ファイルのCRC／SHA照合。
+
+Claudeの表示確認：`park/viewer/index.html` をfile://とHTTP（プロジェクトルートを静的配信）、1200×800／390×844で開く。全体と真上で左右上下ドラッグ、ホイール、実機ピンチ、限界までの拡大縮小、片指を離して再ドラッグ、全体ボタンによる復帰を確認する。その後、園路を歩き、両棟へ切り替え、樽の梯子を昇降する。期待差は全体2視点で公園を外側から回せること。他の場所の挙動は従来どおり。
+
+未決事項：実機での回転感度・距離上下限の使いやすさ、WebGL実描画、Safari／Firefoxのタッチ挙動はClaude確認待ち。公開share/への反映もClaude担当。
+
+
+### 32.4 実装・検証記録
+
+`package_park_viewer.py` に閲覧用のorbit設定と2視点のmodeを追加し、navigation.jsをrevision32へ更新した。3GLBおよびGLBを内蔵する3JSはバイト不変。viewer.jsのカメラだけが中心を周回する。1指ドラッグと2指ピンチをpointerIdごとに管理し、指の本数の変更時は基準位置を取り直す。ホイールはpixel／line／page単位を距離に変換し、passive:falseでキャンバス内のズームに限ってスクロールを抑止。歩行へ戻った場合はホイールを奪わない。選択・blur・取消時は入力を解除する。HTMLは案内文、CSSは全体時の歩行ボタン非表示のみ変更した。
+
+Nodeの28項目が合格（従来18＋新規10）。カメラが中心を注視すること、一周の回転、距離60／420mと仰角15／89.5度の上下限、3種のホイール単位、2指→1指、cancel／lostpointercapture／blur、途中の視点切替、全体への初期化を実行コードで検査。file://とHTTPの模擬環境で全62視点、エリア前後移動、歩行20,940点、梯子・鏡・読込エラー表示も合格した。公園中心から外周までの最大半径は約130.31mで、最遠の距離420mを足しても約550.31mとなり、既存far=600m内。47保護ファイルはSHA一致、GLB容量は131,553,240 bytesのまま。
+
+NodeはWebGLとDOMを代替した操作検査であり、ブラウザ画素・モバイルレイアウト・実機タッチの検査ではない。今回のBlender再生成・レンダー・GLB再読戻しは行わず、revision31で検証した同一ファイルを保持した。実ブラウザは引き継ぎ指定どおりClaude担当。配布前は `finalize_orbit32.py` で基準・操作検査と現行コードのSHAを照合し、`package_park.py` で全同梱ファイルをCRC／SHA検査する。現在の合否はrevision32、形状の検証履歴はrevision31を参照する。

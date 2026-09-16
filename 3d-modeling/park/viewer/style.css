@@ -2,3 +2,6 @@
 
 /* PLAN31: two sequential choices retain native keyboard/mobile controls. */
 header .chooser{display:flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap}header .chooser select{min-width:110px;max-width:330px}header .viewpoints{flex:1}header .viewpoints select{width:100%}button[hidden]{display:none}@media(max-width:600px){header .chooser{order:1;flex:1 1 100%;width:100%}header .chooser select{order:initial;min-width:0;max-width:none;flex:1}header .chooser:first-of-type select{flex-basis:auto}header button{order:2;min-height:44px}header .viewpoints{flex-basis:100%}}
+
+/* PLAN32: hide only the walking pad while orbiting the park. */
+#pad[hidden]{display:none}
