@@ -1,4 +1,6 @@
-公開案内ページ用の一覧6枚と休憩棟の配置図を、最新保存モデルで更新しました（PLAN §33）。[東側玄関からの巡回](out/rest_walkthrough_overview.jpg)／[玄関ポスター](out/poster_overview.jpg)／[休憩棟配置図](out/rest_layout.jpg)。公開側への差替えはClaudeが行います。
+植栽を実寸の葉へ更新しました（PLAN §36・§37）。[植物の比較](out/vegetation36/comparisons.jpg)／[逆光の透け](out/vegetation36/backlight_comparison.jpg)／[公園ビューア](park/viewer/index.html)。建物・作品・歩行範囲とカメラは保持しています。
+
+公開案内ページ用の一覧6枚と休憩棟の配置図を、植栽更新後の保存モデルで再出力しました（PLAN §33・§36）。[東側玄関からの巡回](out/rest_walkthrough_overview.jpg)／[玄関ポスター](out/poster_overview.jpg)／[休憩棟配置図](out/rest_layout.jpg)。公開側への差替えはClaudeが行います。
 
 公園全体と真上の視点を、ドラッグで回転、ホイール／2本指ピンチで拡大縮小できるようにしました（PLAN §32）。[公園ビューアを開く](park/viewer/index.html)。全体表示では歩行を止め、「全体」で角度と距離を戻します。園路や室内を選ぶと従来の操作に戻ります。
 
@@ -546,3 +548,89 @@ Claudeへの差替え指示は `out/frontpage33/publish_manifest.json` に、コ
 再生成用の位置定義は `tools/entry_view35.py`。通常のbuild_models.pyが§31の後に適用します。今回の既存モデルへの差分ジョブ350〜353は、reference/entry35の§34基準から対象カメラだけを更新する専用手順です。今後モデルを変更した後に古い基準で差分ジョブを再実行しないでください。図の再合成は `/opt/homebrew/bin/python3.10 3d-modeling/tools/compose_entry35.py`、配布は `tools/package_viewer.py` と `park/tools/package_park_viewer.py`、Nodeは棟別 `tools/verify_viewer_loading.cjs` と公園 `park/tools/verify_viewer.cjs`。配布前は `tools/finalize_entry35.py`、梱包は `park/tools/package_park.py` です。GLBの形状は不変で、`tools/package_entry35.py` は保存元の署名だけを更新します。
 
 実ブラウザ確認はClaude担当。ZIPを全展開しfile://とHTTPで上の両視点を開き、390px幅とデスクトップで廊下を確認してください。前後の場所へ切り替え、歩行・樽の梯子、公園全体のパンも確認します。実描画は未検証です。
+
+## 植栽の質感を更新（PLAN §36）
+
+葉の輪郭・色むら・葉脈と逆光の透け、幹と竹の細かな凹凸、既存根元の苔・草を追加しました。公園の多面体だった樹冠はcm単位の葉に変えています。[変更前／変更後／写真](out/vegetation36/comparisons.jpg)、[逆光の材質比較](out/vegetation36/backlight_comparison.jpg)。二棟・公園の植物配置、全作品・写真転写・カメラ・歩行範囲は維持。人工芝A11は作品なので変更しません。11月に咲いていたと確認できる花がないため、花は追加していません。
+
+素材はすべて手続き生成です。外部拡張・画像素材・新しい写真テクスチャは使いません。CyclesではThin Wall・透過・葉脈と樹皮のバンプを使い、GLBでは同じ輪郭と焼き込んだ頂点色で軽量化します。公園の遠い木もcm単位の葉形を使います。ビューアでは葉の枚数を減らし、葉の寸法は拡大しません。実際の樹種と葉密度は未同定です。位置・密度の推定は従来のままです。
+
+Claudeの実描画確認：file://とHTTPの両方で、休憩棟「庭の木が見える窓辺」相当のinside_trees、管理棟front_garden、公園「石敷き園路」「あじさいの小径」「公園全体」を開き、葉が白一色にならず、表裏から見えて歩行を妨げないことを確認してください。390px幅、全体のパン・ズーム、梯子、星丸と既存転写画像も確認します。読み込み1分以内という目安とブラウザの実画素・タッチは未検証。Nodeの読込検査とは区別します。
+
+再生成は従来どおりジョブランナー経由です。§36差分は `tools/apply_vegetation36.py`（`reference/vegetation36/before`の3原本から二棟を更新し、公園を再アペンド）→ `export_walkthrough.py` → `park/tools/export_park.py` → `render_vegetation36.py` → `verify_vegetation36.py`・`verify_plant_colors36.py`・既存GLB読み戻し・園路検査の順。`vegetation36.py`は通常の`build_models.py`と`park/tools/build_map_park.py`にも接続しました。`--season green`の二棟生成を保持し、基準モデルからの植栽処理には`season='green'`を渡せます（適用済みモデルへの重ねがけではなく再生成）。本番はnovemberです。
+
+配布は通常Pythonの両`package_*viewer.py`、Nodeの棟別・公園検査、`compose_vegetation36.py`、`finalize_vegetation36.py`、`park/tools/package_park.py`の順です。古い§31／§35専用の最終化スクリプトは現在の配布には使いません。公開差替えは`out/vegetation36/publish_manifest.json`に記録し、share/は変更しません。
+
+## 実寸の葉への訂正（PLAN §37）
+大型の葉群を撤回し、公園の一般広葉6.5〜13.5cm、あじさい8〜16cm、針葉3.5〜8.5cmに変更しました。樹種・葉長の現地実測は未了で、寸法は暫定です。[大型葉との前後比較](out/vegetation36/leaf_scale37_comparison.jpg)／[公園の葉の接写](out/vegetation36/park_leaf_backlight37.png)。
+
+Blenderの公園植栽は約118万枚、ビューアでは約23万枚。公園GLBは52.2MBです。軽量版でも葉を拡大せず、薄い葉の輪郭と頂点色を保持します。省略は[樹冠ごとの明細](out/vegetation36/leaf_lod37.json)、全葉の寸法は[検査記録](out/vegetation36/leaf_scale37.json)に記録。木の位置・本数・幹・樹冠中心の高さ、建築・展示・園路・視点を保っています。
+
+再生成は前節の`vegetation36.py`系の処理を継続して使います。新たな寸法検査は`verify_leaf_scale37.py`（Blender）、`verify_leaf_positions37.py`（Blender）、`verify_leaf_glb37.py`（通常Python＋numpy）。ジョブ380／386が生成、387が最終書出し、382・384・385・388〜390が描画と検証です（383の数値照合は389で再検査）。
+
+Claudeのブラウザ確認：`park/viewer/index.html`をfile://とHTTPの両方で開き、「石敷園路」「あじさいの小径」「茅葺門前」「全体」を確認。二棟は庭と窓からの視点で確認。木の位置と経路・梯子・全体の回転／パンが維持され、近づいても1m級の葉がないこと。390px幅のタッチと実際の読込速度は未検証です。公開側の置換は`out/vegetation36/publish_manifest.json`を使用します。
+
+§37の実施結果：86視点を再描画（合計635.52秒）、GLB5本の読み戻し・全葉寸法・頂点色・再生成・歩行・Node検査に合格。比較10組と大型葉からの訂正4組を用意しました。現行配布の判定は`park/out/release_verification.json` revision37、ZIP同梱の照合は外部`park/out/package_verification.json`です。
+
+## 幹の茶色と常緑の密度を訂正（植栽の現行仕様：PLAN §38）
+
+幹・枝・根を§35の茶色へ戻し、黒い網目模様を取り除きました。竹も元の色です。常緑の葉を実寸のまま増やし、落葉樹のBlender原本は11月の疎らさを保ちます。前節の§37の密度・容量・比較説明は過去の記録です。
+
+[写真／§37／今回の10視点](out/vegetation36/comparisons.jpg)／[公園4視点](out/vegetation36/leaf_scale37_comparison.jpg)／[幹の接写](out/vegetation36/trunk_closeup38.png)。比較のファイル名・一覧構成は維持。公開用の6一覧と配置図・公園18視点一覧も現行保存モデルから更新しました。
+
+公園の原本は約446万枚、ビューア約47万枚。休憩棟は約6.2万枚／約3.6万枚、管理棟は約17.8万枚／約10.1万枚です。ビューアのGLBは公園54.4MB、各棟約57.3MBで上限内。葉だけ8bit色と再計算法線を使い、寸法を拡大せず常緑への表示枚数を増やしました。Cyclesの細かな葉脈・透光は引き続き原本側の表現です。
+
+再生成は§36と同じ基準モデルからの`apply_vegetation36.py`→両GLB書出し。寸法・位置検査に`verify_vegetation38.py`を加え、仕上げの配布判定は`tools/finalize_vegetation38.py`を使います。§36／§37の最終化スクリプトは今回の配布に使いません。`render_vegetation36.py`は今回`run_after()`だけを実行し、変更前欄には保存済みの§37画像を使います。§35の基準画像を上書きしないでください。
+
+Claudeへの引継ぎ：`out/vegetation36/publish_manifest.json`に沿い、**両方のviewer.jsとモデルJS・GLB・navigationを一緒に**差し替えてください。単体HTMLも更新対象です。file://／HTTP、390pxとデスクトップで石敷園路・あじさいの小径・茅葺門・二棟の庭を確認し、常緑の密度、茶色の幹、歩行・梯子・パンを確認します。Nodeは描画実機の検証ではありません。share/の公開反映は未実施です。
+
+§38の実施結果：86視点（描画計668.60秒）、写真比較10＋4組、公開一覧8枚を更新。訂正・寸法・不変対象・再生成・GLB5本・Nodeの検査が合格しました。最新の判定は`park/out/release_verification.json` revision38、ZIPの全CRC／SHA結果は`park/out/package_verification.json`。ブラウザ実描画と公開は引き続きClaude担当です。
+
+## 建築・外構の材質（PLAN §39）
+
+石敷園路・門・両棟・中庭の小屋と、写真6175に写る窓辺の長ベンチを対象に、細い木目、石粒と目地、茅の繊維、紙の肌、部材ごとの艶を調整しました。[写真／変更前／変更後](out/materials39/comparisons.jpg) と [材質の近接](out/materials39/closeups.jpg) で確認できます。写真は青木兼治の記録と大府市公式を参照し、新しい写真テクスチャ・外部素材は使っていません。
+
+Cyclesでは手続き材質の微細な凹凸を表示します。棟別・公園ビューアは同じ基調色と艶、既存頂点による弱い色むらを使い、微細バンプは省略します。公園の容量を増やす画像ベイクは採用していません。建物の形・作品画像・配置・歩行範囲・カメラと、§38の茶色の幹と実寸の葉は保持しています。
+
+材質の再生成は `tools/apply_materials39.py` をqueueランナーで実行します。`reference/materials39/before` の§38の3原本（両棟と公園）からの決定的な差分処理です。さらに `build_models.py` と `park/tools/build_map_park.py` の末尾にも同じ材質処理を組み込みました。古い植栽専用の適用スクリプトだけを再実行すると材質§39を上書きするため、その後に本処理が必要です。最新原本から書出し→ `tools/package_viewer.py` と `park/tools/package_park_viewer.py` →Node検査→比較・一覧の作成→検証→ZIPの順で再配布します。
+
+残る違い：園路の二列の盛り上がった石は既存の形状で、写真の平らな石敷とは一致しません。今回は形状を保持する範囲で材質を直しています。未撮影面の風化や色の絶対値も推定です。公園あずまやの図由来の簡略ベンチは写真で詳細未確認のため、そのままです。
+
+Claudeへの実描画確認：file://とHTTP、デスクトップと390px幅で、公園「茅葺門・錯視の暖簾」「休憩棟への石敷き園路」、休憩棟の東玄関・窓辺・中庭、管理棟の洋室・庭を確認してください。写真の転写、植物、3チャンク読込、梯子・歩行・公園パンが保たれることも確認します。ブラウザ実描画と公開反映は未実施です。今回の配布対象は `out/materials39/publish_manifest.json`。未公開の§36〜38の変更も含みます。
+
+§39の実施結果：87視点（描画計705.51秒）、写真比較12組、近接3面、公開一覧8枚を更新。保護対象・歩行・再生成の41項目、公園全体の再構築一致、GLB5本の読み戻し、Node検査に合格しました。容量は休憩棟57.28MB／管理棟57.15MB／公園54.46MB。最新版の配布判定は`out/materials39/verification.json`と`park/out/release_verification.json` revision39、ZIP同梱の照合結果は外部`park/out/package_verification.json`です。
+
+## 茅葺門と石敷の形状（PLAN §40）
+
+茅葺門の中央と左右の屋根を、厚みを持つ曲面・刈り込んだ軒先・棟の竹束へ組み直しました。石敷園路の二列の盛り上がりを撤去し、既存の中心線と幅1.85mの中に不整形の平石375枚を敷きました。[写真／§39／§40](out/geometry40/comparisons.jpg)で形の変化を確認できます。
+
+門の本体・暖簾・ポスター、奥の門、二棟の原本と作品、植栽§38、材質§39、カメラと歩行データは保持。屋根の厚さと先端、石の輪郭は写真比率に基づく推定です。石一枚ずつの現物トレースではありません。門の本体や植栽の既存近似、写真とモデルの照明・見通しの差は残っています。
+
+再生成はqueue経由で、`reference/geometry40/before/park.blend`を開き、`tools/park_geometry40.py`の`apply()`を実行して公園原本へ保存します。全体の`park/tools/build_map_park.py`にも同じ処理を組み込みました。茅の細い束には明示的なLODがあり、Cycles原本よりブラウザでは疎になります。屋根の本体と平石は形状のまま書き出します。
+
+Claudeへの確認：公園ビューアの「茅葺門・錯視の暖簾」「茅葺門の内側」「休憩棟への石敷き園路」と全体の回転・パンをfile://／HTTP、デスクトップ／390pxで確認してください。二棟の歩行・梯子も保持されること。実ブラウザ・公開反映は未実施。現行の公開置換表は`out/geometry40/publish_manifest.json`、検証は`out/geometry40/verification.json`と`park/out/release_verification.json` revision40です。
+
+§40の最終形状検査：375枚の平石、通行面950点で欠落0・高さ偏差−6.24〜+3.98mm、門口最小高さ3.42m。差分適用と公園全体の再生成が保存原本と一致し、保護した11,015物体・材質・画像・歩行データは不変。目地下地の初回検査で見つかった約2cmの沈みは、地形に沿う格子へ直して解消しました。公園GLBは54.96MB／1,076,350三角形で55MB以内。細い茅の省略面だけを記録し、植栽を減らしていません。公園18視点の再描画は168.45秒、比較6視点は68.30秒。公開用一覧は公園分を更新し、二棟の一覧は保持しています。
+
+最終のGLB3チャンクの読戻し・画像・UV、5本の植物色、Node38項目が合格。読み戻した門正面と石敷も目視しました。二棟の統合GLBは付帯情報を除く形状・材質・画像が§39と完全一致し、配布前22項目も合格しました。最終判定は `out/geometry40/verification.json`、ZIPの全件照合結果は `park/out/package_verification.json`。実ブラウザ・公開反映は未実施です。公開差替えは `out/geometry40/publish_manifest.json` に従い、§36〜40をまとめて反映してください。
+
+## 石の色・丸い縁と、暗い茅葺（PLAN §41）
+
+石375枚の基準位置を保ち、灰・青灰・茶灰の控えめな色差、丸い縁と浅い盛り上がり、約2.4〜4cmの暗い目地を付けました。目地は土を主に、苔の緑を部分的に混ぜています。茅葺門の屋根面は暗い灰褐色、切り口は少し明るい黄褐色へ分け、竹の棟と結びの色は保持しました。[写真／§40／§41の6組](out/surface41/comparisons.jpg)で確認できます。
+
+公園GLBは54.89MB。石の形と頂点色は同じものを渡し、微細な粒のBumpはCyclesのみです。葉や茅の追加間引きはありません。色・目地幅は写真からの推定で、石の各輪郭を現物からトレースした復元ではありません。低面数の縁と面の切替は接写で分かり、写真の不規則な摩耗や粒までは一致しません。
+
+再生成はqueueで、§40の `reference/surface41/before/park.blend` に `tools/park_surface41.py` の `apply()` を適用します。`park/tools/build_map_park.py` の§39→§40→§41処理にも組込み済み。比較・公開一覧は `tools/render_surface41.py` と `compose_surface41.py`、配布検査は `finalize_surface41.py`。ブラウザ実描画と公開はClaude担当です。公園の門正面・門内側・石敷園路・全体をfile://／HTTPで確認し、`out/surface41/publish_manifest.json`に従って§36〜41をまとめて反映してください。
+
+§41の最終モデル検査20項目、Node38項目、公園GLB3チャンクの読戻しが合格。石12,741点・目地882点の位置と色がGLBと原本で一致しました。園路1,325点の欠落0、対象外11,017物体と二棟の原本は不変。読み戻し画像も目視済みです。配布の正本は `out/surface41/verification.json` と `park/out/release_verification.json` revision41、ZIP全件照合結果は `park/out/package_verification.json` です。ブラウザ実描画と公開反映は未実施です。
+
+
+## 石敷の平らな上面（PLAN §42）
+
+375枚の中央頂点をなくし、地面の勾配に沿った平らな上面と、狭い帯状の丸い縁へ変更しました。中央に集まる角錐状の陰影も、面の形と法線の両方で取り除きます。石ごとの色、目地、茅葺、植栽、二棟と展示、カメラ・歩行は保持。[写真／§41／§42](out/paving42/comparisons.jpg)で園路・接写・俯瞰を比較できます。写真と同じ石の輪郭を実測したものではありません。
+
+再生成はqueueで、§41保存原本 `reference/paving42/before/park.blend` に `tools/park_paving42.py` の `apply()` を実行します。全体生成にも§39→§40→§41→§42の順に組込み済み。石のカスタム法線を公園GLBにも渡します。材質の微細Bumpは引き続きCyclesだけです。
+
+**Claude向け最新置換表は `out/paving42/publish_manifest.json` の1本です。** 未公開の§36〜42をすべて含み、旧節の置換表を順番に適用する必要はありません。表内の現行SHAで全ファイルを確認し、file://／HTTP・デスクトップ／390pxで公園の石敷と俯瞰、両棟の展示・梯子、全体の回転・ズーム・パンを確認してから公開してください。比較シートには記録写真を含むため、公開案内ページは記録写真を含まない一覧画像を使ってください。ZIPは `park/out/package_verification.json` のCRC/SHA合格を確認して別途置換します。Codexはshare/を書き換えていません。
+
+§42の最終モデル検査18項目、Node38項目、GLB3チャンクの読戻しが合格しました。石12,366点・目地882点の位置と色、石12,366点の法線が原本とGLBで全点一致。通行面1,325点の欠落0、公園全体の再生成差0、対象外11,021物体と材質・画像は保持。公園18視点と公開一覧を更新し、読戻し接写も目視済みです。公園GLBは54.87MB。最終判定は `out/paving42/verification.json`、ZIP全件照合結果は `park/out/package_verification.json`。公開反映には§36〜42をまとめた `out/paving42/publish_manifest.json` だけを使ってください。実ブラウザ確認と公開はClaudeへ引き継ぎます。
