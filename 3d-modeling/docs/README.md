@@ -1,3 +1,7 @@
+園路の交差部を連続した面にまとめ、舗装の低い縁石、土・砂利の路肩、緩い山なりを追加しました（PLAN §47）。[写真／§46／今回の比較](out/roads47/comparisons.jpg)／[公園ビューア](park/viewer/index.html)／[§46＋§47の公開置換表](out/roads47/publish_manifest.json)。石敷375枚、門、二棟・作品、植栽、歩行データとUI45は保持。写真のない区間の寸法・高低差は推定です。公開にはこの置換表1本を使い、以下の旧版の表を重ねて適用しないでください。
+
+公園の舗装・砂利・土・石段・橋の材質を調整しました（PLAN §46）。[9組の写真／変更前／変更後](out/paths46/comparisons.jpg)／[計画と出典](PLAN.md)／[今回の公開置換表](out/paths46/publish_manifest.json)。石敷園路375枚、二棟と作品、植栽、UI45は保持しています。写真のない区間は推定です。以下の旧節の置換表と検証値は当時の記録です。
+
 地図をクリック／タップして移動した後、3D画面へフォーカスを戻し、そのまま矢印／WASDで歩けるように修正しました（PLAN §45）。Tab＋Enter／Spaceで点を選ぶ場合は地図のフォーカスを保ちます。[公園ビューア](park/viewer/index.html)／[実ブラウザ確認手順](out/mapfocus45/BROWSER_CHECK.md)／[今回の公開置換表](out/mapfocus45/publish_manifest.json)。Node86項目が合格。実ブラウザ確認と公開反映はClaude担当です。§44までは公開済みとの引継ぎがあり、以下の旧節の置換表・検証値は当時の記録です。
 
 ミニマップをクリック／タップすると、近くの登録視点へ移動できるようにしました（PLAN §44）。点をTabで選んでEnter／Spaceでも移動できます。[公園ビューア](park/viewer/index.html)／[確認手順](out/mapjump44/BROWSER_CHECK.md)／[今回の公開置換表](out/mapjump44/publish_manifest.json)。§43はClaudeから公開済みと連絡を受けています。以下の旧節の「クリック移動なし」「最新置換表」は当時の記録です。
@@ -658,3 +662,26 @@ Claudeへの確認：公園ビューアの「茅葺門・錯視の暖簾」「�
 地図面をクリック／タップすると近くの視点へ移動します。公園図では園内の視点と両棟の玄関、棟内図ではその棟の鑑賞点が対象です。点をTabで選び、Enter／Spaceでも移動できます。遠い空白では「近くに視点がありません」と表示し、読み込み中・梯子の上り下り中・ドラッグでは移動しません。地図の種類の選択や折りたたみだけではカメラは動きません。
 
 既存操作を含むNode71項目が合格。実行は3d-modeling内で `node park/tools/verify_viewer.cjs`。地図の基礎データ・navigation・GLB・Blender原本・棟別ビューアは不変です。実ブラウザ・タッチ確認はClaudeが [手順](out/mapjump44/BROWSER_CHECK.md) に沿って行います。公開置換は `out/mapjump44/publish_manifest.json` の4ファイルだけです。ZIP全件照合結果は `park/out/package_verification.json`。Codexはshare/を変更していません。
+
+
+## 公園の道の材質（PLAN §46）
+
+土に砂利材質が割り当てられていた区間を修正し、舗装の灰色の骨材、砂利の粒ごとの色と凹凸、土の細粒と弱い斑、石段・橋の中性の灰色を分けました。写真や外部素材は貼らず、専用の手続き材質を使用しています。写真のない土の区間・石段・橋は材種と細部が未確認です。既存の角ばった縁や交差部、地形との取り合いは今回の形状保持に伴う限界として残ります。
+
+Cyclesは細粒のBumpと艶むら、ブラウザは粗い色むら・中央と縁の色差までです。公園GLBは54.78MB、55MB以内で植栽の追加間引きはありません。建物の原本と棟別ビューアは変更していません。
+
+再生成は既存のジョブランナーでpark/tools/build_map_park.pyを実行（末尾でtools/park_paths46.pyを適用）。差分適用・比較・検査のスクリプトもtools/*46.pyに保存しています。Blenderを直接起動しないでください。Nodeは `node park/tools/verify_viewer.cjs`。最新の判定はout/paths46/verification.json、ZIP全件CRC/SHAはpark/out/package_verification.json。実ブラウザ・公開はClaudeが [確認手順](out/paths46/BROWSER_CHECK.md) に沿って実施し、差し替えには今回のpublish_manifestだけを使います。
+
+§46最終版は乱数seed46046を固定し、公園全体の再生成一致・モデル14項目・GLB3チャンクの読み戻し・路面5種類の色・Node86項目に合格しました。9組の比較と公園18視点の公開一覧を更新。実ブラウザと公開反映はClaudeへ引き継ぎます。今回のみの置換表は [out/paths46/publish_manifest.json](out/paths46/publish_manifest.json) です。
+
+
+## 園路の交差部・縁・山なり（PLAN §47）
+
+舗装の縁石は幅12cm・路面から約3.5cm、土と砂利は暗い路肩。分岐、門、橋・石段と玄関への接続は通れる開口を保ちます。中央から縁への山なりは最大12.5mmです。旧帯の地面への埋まりを直した分はこの山なり量とは別で、旧路面との差は最大約14cm。西側等の未撮影区間の路盤高さは未確認で、詳細と採用理由はPLAN §47.6に記録しています。
+
+前処理は3d-modeling内から `/opt/homebrew/bin/python3.10 tools/build_roads47.py`。同梱ShapelyはこのMacのPython3.10用。他環境では同版を用意してください。`reference/roads47/mesh.json` からのBlender再生成には追加拡張は不要です。`park/tools/build_map_park.py` の末尾で `tools/park_roads47.py` を適用します。Blenderの実行は従来のqueueジョブランナー経由です。
+
+今回の検査は `tools/verify_road_mesh47.py`（平面・断面）、`tools/verify_roads47.py`（Blender・歩行・再生成）、`tools/verify_road_colors47.py` と `tools/verify_road_encoding47.py`（GLB）、`node park/tools/verify_viewer.cjs`。公園の公開18視点を更新します。最終照合は `out/roads47/verification.json` と `park/out/package_verification.json`。実ブラウザfile://／HTTP・390px・公開反映はClaudeが [確認手順](out/roads47/BROWSER_CHECK.md) に沿って行います。
+
+
+§47最終版は公園GLB **53.996MB／1,134,493三角形**、比較9組と公開18視点を更新。全体再生成・路面被覆・通行・保護資産・GLB3チャンクと34画像の読み戻し・頂点色／石敷の法線・Node86項目が合格しました。ブラウザの実描画と公開はClaudeが行います。旧路面から最大約14cmの補正を含むため、山なり12.5mmとの区別はPLAN47.6を参照してください。最新の公開置換は§46＋§47を合わせたout/roads47/publish_manifest.json、ZIP全件CRC／SHAの結果はpark/out/package_verification.jsonです。
