@@ -1,3 +1,5 @@
+公開案内ページ用の一覧6枚と休憩棟の配置図を、最新保存モデルで更新しました（PLAN §33）。[東側玄関からの巡回](out/rest_walkthrough_overview.jpg)／[玄関ポスター](out/poster_overview.jpg)／[休憩棟配置図](out/rest_layout.jpg)。公開側への差替えはClaudeが行います。
+
 公園全体と真上の視点を、ドラッグで回転、ホイール／2本指ピンチで拡大縮小できるようにしました（PLAN §32）。[公園ビューアを開く](park/viewer/index.html)。全体表示では歩行を止め、「全体」で角度と距離を戻します。園路や室内を選ぶと従来の操作に戻ります。
 
 休憩棟の東側玄関・ポスター・外装、小屋のカウンター方位、管理棟のノート室と星丸の鏡を修正しました（PLAN §31）。[公園ビューア](park/viewer/index.html)では、先に「公園内／休憩棟／管理棟」を選び、次に見る場所を選べます。休憩棟の「梯子から樽の中」で上り、ボタンで下りられます。[今回の写真比較](out/corrections31/comparisons.jpg)／[棟別ビューア](viewer/index.html)。
@@ -30,13 +32,13 @@
 
 自由に動く場合は、`Cameras_Lights` の `rest_free_walk` / `management_free_walk` をアクティブカメラにして、3Dビューの「ビュー → ナビゲーション → ウォークナビゲーション」（F3で `Walk Navigation` を検索）を使います。WASDとマウスで移動・見回し、左クリックで確定、Escで開始位置へ戻れます。日本語キーボードでショートカットが合わない場合もメニューから開始できます。標準の自由移動は壁をすり抜けることがあります。保存した巡回カメラの経路は、別途モデルの形状と照合しています。
 
-休憩棟の最新の写真転写は [室内の確認画像](out/rest_photo_room_views.jpg) で確認できます。従来の全44歩行視点の一覧は `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` です。休憩棟の旧一覧には転写前の画像が含まれます。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
+休憩棟の最新の写真転写は [室内の確認画像](out/rest_photo_room_views.jpg) で確認できます。最新の全44歩行視点の一覧は `out/rest_walkthrough_overview.jpg` と `out/management_walkthrough_overview.jpg` です。両棟の一覧は§33で最新保存モデルへ更新しました。視点の位置・停止フレームは `out/walkthrough_viewpoints.json`、写真比較は `out/*_walk_*_comparison.jpg` です。
 
 ## モデル・画像の構成
 
 `out/weiji_buildings.zip` は、二棟のモデル、画像、計画・検証結果、再生成スクリプト、必要な参照画像をまとめたものです。
 
-`out/exhibition_overview.jpg` と `out/room_views.jpg` は主要な内装をまとめた以前の一覧です。S12追加後の確認には `out/eden_science_overview.jpg` と最新の `out/management_walkthrough_overview.jpg` を使ってください。写真との比較は `out/*_comparison.jpg`。元の建築初版は `archive/weiji_buildings_architecture_v1.zip` に保管しています（新しいZIPには含めません）。
+`out/exhibition_overview.jpg` は主要な内装をまとめた一覧で、§33で最新保存モデルへ更新しました。`out/room_views.jpg` は旧版の記録です。S12を含む管理棟の巡回は `out/management_walkthrough_overview.jpg` で確認できます。写真との比較は `out/*_comparison.jpg`。元の建築初版は `archive/weiji_buildings_architecture_v1.zip` に保管しています（新しいZIPには含めません）。
 
 `out/rest_layout.jpg` と `out/management_layout.jpg` は、作品番号をモデルのXY座標へ載せた作業用配置図です。実測図や正確な方位を示す図ではありません。
 
@@ -494,15 +496,42 @@ Claudeへの描画確認：file://とHTTP、1200×800／390×844の両方で二�
 最新版の確認：棟別25／26項目、棟別Node27項目、公園Node18項目が合格。管理棟の旧架台の補強棒2本を除去し、配置図も更新しました。公園版は全18視点を再出力しています。[6件の比較画像](out/corrections31/comparisons.jpg)、[管理棟の配置図](out/management_layout.jpg)、[検証記録](out/verification.json)をご覧ください。寸法の推定と実ブラウザの未検証はPLAN §31に記録しています。
 
 
-## 公園全体の回転とズーム（§32）
+## 公園全体の回転・移動・ズーム（§32・§34）
 
-ZIPを全部展開して `park/viewer/index.html` を開きます。「公園内」→「公園全体（案内図に基づく配置）」または「真上から配置を見る」を選んでください。
+ZIPを全部展開して `park/viewer/index.html` を開き、「公園内」→「公園全体」または「真上から配置を見る」を選びます。休憩棟など見たい場所へ中心を動かし、その周囲を回れます。
 
-- マウスのドラッグ／1本指：公園の中心を軸に回転し、見る高さを変える。
-- ホイール／2本指ピンチ：拡大縮小。指を広げると近づく。
-- 「全体」：角度と距離を初期状態に戻す。
-- 園路や室内を選ぶ：歩行と見回しへ戻る。
+- 左ドラッグ／1本指：移した中心のまわりを回転。
+- 右ドラッグ／Shift＋左ドラッグ／2本指ドラッグ：中心を公園内で移動。
+- WASD／矢印キー・右下の矢印：見ている方向に合わせて中心を移動。
+- ホイール：カーソル位置へ拡大縮小。2本指は移動とピンチを同時に使えます。
+- 「全体」：中心・角度・距離を初期状態へ戻す。園路や室内を選ぶと従来の歩行へ戻ります。
 
-全体の2視点ではWASD／矢印キーを使わず、画面の歩行ボタンも隠します。距離60〜420m、仰角15〜89.5度の範囲で回せます。建物・作品・地形、棟別ビューアは変更していません。公園の3GLBも同一で、追加のダウンロードはありません。
+中心が公園の外に出ないよう制限しています。端や地平線付近では、カーソル位置を保てない場合があります。距離60〜420m、仰角15〜89.5度。モデル・地形・画像・棟別ビューアは変更せず、追加のモデル読込みもありません。
 
-Node28項目で回転、ホイールの単位、ズーム・角度の上下限、ピンチ、指を離す／取消、切替と全体への復帰、歩行と梯子を検査済みです。実ブラウザとタッチ実機はClaude確認待ち。確認手順・UIのみの再配布コマンドは [公園README](park/README.md) を参照してください。
+Node38項目が合格。パンと回転・ズーム、カーソル下の点の保持、範囲制限、切替・初期化、歩行・梯子を検査しました。実ブラウザとタッチ実機はClaude確認待ちです。[公園README](park/README.md) に再配布・確認手順があります。§33の最新一覧画像も配布ZIPに維持しています。
+
+
+## 公開ページ用画像の更新（§33）
+
+次の7枚は、公開側の同名ファイルへ差し替える画像です。列数・画像寸法を保ち、比較用の記録写真を含めていません。モデルに許可済みの作品・ポスター画像は写っています。
+
+|画像|内容|
+|---|---|
+|[site_overview.jpg](out/site_overview.jpg)|庭と室内をつなぐ6視点|
+|[exhibition_overview.jpg](out/exhibition_overview.jpg)|内装9視点|
+|[rest_walkthrough_overview.jpg](out/rest_walkthrough_overview.jpg)|休憩棟17視点。先頭は東側の正式玄関|
+|[management_walkthrough_overview.jpg](out/management_walkthrough_overview.jpg)|管理棟27視点。ノート室と作品画像を更新|
+|[details_overview.jpg](out/details_overview.jpg)|建物・庭・小屋・樽の細部9視点|
+|[poster_overview.jpg](out/poster_overview.jpg)|両棟の玄関・近接・最新GLB読戻し|
+|[rest_layout.jpg](out/rest_layout.jpg)|東入口・ポスター・小屋の東向き開口と24作品|
+
+公園の [18視点一覧](park/out/park_render_sheet.jpg) は、現行モデルの最終レンダー18枚と同じ構成・画素であることを確認し、そのまま使用しています。管理棟と公園の配置図も現行版を維持します。
+
+Claudeへの差替え指示は `out/frontpage33/publish_manifest.json` に、コピー元・公開側のコピー先・SHAをまとめています。`share/3d-modeling/index.html` と `share/3d-modeling/images/` は今回変更していません。公開・キャッシュ更新はClaude担当です。
+
+再作成は保存モデルを変更せず、queueの340でカメラ・配置を抽出し、通常Pythonで `tools/frontpage33_data.py` により古いレンダーを判定、341・342で対象のみ描画、343でポスターのGLBを読み戻します。その後 `/opt/homebrew/bin/python3.10 3d-modeling/tools/compose_frontpage33.py` で一覧を作り、目視確認を `out/frontpage33/visual_review.json` に記録して `tools/verify_frontpage33.py`、`park/tools/package_park.py` の順に検査・梱包します。モデルが変わった際には新しい基準を記録し、旧基準を使って合格にしないでください。通常Pythonのスクリプトパスはすべてプロジェクトルートから指定します。
+
+一覧だけを更新する際は、写真比較も一括再生成する旧 `compare_*.py` を実行せず、専用コンポーザーを使ってください。旧スクリプトの庭側入口などの文言は過去版の記録です。現在の公開用一覧の正本は `tools/compose_frontpage33.py` と `out/frontpage33/sheet_inventory.json` です。
+
+
+§33の検査は18項目すべて合格しました。54枚を再レンダー、11枚を再利用し、ポスター読戻し2枚を更新しています。6一覧と配置図の目視確認、モデル・ビューア30ファイルのSHA一致も完了。細部一覧の小屋だけは、背面の板壁が写る旧視点から、§31で撮影済みの東向きカウンター視点へ差し替えました。モデルやカメラは変更していません。

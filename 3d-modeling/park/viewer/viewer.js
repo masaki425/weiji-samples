@@ -14,20 +14,59 @@ function applyOrbit(){
  orbit.distance=clamp(orbit.distance,spec.min_distance,spec.max_distance);
  orbit.elevation=clamp(orbit.elevation,spec.min_elevation_deg*Math.PI/180,spec.max_elevation_deg*Math.PI/180);
  orbit.azimuth=Math.atan2(Math.sin(orbit.azimuth),Math.cos(orbit.azimuth));
- const radius=orbit.distance*Math.cos(orbit.elevation),centre=converted(spec.target);
+ const radius=orbit.distance*Math.cos(orbit.elevation),centre=converted(orbit.target);
  camera.position.set(centre.x+radius*Math.sin(orbit.azimuth),centre.y+orbit.distance*Math.sin(orbit.elevation),centre.z+radius*Math.cos(orbit.azimuth));
- lookAt(spec.target);dirty=true;
+ lookAt(orbit.target);dirty=true;
 }
 function startOrbit(v){
+ camera.far=v.mode==='orbit'?900:600;camera.updateProjectionMatrix();
  if(v.mode!=='orbit'){orbit=null;return;}
  const offset=converted(v.position).sub(converted(nav.orbit.target)),distance=offset.length();
- orbit={distance,elevation:Math.asin(offset.y/distance),azimuth:Math.atan2(offset.x,offset.z)};
+ orbit={target:nav.orbit.target.slice(),distance,elevation:Math.asin(offset.y/distance),azimuth:Math.atan2(offset.x,offset.z)};
  applyOrbit();
 }
-function zoomOrbit(factor){if(!orbit||busy||!Number.isFinite(factor)||factor<=0)return;orbit.distance*=factor;applyOrbit();}
+// Pan on a horizontal plane; the target is bounded by the map outline, not walkable paths.
+function translateOrbit(dx,dy){
+ if(!orbit||busy||!Number.isFinite(dx)||!Number.isFinite(dy))return;
+ const p=[orbit.target[0]+dx,orbit.target[1]+dy],poly=nav.site.boundary;
+ if(!OkuraCore.inside(p,poly)){
+  let nearest=null,distance=Infinity;
+  for(let i=0;i<poly.length;i++){
+   const a=poly[i],b=poly[(i+1)%poly.length],x=b[0]-a[0],y=b[1]-a[1];
+   const t=clamp(((p[0]-a[0])*x+(p[1]-a[1])*y)/(x*x+y*y||1),0,1),q=[a[0]+t*x,a[1]+t*y],d=Math.hypot(p[0]-q[0],p[1]-q[1]);
+   if(d<distance){nearest=q;distance=d;}
+  }
+  [p[0],p[1]]=nearest;
+ }
+ orbit.target=[p[0],p[1],nav.orbit.target[2]];applyOrbit();
+}
+function planePoint(point){
+ if(!point||!Number.isFinite(point.x)||!Number.isFinite(point.y))return null;
+ const rect=canvas.getBoundingClientRect();camera.updateMatrixWorld();
+ const ray=new V((point.x-rect.left)/rect.width*2-1,1-(point.y-rect.top)/rect.height*2,.5).unproject(camera).sub(camera.position).normalize();
+ const t=(orbit.target[2]-camera.position.y)/ray.y;
+ // A near-horizon ray must not fling the map across the park.
+ if(!Number.isFinite(t)||t<=0||t>orbit.distance*8)return null;
+ const hit=camera.position.clone().addScaledVector(ray,t);return[hit.x,-hit.z];
+}
+function panOrbit(from,to){
+ const a=planePoint(from),b=planePoint(to);
+ if(a&&b){translateOrbit(a[0]-b[0],a[1]-b[1]);return;}
+ const unit=2*orbit.distance*Math.tan(camera.fov*Math.PI/360)/canvas.getBoundingClientRect().height;
+ const right=-(to.x-from.x)*unit,forward=(to.y-from.y)*unit/Math.sin(orbit.elevation),az=orbit.azimuth;
+ translateOrbit(Math.cos(az)*right-Math.sin(az)*forward,Math.sin(az)*right+Math.cos(az)*forward);
+}
+function zoomOrbit(factor,anchor){
+ if(!orbit||busy||!Number.isFinite(factor)||factor<=0)return;
+ const distance=clamp(orbit.distance*factor,nav.orbit.min_distance,nav.orbit.max_distance);
+ if(distance===orbit.distance)return; // At a zoom limit, do not creep the target.
+ const before=planePoint(anchor);orbit.distance=distance;applyOrbit();const after=planePoint(anchor);
+ if(before&&after)translateOrbit(before[0]-after[0],before[1]-after[1]);
+}
 function updateControls(){
- $('pad').hidden=!!orbit;
- $('controls-help').textContent=orbit?'ドラッグで公園を回転 · ホイール／2本指でズーム':'ドラッグで見回す · W/A/S/D／矢印で園路と室内を移動';
+ $('pad').hidden=false;
+ $('controls-help').textContent=orbit?'ドラッグで回転 · 右／Shift＋ドラッグ・2本指で中心を移動 · ホイール／ピンチでズーム':'ドラッグで見回す · W/A/S/D／矢印で園路と室内を移動';
+ for(const b of document.querySelectorAll('[data-move]'))b.setAttribute('aria-label',(orbit?'中心を':'')+({forward:'前へ',left:'左へ',back:'後へ',right:'右へ'}[b.dataset.move]));
 }
 function status(message){$('status').textContent=message;$('status').hidden=!message;}
 function error(e){status('読み込みに失敗しました。ZIPをすべて展開し、park と viewer を同じ構成で置いてください。 '+e.message);$('retry').hidden=false;console.error(e);}
@@ -94,7 +133,7 @@ function lookAt(target){camera.lookAt(converted(target));yaw=camera.rotation.y;p
 function updateLadder(){const data=ladderData(),close=data&&camera.position.distanceTo(converted(data.path[0]))<1.25;$('ladder').hidden=!data||(!station&&!(selected&&areaOf(selected)==='rest'));$('ladder').disabled=busy||!!(station&&station.mode!=='top');$('ladder').textContent=station?(station.mode==='top'?'梯子を下りる':station.mode==='down'?'下りています…':'上っています…'):(close?'梯子を上る':'樽の梯子へ');}
 function beginLadder(){const data=ladderData();if(!data)return;clearInput();camera.position.copy(converted(data.path[0]));lookAt(data.target);station={mode:'up',elapsed:0};dirty=true;updateLadder();}
 function advanceLadder(dt){if(!station||station.mode==='top')return;const data=ladderData();station.elapsed=Math.min(data.duration,station.elapsed+dt);const t=station.elapsed/data.duration,p=station.mode==='down'?1-t:t,q=p*(data.path.length-1),i=Math.min(data.path.length-2,Math.floor(q));camera.position.copy(converted(data.path[i]).lerp(converted(data.path[i+1]),q-i));lookAt(data.target);dirty=true;if(t>=1){if(station.mode==='down'){station=null;selected=nav.views.find(v=>v.id==='rest_barrel');$('view').value=selected.id;$('place').textContent='樽の梯子の下';}else{station.mode='top';$('place').textContent='樽の中 — ドラッグで見回せます';}updateLadder();}}
-async function select(id){const token=++request;const v=nav.views.find(x=>x.id===id);if(!v)return;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));lookAt(v.target);startOrbit(v);updateControls();dirty=true;$('place').textContent=orbit?'全体表示では歩行キー・矢印は使いません。「全体」で角度と距離を戻せます。':v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();window.okuraReady=true;}catch(e){error(e);}finally{if(token===request){busy=false;updateLadder();}}}
+async function select(id){const token=++request;const v=nav.views.find(x=>x.id===id);if(!v)return;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));lookAt(v.target);startOrbit(v);updateControls();dirty=true;$('place').textContent=orbit?'WASD／矢印でも中心を移動。「全体」で位置・角度・距離を戻せます。':v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();window.okuraReady=true;}catch(e){error(e);}finally{if(token===request){busy=false;updateLadder();}}}
 function resize(){const r=$('scene').parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();dirty=true;}
 function move(dx,dy){if(busy||orbit||station||!selected||selected.fixed)return false;const old=[camera.position.x,-camera.position.z,camera.position.y],next=OkuraCore.step(nav,old,dx,dy);camera.position.copy(converted(next));dirty=true;updateLadder();return old.some((v,i)=>v!==next[i]);}
 for(const credit of new Set(Object.values(manifest.approved_images).map(x=>x.credit))){const li=document.createElement('li');li.textContent=credit;$('credits').appendChild(li);}
@@ -105,40 +144,42 @@ $('view').addEventListener('change',()=>select($('view').value));$('home').addEv
 function offset(n){const views=nav.views.filter(v=>areaOf(v)===$('area').value);const i=views.findIndex(v=>v.id===$('view').value);select(views[(i+n+views.length)%views.length].id);}
 $('previous').addEventListener('click',()=>offset(-1));$('next').addEventListener('click',()=>offset(1));
 const canvas=$('scene');
+function pointerMid(){const [a,b]=Array.from(pointers.values());return b?{x:(a.x+b.x)/2,y:(a.y+b.y)/2}:null;}
 function pointerSpan(){const [a,b]=Array.from(pointers.values());return b?Math.hypot(a.x-b.x,a.y-b.y):null;}
 canvas.addEventListener('pointerdown',e=>{
- if(busy||!selected||(e.button!==undefined&&e.button!==0)||pointers.size>=2)return;
- canvas.focus();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
- if(pointers.size===1)drag={x:e.clientX,y:e.clientY};
+ if(busy||!selected||(e.button!==undefined&&e.button!==0&&!(orbit&&e.button===2))||pointers.size>=2)return;
+ canvas.focus();const point={x:e.clientX,y:e.clientY,pan:e.button===2};pointers.set(e.pointerId,point);
+ if(pointers.size===1)drag={...point};
  pinchDistance=pointerSpan();canvas.setPointerCapture(e.pointerId);
 });
 canvas.addEventListener('pointermove',e=>{
  if(busy||!pointers.has(e.pointerId))return;
- pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ const oldMid=pointerMid(),point={...pointers.get(e.pointerId),x:e.clientX,y:e.clientY};pointers.set(e.pointerId,point);
  if(pointers.size===2){
   const span=pointerSpan();
-  if(orbit&&pinchDistance>1&&span>1)zoomOrbit(pinchDistance/span);
+  if(orbit){if(pinchDistance>1&&span>1)zoomOrbit(pinchDistance/span,oldMid);panOrbit(oldMid,pointerMid());}
   pinchDistance=span;drag=null;return;
  }
  if(drag){
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-  if(orbit){orbit.azimuth-=dx*.004;orbit.elevation+=dy*.004;applyOrbit();}
+  if(orbit){if(point.pan||e.shiftKey)panOrbit(drag,point);else{orbit.azimuth-=dx*.004;orbit.elevation+=dy*.004;applyOrbit();}}
   else{yaw-=dx*.004;pitch=clamp(pitch-dy*.004,-1.53,1.53);camera.rotation.set(pitch,yaw,0);dirty=true;}
  }
- drag={x:e.clientX,y:e.clientY};
+ drag={...point};
 });
 for(const ev of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(ev,e=>{
  if(!pointers.delete(e.pointerId))return;
  drag=pointers.size===1?{...pointers.values().next().value}:null;pinchDistance=pointerSpan();
 });
+canvas.addEventListener('contextmenu',e=>{if(orbit)e.preventDefault();});
 canvas.addEventListener('wheel',e=>{
  if(!orbit||busy)return;
  e.preventDefault();
  const unit=e.deltaMode===1?16:e.deltaMode===2?canvas.getBoundingClientRect().height:1;
- zoomOrbit(Math.exp(clamp(e.deltaY*unit*.0015,-4,4)));
+ zoomOrbit(Math.exp(clamp(e.deltaY*unit*.0015,-4,4)),{x:e.clientX,y:e.clientY});
 },{passive:false});
-window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){if(!orbit&&!busy)keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',clearInput);
-for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{if(orbit||busy)return;moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
-let previous=0;function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.05);previous=now;advanceLadder(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const len=Math.hypot(fw,side);fw/=len;side/=len;move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.4,(Math.cos(yaw)*fw+Math.sin(yaw)*side)*dt*1.4);}if(dirty)render();}
+window.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){if(!busy)keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',clearInput);
+for(const b of document.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{if(busy)return;canvas.focus();moves.add(b.dataset.move);b.setPointerCapture(e.pointerId);e.preventDefault();});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>moves.delete(b.dataset.move));}
+let previous=0;function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.05);previous=now;advanceLadder(dt);let fw=(keys.has('KeyW')||keys.has('ArrowUp')||moves.has('forward')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')||moves.has('back')?1:0),side=(keys.has('KeyD')||keys.has('ArrowRight')||moves.has('right')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')||moves.has('left')?1:0);if(fw||side){const len=Math.hypot(fw,side);fw/=len;side/=len;if(orbit){const speed=clamp(orbit.distance*.18,12,65),az=orbit.azimuth;translateOrbit((-Math.sin(az)*fw+Math.cos(az)*side)*dt*speed,(Math.cos(az)*fw+Math.sin(az)*side)*dt*speed);}else move((-Math.sin(yaw)*fw+Math.cos(yaw)*side)*dt*1.4,(Math.cos(yaw)*fw+Math.sin(yaw)*side)*dt*1.4);}if(dirty)render();}
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.gammaOutput=true;renderer.gammaFactor=2.2;renderer.toneMapping=THREE.ReinhardToneMapping;renderer.toneMappingExposure=1.5;resize();window.addEventListener('resize',resize);requestAnimationFrame(animate);select('park_overview');}catch(e){status('WebGLを開始できません。ブラウザのハードウェアアクセラレーション設定をご確認ください。 '+e.message);}
-window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,orbit:orbit?{...orbit,target:nav.orbit.target.slice()}:null,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};
+window.okura={select,move,get state(){return{position:[camera.position.x,-camera.position.z,camera.position.y],view:selected&&selected.id,area:$('area').value,orbit:orbit?{...orbit,target:orbit.target.slice()}:null,station:station?{...station}:null,mirror:mirror?{position:mirror.position.toArray(),width:mirror.geometry.parameters.width,height:mirror.geometry.parameters.height,quaternion:mirror.quaternion.toArray()}:null,loaded:Object.keys(loaded),busy,far:camera.far,frameCount,direction:camera.getWorldDirection(new V()).toArray()};}};
