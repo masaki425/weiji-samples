@@ -8,7 +8,7 @@ const converted=p=>new V(p[0],p[2],-p[1]);
 scene.add(new THREE.HemisphereLight(0xe9eef3,0x6f7357,1.05));scene.add(new THREE.AmbientLight(0xffffff,.24));const sun=new THREE.DirectionalLight(0xfff1d7,.95);sun.position.set(30,70,-50);scene.add(sun);
 const loaded={},pending={},keys=new Set(),moves=new Set();let yaw=0,pitch=0,drag=null,busy=false,selected=null,request=0,station=null;
 const pointers=new Map();let orbit=null,pinchDistance=null;
-const minimap=window.OkuraMinimap.mount(document,nav,window.OKURA_MAPS);
+const minimap=window.OkuraMinimap.mount(document,nav,window.OKURA_MAPS,{select,canSelect:()=>!!selected&&!busy&&!(station&&station.mode!=='top')});
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 function applyOrbit(){
  const spec=nav.orbit;

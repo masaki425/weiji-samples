@@ -1,3 +1,5 @@
+ミニマップをクリック／タップすると、近くの登録視点へ移動できるようにしました（PLAN §44）。点をTabで選んでEnter／Spaceでも移動できます。[公園ビューア](park/viewer/index.html)／[確認手順](out/mapjump44/BROWSER_CHECK.md)／[今回の公開置換表](out/mapjump44/publish_manifest.json)。§43はClaudeから公開済みと連絡を受けています。以下の旧節の「クリック移動なし」「最新置換表」は当時の記録です。
+
 公園ビューアの右上に、現在位置と向きを示す地図を追加しました（PLAN §43）。「地図：自動／公園全体／休憩棟／管理棟」で切替でき、「たたむ」で小さくできます。[公園ビューア](park/viewer/index.html)／[ブラウザ確認と公開引継ぎ](out/minimap43/BROWSER_CHECK.md)。§36〜42はClaudeから公開済みと連絡を受けています。今回の公開置換表は [out/minimap43/publish_manifest.json](out/minimap43/publish_manifest.json) です。以下の旧節の公開待ち・最新表記は当時の記録です。
 
 植栽を実寸の葉へ更新しました（PLAN §36・§37）。[植物の比較](out/vegetation36/comparisons.jpg)／[逆光の透け](out/vegetation36/backlight_comparison.jpg)／[公園ビューア](park/viewer/index.html)。建物・作品・歩行範囲とカメラは保持しています。
@@ -647,3 +649,10 @@ Claudeへの確認：公園ビューアの「茅葺門・錯視の暖簾」「�
 再生成は `python3 park/tools/build_minimap.py`、検査は `node park/tools/verify_viewer.cjs`（3d-modeling内から実行）。Node54項目と園路20,940標本、地図データの再生成一致を確認済み。実ブラウザのCSS配置・タッチはClaudeが [確認手順](out/minimap43/BROWSER_CHECK.md) に沿ってfile://／HTTP、1200×800／390×844で確認します。静止した略図は [公園](out/minimap43/park.png)／[休憩棟](out/minimap43/rest.png)／[管理棟](out/minimap43/management.png) で確認できます（実画面のスクリーンショットではありません）。
 
 最新版のUIの配布判定は `out/minimap43/verification.json`。公開置換は `out/minimap43/publish_manifest.json` の5ファイル、ZIPの照合は `park/out/package_verification.json` を使います。share/は変更していません。
+
+
+## 地図から近くの視点へ（PLAN §44）
+
+地図面をクリック／タップすると近くの視点へ移動します。公園図では園内の視点と両棟の玄関、棟内図ではその棟の鑑賞点が対象です。点をTabで選び、Enter／Spaceでも移動できます。遠い空白では「近くに視点がありません」と表示し、読み込み中・梯子の上り下り中・ドラッグでは移動しません。地図の種類の選択や折りたたみだけではカメラは動きません。
+
+既存操作を含むNode71項目が合格。実行は3d-modeling内で `node park/tools/verify_viewer.cjs`。地図の基礎データ・navigation・GLB・Blender原本・棟別ビューアは不変です。実ブラウザ・タッチ確認はClaudeが [手順](out/mapjump44/BROWSER_CHECK.md) に沿って行います。公開置換は `out/mapjump44/publish_manifest.json` の4ファイルだけです。ZIP全件照合結果は `park/out/package_verification.json`。Codexはshare/を変更していません。

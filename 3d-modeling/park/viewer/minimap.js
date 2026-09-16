@@ -2,6 +2,7 @@
 (function(root){
  'use strict';
  const labels={park:'公園全体',rest:'休憩棟',management:'管理棟'},W=280,H=224,PAD=21;
+ const HIT_RADIUS_PX=12,DRAG_LIMIT_PX=8,MAX_DISTANCE={park:24,rest:2.5,management:2.5};
  const angle=t=>t.rotation_deg*Math.PI/180;
  function toWorld(p,t){const a=angle(t),c=Math.cos(a),s=Math.sin(a);return[t.translation[0]+c*p[0]-s*p[1],t.translation[1]+s*p[0]+c*p[1],(t.translation[2]||0)+(p[2]||0)];}
  function toLocal(p,t){const a=angle(t),c=Math.cos(a),s=Math.sin(a),x=p[0]-t.translation[0],y=p[1]-t.translation[1];return[c*x+s*y,-s*x+c*y,(p[2]||0)-(t.translation[2]||0)];}
@@ -21,12 +22,33 @@
   const cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;
   return{scale,point:p=>[W/2+(p[0]-cx)*scale,H/2-(p[1]-cy)*scale],unproject:p=>[cx+(p[0]-W/2)/scale,cy-(p[1]-H/2)/scale]};
  }
+ function candidates(nav,name){return nav.views.filter(v=>!v.mode&&((v.chunk||'park')===name||(name==='park'&&['rest_entrance','management_entrance'].includes(v.id))));}
+ // SVG uses xMidYMid meet; account for responsive scaling and any letterboxing.
+ function clientPoint(rect,x,y){
+  if(![rect.left,rect.top,rect.width,rect.height,x,y].every(Number.isFinite)||rect.width<=0||rect.height<=0)return null;
+  const scale=Math.min(rect.width/W,rect.height/H),point=[(x-rect.left-(rect.width-W*scale)/2)/scale,(y-rect.top-(rect.height-H*scale)/2)/scale];
+  return point[0]<0||point[0]>W||point[1]<0||point[1]>H?null:{point,scale};
+ }
+ function nearest(sc,nav,point,pixelsPerUnit=1){
+  if(!point||!point.every(Number.isFinite)||point[0]<0||point[0]>W||point[1]<0||point[1]>H||!Number.isFinite(pixelsPerUnit)||pixelsPerUnit<=0)return null;
+  const world=sc.map.unproject(point);let best=null,distance=Infinity;
+  for(const v of sc.views){
+   const d=Math.hypot(world[0]-v.position[0],world[1]-v.position[1]);
+   // An entrance and a park view share XY. Prefer entering the building on an exact tie.
+   if(d<distance-1e-7||(Math.abs(d-distance)<=1e-7&&['rest_entrance','management_entrance'].includes(v.id))){best=v;distance=d;}
+  }
+  if(!best)return null;
+  const hit=distance*sc.map.scale*pixelsPerUnit<=HIT_RADIUS_PX;
+  if(hit)return best;
+  if(sc.name==='park'&&!inside(world,nav.site.boundary))return null;
+  return distance<=MAX_DISTANCE[sc.name]?best:null;
+ }
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const num=v=>Number(v.toFixed(3));
  function scene(nav,data,name){
   const floor=data.buildings[name],transform=nav.site.buildings[name];
   const world=p=>floor?toWorld(p,transform):p;
-  const views=nav.views.filter(v=>(v.chunk||'park')===name&&!v.mode);
+  const views=candidates(nav,name);
   const bounds=floor?floor.footprint.map(world).concat(views.map(v=>v.position)):nav.site.boundary;
   const map=projection(bounds),parts=[];
   const points=ps=>ps.map(p=>map.point(p).map(num).join(',')).join(' ');
@@ -56,35 +78,84 @@
    for(const r of floor.rooms)if(r.label)text(world(r.label_point||[(r.bounds[0]+r.bounds[2])/2,(r.bounds[1]+r.bounds[3])/2]),r.label);
    const q=world(floor.entrance);dot(q,'map-entrance','正式な入口');text([q[0]+2.1,q[1]],'入口','map-entry-label');
   }
-  for(const v of views)dot(v.position,'map-view',v.label);
+  for(const v of views){const q=map.point(v.position);parts.push('<g class="map-target" tabindex="0" role="button" data-view="'+esc(v.id)+'" aria-label="'+esc(v.label)+'へ移動" transform="translate('+q.map(num).join(' ')+')"><circle class="map-hit" r="2" vector-effect="non-scaling-stroke"/><circle class="map-view" r="2.5"/></g>');}
   parts.push('<g class="map-north"><path d="M260 31V11m0 0l-4 7m4-7l4 7"/><text x="260" y="44">北</text></g>');
-  return{name,label:labels[name],map,svg:parts.join('')};
+  return{name,label:labels[name],map,views,svg:parts.join('')};
  }
  function marker(scene,state){
   const raw=scene.map.point(state.position),x=Math.max(9,Math.min(W-9,raw[0])),y=Math.max(9,Math.min(H-9,raw[1])),outside=x!==raw[0]||y!==raw[1],d=direction(state.direction),length=Math.hypot(d[0],d[1]);
   const heading=length>.015?Math.atan2(d[0],d[1])*180/Math.PI:null;
   return{raw,position:[x,y],outside,heading,focus:state.orbit?scene.map.point(state.orbit.target):null,height:state.position[2]};
  }
- function mount(doc,nav,data){
-  const get=id=>doc.getElementById(id),choice=get('map-choice'),toggle=get('map-toggle'),body=get('map-body'),cache={};
-  let last=null,current=null,folded=false;
+ function mount(doc,nav,data,actions={}){
+  const get=id=>doc.getElementById(id),choice=get('map-choice'),toggle=get('map-toggle'),body=get('map-body'),svg=get('map-svg'),feedback=get('map-feedback'),cache={},pointers=new Set();
+  let last=null,current=null,folded=false,gesture=null,released=null,pointerAttempt=false,epoch=0;
+  const stop=e=>e.stopPropagation();
+  const clearHover=()=>get('map-hover').setAttribute('display','none');
+  function reset(){gesture=null;released=null;pointers.clear();clearHover();}
+  function eligible(){return !folded&&!!current&&!!last&&typeof actions.select==='function'&&actions.canSelect();}
+  function jump(v){
+   if(!eligible())return;
+   if(!v){feedback.textContent='近くに視点がありません';return;}
+   feedback.textContent='';actions.select(v.id);
+  }
+  const atEvent=e=>{const p=clientPoint(svg.getBoundingClientRect(),e.clientX,e.clientY);return p&&current?nearest(current,nav,p.point,p.scale):null;};
+  function targetView(e){const t=e.target.closest&&e.target.closest('[data-view]');return t&&current&&current.views.find(v=>v.id===t.dataset.view);}
   const draw=state=>{
-   if(!state||!state.view)return;last=state;
+   if(!state||!state.view)return;
+   if(last&&last.view!==state.view){reset();epoch++;feedback.textContent='';}last=state;
    const name=area(nav,data,state,choice.value||'auto');
-   if(!current||current.name!==name){current=cache[name]||(cache[name]=scene(nav,data,name));get('map-drawing').innerHTML=current.svg;get('map-title').textContent=current.label;get('minimap').dataset.area=name;}
+   if(!current||current.name!==name){
+    const heldFocus=svg.contains(doc.activeElement);reset();epoch++;
+    current=cache[name]||(cache[name]=scene(nav,data,name));get('map-drawing').innerHTML=current.svg;get('map-title').textContent=current.label;get('minimap').dataset.area=name;
+    if(heldFocus)svg.focus({preventScroll:true});
+   }
    const m=marker(current,state),point=get('map-marker'),arrow=get('map-direction'),focus=get('map-focus');
    point.setAttribute('transform','translate('+m.position.map(num).join(' ')+')');point.setAttribute('class',m.outside?'map-marker map-outside':'map-marker');
    arrow.setAttribute('display',m.heading===null?'none':'inline');arrow.setAttribute('transform','rotate('+num(m.heading||0)+')');
    focus.setAttribute('display',m.focus?'inline':'none');if(m.focus)focus.setAttribute('transform','translate('+m.focus.map(num).join(' ')+')');
    const note=(m.outside?'視点は地図の外':'現在位置')+(state.orbit?' · ＋は見ている中心':state.station?' · 梯子の'+(state.station.mode==='top'?'上':state.station.mode==='up'?'上り':'下り'):'');
-   get('map-note').textContent=note;get('map-svg').setAttribute('aria-label',current.label+'の略図。'+note+'。北が上。');
+   get('map-note').textContent=note;svg.setAttribute('aria-label',current.label+'の略図。'+note+'。北が上。');
    get('minimap').dataset.outside=String(m.outside);
   };
-  choice.addEventListener('change',()=>draw(last));
-  toggle.addEventListener('click',()=>{folded=!folded;body.hidden=folded;toggle.setAttribute('aria-expanded',String(!folded));toggle.textContent=folded?'開く':'たたむ';});
+  svg.addEventListener('pointerdown',e=>{
+   stop(e);released=null;pointerAttempt=true;pointers.add(e.pointerId);
+   if(eligible()&&pointers.size===1&&(e.button===0||e.button===undefined)&&!e.ctrlKey&&!e.metaKey)gesture={id:e.pointerId,x:e.clientX,y:e.clientY,epoch,invalid:false};else gesture=null;
+  });
+  svg.addEventListener('pointermove',e=>{
+   stop(e);
+   if(gesture&&gesture.id===e.pointerId&&Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>DRAG_LIMIT_PX)gesture.invalid=true;
+   clearHover();
+   if(e.pointerType!=='touch'&&eligible()&&(!gesture||!gesture.invalid)){
+    const v=atEvent(e);if(v){get('map-hover').setAttribute('transform','translate('+current.map.point(v.position).map(num).join(' ')+')');get('map-hover').setAttribute('display','inline');}
+   }
+  });
+  svg.addEventListener('pointerup',e=>{
+   stop(e);released=gesture&&gesture.id===e.pointerId&&!gesture.invalid&&Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)<=DRAG_LIMIT_PX&&pointers.size===1&&gesture.epoch===epoch?{epoch}:null;
+   pointers.delete(e.pointerId);gesture=null;
+  });
+  svg.addEventListener('pointercancel',e=>{stop(e);reset();});
+  // Touch can leave and release implicit capture between pointerup and click. Keep a completed tap.
+  for(const type of ['lostpointercapture','pointerleave'])svg.addEventListener(type,e=>{stop(e);clearHover();if(pointers.size)reset();});
+  svg.addEventListener('click',e=>{
+   stop(e);e.preventDefault();const tap=released,wasPointer=pointerAttempt;released=null;pointerAttempt=false;
+   if(tap&&tap.epoch===epoch)jump(atEvent(e));
+   else if(!wasPointer&&e.detail===0){const v=targetView(e);if(v)jump(v);} // Assistive activation has no pointer sequence.
+  });
+  svg.addEventListener('keydown',e=>{
+   stop(e); // Map focus must not also operate the viewer's WASD/arrow handler.
+   if(['Enter',' ','Spacebar'].includes(e.key)){
+    e.preventDefault();reset();pointerAttempt=false;if(e.repeat)return;const v=targetView(e);if(v)jump(v);
+   }
+  });
+  svg.addEventListener('contextmenu',e=>{stop(e);e.preventDefault();reset();});
+  choice.addEventListener('change',()=>{reset();epoch++;feedback.textContent='';draw(last);});
+  toggle.addEventListener('click',()=>{reset();epoch++;folded=!folded;body.hidden=folded;toggle.setAttribute('aria-expanded',String(!folded));toggle.textContent=folded?'開く':'たたむ';});
+  if(root.addEventListener)root.addEventListener('blur',()=>{reset();pointerAttempt=false;});
   return{update:draw,get state(){return last&&current?{area:current.name,choice:choice.value||'auto',folded,...marker(current,last)}:null;}};
  }
- const api={toWorld,toLocal,direction,area,projection,scene,marker,mount};
+
+ const api={toWorld,toLocal,direction,area,projection,candidates,clientPoint,nearest,scene,marker,mount};
  if(typeof module==='object'&&module.exports)module.exports=api;
  root.OkuraMinimap=api;
 })(typeof window==='object'?window:globalThis);
