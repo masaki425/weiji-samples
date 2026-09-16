@@ -66,7 +66,7 @@ function zoomOrbit(factor,anchor){
 }
 function updateControls(){
  $('pad').hidden=false;
- $('controls-help').textContent=orbit?'ドラッグで回転 · 右／Shift＋ドラッグ・2本指で中心を移動 · ホイール／ピンチでズーム':'ドラッグで見回す · W/A/S/D／矢印で園路と室内を移動';
+ $('controls-help').textContent=orbit?'ドラッグで回転 · 右／Shift＋ドラッグ・2本指で中心を移動 · ホイール／ピンチでズーム':'ドラッグで見回す · W/A/S/D／矢印で地形と室内を移動';
  for(const b of document.querySelectorAll('[data-move]'))b.setAttribute('aria-label',(orbit?'中心を':'')+({forward:'前へ',left:'左へ',back:'後へ',right:'右へ'}[b.dataset.move]));
 }
 function status(message){$('status').textContent=message;$('status').hidden=!message;}
@@ -137,7 +137,7 @@ function beginLadder(){const data=ladderData();if(!data)return;clearInput();came
 function advanceLadder(dt){if(!station||station.mode==='top')return;const data=ladderData();station.elapsed=Math.min(data.duration,station.elapsed+dt);const t=station.elapsed/data.duration,p=station.mode==='down'?1-t:t,q=p*(data.path.length-1),i=Math.min(data.path.length-2,Math.floor(q));camera.position.copy(converted(data.path[i]).lerp(converted(data.path[i+1]),q-i));lookAt(data.target);dirty=true;if(t>=1){if(station.mode==='down'){station=null;selected=nav.views.find(v=>v.id==='rest_barrel');$('view').value=selected.id;$('place').textContent='樽の梯子の下';}else{station.mode='top';$('place').textContent='樽の中 — ドラッグで見回せます';}updateLadder();}}
 async function select(id,{focusScene=false,walkPoint=null}={}){let v=nav.views.find(x=>x.id===id);if(!v)return;
  if(walkPoint){const landing=OkuraCore.nearestWalkable(nav,walkPoint);if(!landing||(v.chunk||'park')!=='park')return;v={...v,position:landing.position,fixed:false,mode:undefined,mapWalk:true};}
- const token=++request;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));lookAt(v.target);startOrbit(v);updateControls();dirty=true;$('place').textContent=orbit?'WASD／矢印でも中心を移動。「全体」で位置・角度・距離を戻せます。':v.mapWalk?'園路・広場：矢印／WASDで移動できます。':v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();
+ const token=++request;clearInput();station=null;busy=true;updateLadder();status('会場を読み込み中…');$('retry').hidden=true;try{await load('park');await load('rest');await load('management');if(token!==request)return;selected=v;fillViews(areaOf(v));$('view').value=id;camera.position.copy(converted(v.position));lookAt(v.target);startOrbit(v);updateControls();dirty=true;$('place').textContent=orbit?'WASD／矢印でも中心を移動。「全体」で位置・角度・距離を戻せます。':(v.mapWalk||areaOf(v)==='park')?'屋外は自由に歩けます。園路外の地形は推定です。':v.fixed?'鑑賞視点：見回しできます。移動は園路や室内の場所を選んでください。':v.label;status('');if(v.id==='rest_barrel_peek')beginLadder();
  // Pointer map jumps hand keys back to the scene only after successful selection.
  // Do this before the next map redraw can preserve focus on a removed map target.
  if(focusScene)$('scene').focus({preventScroll:true});

@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const labels={park:'公園全体',rest:'休憩棟',management:'管理棟'},W=280,H=224,PAD=21;
- const HIT_RADIUS_PX=12,DRAG_LIMIT_PX=8,MAX_DISTANCE={park:24,rest:2.5,management:2.5};
+ const HIT_RADIUS_PX=12,DRAG_LIMIT_PX=8,MAX_DISTANCE={rest:2.5,management:2.5};
  const angle=t=>t.rotation_deg*Math.PI/180;
  function toWorld(p,t){const a=angle(t),c=Math.cos(a),s=Math.sin(a);return[t.translation[0]+c*p[0]-s*p[1],t.translation[1]+s*p[0]+c*p[1],(t.translation[2]||0)+(p[2]||0)];}
  function toLocal(p,t){const a=angle(t),c=Math.cos(a),s=Math.sin(a),x=p[0]-t.translation[0],y=p[1]-t.translation[1];return[c*x+s*y,-s*x+c*y,(p[2]||0)-(t.translation[2]||0)];}
@@ -41,7 +41,7 @@
   const hit=distance*sc.map.scale*pixelsPerUnit<=HIT_RADIUS_PX;
   if(hit)return best;
   if(sc.name==='park'&&!inside(world,nav.site.boundary))return null;
-  return distance<=MAX_DISTANCE[sc.name]?best:null;
+  return sc.name==='park'||distance<=MAX_DISTANCE[sc.name]?best:null;
  }
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const num=v=>Number(v.toFixed(3));
@@ -98,8 +98,8 @@
    if(!eligible())return;
    if(!v){feedback.textContent='近くに視点がありません';return;}
    const walkPoint=current.name==='park'&&(v.chunk||'park')==='park'?(v.walkPoint||v.position):null;
-   const landing=walkPoint&&root.OkuraCore.nearestWalkable(nav,walkPoint,MAX_DISTANCE.park,!pointer);
-   if(walkPoint&&!landing){feedback.textContent='近くに歩ける園路・広場がありません';return;}
+   const landing=walkPoint&&root.OkuraCore.nearestWalkable(nav,walkPoint,undefined,!pointer);
+   if(walkPoint&&!landing){feedback.textContent='近くに歩ける場所がありません';return;}
    feedback.textContent='';actions.select(v.id,{focusScene:pointer,walkPoint:landing?landing.position:null});
   }
   const atEvent=e=>{
@@ -109,7 +109,7 @@
    // The two entrance targets retain their original building selection.
    if(v&&(v.chunk||'park')!=='park'&&Math.hypot(world[0]-v.position[0],world[1]-v.position[1])*current.map.scale*p.scale<=HIT_RADIUS_PX)return v;
    const hit=v&&Math.hypot(world[0]-v.position[0],world[1]-v.position[1])*current.map.scale*p.scale<=HIT_RADIUS_PX;
-   const landing=root.OkuraCore.nearestWalkable(nav,world,MAX_DISTANCE.park,!!hit);if(!landing)return null;
+   const landing=root.OkuraCore.nearestWalkable(nav,world,undefined,!!hit);if(!landing)return null;
    const anchor=current.views.filter(v=>(v.chunk||'park')==='park').reduce((best,v)=>!best||Math.hypot(world[0]-v.position[0],world[1]-v.position[1])<Math.hypot(world[0]-best.position[0],world[1]-best.position[1])?v:best,null);
    return anchor&&{...anchor,position:landing.position,walkPoint:landing.position};
   };
@@ -118,7 +118,7 @@
    if(!state||!state.view)return;
    if(last&&last.view!==state.view){reset();epoch++;feedback.textContent='';}last=state;
    const name=area(nav,data,state,choice.value||'auto');
-   get('map-hint').textContent=name==='park'?'地図を押すと近くの園路・広場へ':'地図を押すと近くの視点へ';
+   get('map-hint').textContent=name==='park'?'地図を押すとその付近の地形へ':'地図を押すと近くの視点へ';
    if(!current||current.name!==name){
     const heldFocus=svg.contains(doc.activeElement);reset();epoch++;
     current=cache[name]||(cache[name]=scene(nav,data,name));get('map-drawing').innerHTML=current.svg;get('map-title').textContent=current.label;get('minimap').dataset.area=name;

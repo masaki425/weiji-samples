@@ -1,3 +1,5 @@
+屋外は園路の外も、地形に沿って自由に歩けるようにしました（PLAN §49）。水面（橋以外）、建物の壁・施設・門の壁・小屋・幹を避けて移動します。**園路外の地形は推定です。** [公園ビューア](park/viewer/index.html)／[実ブラウザ確認手順](out/freewalk49/BROWSER_CHECK.md)／[今回の公開差分](out/freewalk49/publish_manifest.json)。Node108項目合格。ブラウザ確認・公開反映はClaude担当。§48までは公開済みとの引継ぎで、以下は旧版の記録です。
+
 公園図を押した後、近くの歩ける園路・広場に降り、そのまま矢印／WASDで歩けるように修正しました（PLAN §48）。[公園ビューア](park/viewer/index.html)／[確認手順](out/mapwalk48/BROWSER_CHECK.md)／[今回だけの公開置換表](out/mapwalk48/publish_manifest.json)。Node96項目合格。実ブラウザ確認・公開反映はClaude担当です。§47までは公開済みとの引継ぎです。以下の旧節の操作・公開待ち・置換表は当時の記録です。
 
 園路の交差部を連続した面にまとめ、舗装の低い縁石、土・砂利の路肩、緩い山なりを追加しました（PLAN §47）。[写真／§46／今回の比較](out/roads47/comparisons.jpg)／[公園ビューア](park/viewer/index.html)／[§46＋§47の公開置換表](out/roads47/publish_manifest.json)。石敷375枚、門、二棟・作品、植栽、歩行データとUI45は保持。写真のない区間の寸法・高低差は推定です。公開にはこの置換表1本を使い、以下の旧版の表を重ねて適用しないでください。
