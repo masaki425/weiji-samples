@@ -1,3 +1,5 @@
+管理棟の記録写真4枚で撮影条件を校正し、写真比較用カメラ4台を更新しました（PLAN §50）。**建物の実寸を保証する校正ではありません。画像幅1%の目標は4枚中3枚で未達で、壁・開口・作品の形状や位置は保持しました。** 司壁の幅とパネル寸法の不整合は[PLAN §50](PLAN.md)に数値を記録し、制作者の判断待ちです。[検証専用の写真比較](out/precision50/private/comparisons.jpg)／[測定値](out/precision50/fit.json)／[公開差分](out/precision50/publish_manifest.json)／[確認手順](out/precision50/BROWSER_CHECK.md)。§49までは公開済みとの引継ぎです。以下の古い置換表は再適用しないでください。
+
 屋外は園路の外も、地形に沿って自由に歩けるようにしました（PLAN §49）。水面（橋以外）、建物の壁・施設・門の壁・小屋・幹を避けて移動します。**園路外の地形は推定です。** [公園ビューア](park/viewer/index.html)／[実ブラウザ確認手順](out/freewalk49/BROWSER_CHECK.md)／[今回の公開差分](out/freewalk49/publish_manifest.json)。Node108項目合格。ブラウザ確認・公開反映はClaude担当。§48までは公開済みとの引継ぎで、以下は旧版の記録です。
 
 公園図を押した後、近くの歩ける園路・広場に降り、そのまま矢印／WASDで歩けるように修正しました（PLAN §48）。[公園ビューア](park/viewer/index.html)／[確認手順](out/mapwalk48/BROWSER_CHECK.md)／[今回だけの公開置換表](out/mapwalk48/publish_manifest.json)。Node96項目合格。実ブラウザ確認・公開反映はClaude担当です。§47までは公開済みとの引継ぎです。以下の旧節の操作・公開待ち・置換表は当時の記録です。
@@ -689,3 +691,13 @@ Cyclesは細粒のBumpと艶むら、ブラウザは粗い色むら・中央と�
 
 
 §47最終版は公園GLB **53.996MB／1,134,493三角形**、比較9組と公開18視点を更新。全体再生成・路面被覆・通行・保護資産・GLB3チャンクと34画像の読み戻し・頂点色／石敷の法線・Node86項目が合格しました。ブラウザの実描画と公開はClaudeが行います。旧路面から最大約14cmの補正を含むため、山なり12.5mmとの区別はPLAN47.6を参照してください。最新の公開置換は§46＋§47を合わせたout/roads47/publish_manifest.json、ZIP全件CRC／SHAの結果はpark/out/package_verification.jsonです。
+
+## §51：司壁と取り付く展示の寸法修正
+
+管理棟の司壁を、写真の合板910×1820mmを物差しに **幅3.44×高さ2.38m** へ修正しました。白柱は18cm幅、下段は縦貼り4枚・上段は横貼り2枚。S08、裏のS12／月／ログビネンコの3枚、札・架台を測り直し、写真転写画像とUVを保って配置し直しています。歩行・ミニマップ・公園統合も新しい壁へ追従します。部屋の接続、ノート室、休憩棟は保持しています。
+
+これは **写真との整合の改善で、実寸の保証ではありません**。定尺板が切られていないという仮定、壁中心の絶対位置、奥行には不確実性があります。表の対応点の中央値は24.31→2.37px、裏は5.00→3.79px（幅1200換算）。進化ストリーム側の確認点のずれは残り、全写真精度の目標は未達です。詳しくはPLAN51、`out/precision51/verification.json` を参照してください。
+
+再生成：`build_models.py`末尾の`precision51_geometry.py`と`precision51_cameras.py`が同じ測定・校正JSONを適用します。保存原本への差分・公園管理棟だけの再統合は`tools/rebuild_precision51.py`を既存ジョブランナーで実行します（ローカルarchive/precision51が必要で、この大きい復元用コピーはZIPへ追加しません）。Blenderを直接起動しないでください。`reference/precision51/measurements.json`／`solution.json`が入力です。測定と校正をやり直すときは `measure_precision51.py`→`precision51_points.py`→`fit_precision51.py` の順でPython3.10を使います。写真入りの比較はローカル`out/precision51/private/`に分離します。
+
+**今回の公開置換表は `out/precision51/publish_manifest.json` の1本（未公開の§50＋§51）です。** [ブラウザ確認手順](out/precision51/BROWSER_CHECK.md)に従い、管理棟の司壁表・裏・エデンの海・進化ストリームと両脇の通り抜けを確認してください。公開用には更新した内装一覧・細部一覧・管理棟巡回一覧・配置図を使用し、private/ の写真付き比較は公開しません。ZIPの全CRC/SHA結果は`park/out/package_verification.json`。ブラウザ確認・share/への反映はClaudeが行います。
