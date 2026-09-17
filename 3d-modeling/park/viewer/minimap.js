@@ -76,6 +76,7 @@
    for(const wall of floor.walls)line(wall.map(world),'map-partition');
    for(const o of floor.openings){const [x,y]=o.xy,h=o.width/2;line((o.axis==='x'?[[x,y-h],[x,y+h]]:[[x-h,y],[x+h,y]]).map(world),'map-opening');}
    for(const r of floor.rooms)if(r.label)text(world(r.label_point||[(r.bounds[0]+r.bounds[2])/2,(r.bounds[1]+r.bounds[3])/2]),r.label);
+   for(const a of (floor.artworks||[])){const p=world(a.xy);dot(p,'map-view',a.label);text([p[0],p[1]-1.0],a.label,'map-entry-label');}
    const q=world(floor.entrance);dot(q,'map-entrance','正式な入口');text([q[0]+2.1,q[1]],'入口','map-entry-label');
   }
   for(const v of views){const q=map.point(v.position);parts.push('<g class="map-target" tabindex="0" role="button" data-view="'+esc(v.id)+'" aria-label="'+esc(v.label)+'へ移動" transform="translate('+q.map(num).join(' ')+')"><circle class="map-hit" r="2" vector-effect="non-scaling-stroke"/><circle class="map-view" r="2.5"/></g>');}
