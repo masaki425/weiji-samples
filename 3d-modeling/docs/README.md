@@ -1,3 +1,12 @@
+<!-- PRECISION53 CURRENT -->
+休憩棟の東向き玄関を、広縁と直角の格子壁に囲まれた入隅へ組み直しました（PLAN §53）。障子を写真の開放状態へ寄せ、建築用の紙に薄い透過を追加。管理棟のノート室を濃い板壁・飴色床・白板天井にし、小机と窓前の台を調整しました。寸法は写真からの推定で、実測保証ではありません。玄関の奥行き、ノート室の大机/窓と廊下奥の見通し、写真と庭木の対応には未解決を残します。
+
+[公園ビューア](park/viewer/index.html)／[入口の採用平面](out/precision53/entry_plan.jpg)／[公開一覧](out/rest_walkthrough_overview.jpg)／[確認手順](out/precision53/BROWSER_CHECK.md)／[§52＋§53の置換表](out/precision53/publish_manifest.json)。公園側の「休憩棟→玄関前／入口・板の廊下／玄関ポスター」で新入口を確認できます。「梯子から樽の中」と、地図クリック後の矢印/WASDも保持しています。
+
+技術検査225条件・原本保持28条件・巡回20,382フレーム・公園Node108条件・GLB34画像読戻しが合格。写真との完全一致は未達。非公開比較は[out/precision53/private/comparisons.jpg](out/precision53/private/comparisons.jpg)。§52は未公開、§50+51は公開済みとの引継ぎです。公開には53の合併表だけを使ってください。以下の「最新」「公開待ち」や旧置換表は当時の記録です。
+
+<!-- END PRECISION53 CURRENT -->
+
 管理棟の記録写真4枚で撮影条件を校正し、写真比較用カメラ4台を更新しました（PLAN §50）。**建物の実寸を保証する校正ではありません。画像幅1%の目標は4枚中3枚で未達で、壁・開口・作品の形状や位置は保持しました。** 司壁の幅とパネル寸法の不整合は[PLAN §50](PLAN.md)に数値を記録し、制作者の判断待ちです。[検証専用の写真比較](out/precision50/private/comparisons.jpg)／[測定値](out/precision50/fit.json)／[公開差分](out/precision50/publish_manifest.json)／[確認手順](out/precision50/BROWSER_CHECK.md)。§49までは公開済みとの引継ぎです。以下の古い置換表は再適用しないでください。
 
 屋外は園路の外も、地形に沿って自由に歩けるようにしました（PLAN §49）。水面（橋以外）、建物の壁・施設・門の壁・小屋・幹を避けて移動します。**園路外の地形は推定です。** [公園ビューア](park/viewer/index.html)／[実ブラウザ確認手順](out/freewalk49/BROWSER_CHECK.md)／[今回の公開差分](out/freewalk49/publish_manifest.json)。Node108項目合格。ブラウザ確認・公開反映はClaude担当。§48までは公開済みとの引継ぎで、以下は旧版の記録です。
@@ -701,3 +710,7 @@ Cyclesは細粒のBumpと艶むら、ブラウザは粗い色むら・中央と�
 再生成：`build_models.py`末尾の`precision51_geometry.py`と`precision51_cameras.py`が同じ測定・校正JSONを適用します。保存原本への差分・公園管理棟だけの再統合は`tools/rebuild_precision51.py`を既存ジョブランナーで実行します（ローカルarchive/precision51が必要で、この大きい復元用コピーはZIPへ追加しません）。Blenderを直接起動しないでください。`reference/precision51/measurements.json`／`solution.json`が入力です。測定と校正をやり直すときは `measure_precision51.py`→`precision51_points.py`→`fit_precision51.py` の順でPython3.10を使います。写真入りの比較はローカル`out/precision51/private/`に分離します。
 
 **今回の公開置換表は `out/precision51/publish_manifest.json` の1本（未公開の§50＋§51）です。** [ブラウザ確認手順](out/precision51/BROWSER_CHECK.md)に従い、管理棟の司壁表・裏・エデンの海・進化ストリームと両脇の通り抜けを確認してください。公開用には更新した内装一覧・細部一覧・管理棟巡回一覧・配置図を使用し、private/ の写真付き比較は公開しません。ZIPの全CRC/SHA結果は`park/out/package_verification.json`。ブラウザ確認・share/への反映はClaudeが行います。
+
+§52ではノート室の受付・廊下への戸口・小机・窓の横桟と、休憩棟の広縁の窓・欄間・東入口の高さを写真の比率で調整しています。畳1.82×.91m、B2ポスター、定尺建具などは仮定で、実測寸法の保証ではありません。大机と全体の部屋割り・縮尺は保持しました。裏の錯視3枚の上に並んだ根拠のない12枚の札を外し、進化ストリーム側の写真で確認できる6枚を残しています。撮影条件と形状の差、残る不一致はPLAN §52、公開前の操作確認はout/precision52/BROWSER_CHECK.mdを参照してください。
+
+§52の検証と配布：校正7組では局所の比率が改善した一方、ノート室の大机/窓と休憩棟の庇/手前の建具に不一致が残ります。未使用の確認点が悪化した写真もあるため、実寸の復元完了とはしません。技術検査225条件、原本/公園の保持23条件、全巡回22,115フレーム、34画像のGLB読み戻しが合格。関連70視点と公開一覧を更新しました。公園/休憩棟/管理棟のGLBは約54.0/57.3/56.9MB。公開前の確認は[確認手順](out/precision52/BROWSER_CHECK.md)、今回だけの置換は[置換表](out/precision52/publish_manifest.json)。実ブラウザ/公開はClaude担当で未実施です。
