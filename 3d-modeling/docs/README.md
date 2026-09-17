@@ -1,11 +1,10 @@
-<!-- PRECISION53 CURRENT -->
-休憩棟の東向き玄関を、広縁と直角の格子壁に囲まれた入隅へ組み直しました（PLAN §53）。障子を写真の開放状態へ寄せ、建築用の紙に薄い透過を追加。管理棟のノート室を濃い板壁・飴色床・白板天井にし、小机と窓前の台を調整しました。寸法は写真からの推定で、実測保証ではありません。玄関の奥行き、ノート室の大机/窓と廊下奥の見通し、写真と庭木の対応には未解決を残します。
+<!-- ENTRANCE55 CURRENT -->
+休憩棟の正式玄関を、§52までの東端（局所座標X=17.10）へ戻しました（PLAN §55）。引き戸・右戸のポスター・庇・格子窓・石段・雨戸と、廊下/広縁の外形を元に戻しています。§53の開いた障子と半透過紙は保持。管理棟は§53の原本から変更しません。
 
-[公園ビューア](park/viewer/index.html)／[入口の採用平面](out/precision53/entry_plan.jpg)／[公開一覧](out/rest_walkthrough_overview.jpg)／[確認手順](out/precision53/BROWSER_CHECK.md)／[§52＋§53の置換表](out/precision53/publish_manifest.json)。公園側の「休憩棟→玄関前／入口・板の廊下／玄関ポスター」で新入口を確認できます。「梯子から樽の中」と、地図クリック後の矢印/WASDも保持しています。
+[公園ビューア](park/viewer/index.html)／[休憩棟配置図](out/rest_layout.jpg)／[巡回一覧](out/rest_walkthrough_overview.jpg)／[ブラウザ確認手順](out/entrance55/BROWSER_CHECK.md)／[今回だけの置換表](out/entrance55/publish_manifest.json)。休憩棟の「東側の正式な玄関」「入口・板の廊下」「東側玄関のポスター」と、公園の「休憩棟の玄関」で確認できます。
 
-技術検査225条件・原本保持28条件・巡回20,382フレーム・公園Node108条件・GLB34画像読戻しが合格。写真との完全一致は未達。非公開比較は[out/precision53/private/comparisons.jpg](out/precision53/private/comparisons.jpg)。§52は未公開、§50+51は公開済みとの引継ぎです。公開には53の合併表だけを使ってください。以下の「最新」「公開待ち」や旧置換表は当時の記録です。
-
-<!-- END PRECISION53 CURRENT -->
+写真6412の入隅との構造差は未解決です。今回は入口の形も位置も写真から再解釈せず、明示された元の位置を復元しました。実測・図面は無く、寸法は従来の仮定を保持。§54の3項目は中断し、今回には含めません。§52+53は公開済みで、古い置換表は再適用しないでください。以下の旧版の「最新」「公開待ち」は当時の記録です。
+<!-- END ENTRANCE55 CURRENT -->
 
 管理棟の記録写真4枚で撮影条件を校正し、写真比較用カメラ4台を更新しました（PLAN §50）。**建物の実寸を保証する校正ではありません。画像幅1%の目標は4枚中3枚で未達で、壁・開口・作品の形状や位置は保持しました。** 司壁の幅とパネル寸法の不整合は[PLAN §50](PLAN.md)に数値を記録し、制作者の判断待ちです。[検証専用の写真比較](out/precision50/private/comparisons.jpg)／[測定値](out/precision50/fit.json)／[公開差分](out/precision50/publish_manifest.json)／[確認手順](out/precision50/BROWSER_CHECK.md)。§49までは公開済みとの引継ぎです。以下の古い置換表は再適用しないでください。
 
