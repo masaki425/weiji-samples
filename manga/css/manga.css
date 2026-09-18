@@ -1,0 +1,188 @@
+/* Manga-only rules; shared design files are read, never overridden on disk. */
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  --mm: calc((min(100vw, 960px) - 64px) / 128);
+  --rule: 1px;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: calc(3.527778 * var(--mm)); /* 10pt at print scale */
+  font-weight: 400;
+  line-height: 1.5;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+p, h1 { margin: 0; }
+.manga { width: min(100%, 960px); margin-inline: auto; }
+.page {
+  position: relative;
+  padding: calc(12 * var(--mm)) 32px;
+  height: calc(210 * var(--mm));
+}
+.page + .page { box-shadow: 0 -1px var(--color-line); }
+.panels {
+  display: grid;
+  grid-template-columns: var(--cols);
+  grid-template-rows: var(--rows);
+  grid-template-areas: var(--areas);
+  column-gap: var(--column-gap);
+  row-gap: var(--row-gap);
+}
+.title-block { height: var(--reserve-top); }
+h1 { font-size: calc(4.938889 * var(--mm)); font-weight: 300; line-height: 1.2; }
+.subtitle { margin-top: calc(0.5 * var(--mm)); font-size: calc(2.645833 * var(--mm)); }
+.colophon {
+  height: var(--reserve-bottom);
+  padding-top: calc(3 * var(--mm));
+  font-size: calc(2.645833 * var(--mm));
+  line-height: 1.4;
+}
+.folio {
+  position: absolute;
+  bottom: calc(4 * var(--mm));
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: calc(2.645833 * var(--mm));
+  color: var(--color-text-3);
+}
+.panel {
+  grid-area: var(--area);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-bg);
+  isolation: isolate;
+  break-inside: avoid;
+}
+/* Inset stroke changes neither grid geometry nor lettering coordinates. */
+.panel--ink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 var(--rule) var(--color-text);
+  pointer-events: none;
+  z-index: 3;
+}
+.panel-art { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.panel-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--fit);
+  object-position: var(--focus);
+  clip-path: inset(var(--crop-inset));
+}
+.lettering { position: absolute; inset: 0; z-index: 1; }
+.text-block {
+  position: absolute;
+  writing-mode: horizontal-tb;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: stretch;
+  gap: calc(0.6 * var(--mm));
+  right: var(--text-right);
+  top: var(--text-top);
+  height: var(--text-height);
+  width: auto;
+  max-width: var(--text-max-width);
+  padding: calc(0.6 * var(--mm)) calc(0.9 * var(--mm));
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.text-body, .speaker, .source {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--font-vertical);
+  flex: 0 0 auto;
+  min-width: 1em; /* Also protects intrinsic vertical text width in Safari. */
+  height: 100%;
+  font-weight: 400;
+}
+.text-body { line-height: 1.35; }
+.speaker, .source { font-size: calc(2.645833 * var(--mm)); line-height: 1.3; }
+.source { color: var(--color-text-2); }
+.speaker { color: var(--color-common-text); }
+[data-voice="a"] .speaker { color: var(--color-a-text); }
+[data-voice="s"] .speaker { color: var(--color-s-text); }
+.tcy { text-combine-upright: all; -webkit-text-combine: horizontal; }
+.text-block--balloon { border: var(--rule) solid var(--color-text); border-radius: calc(2 * var(--mm)); }
+.text-block--balloon[data-tail-edge]::after {
+  content: "";
+  position: absolute;
+  width: calc(2 * var(--mm));
+  height: calc(2 * var(--mm));
+  background: var(--color-bg);
+  border-right: var(--rule) solid var(--color-text);
+  border-bottom: var(--rule) solid var(--color-text);
+}
+[data-tail-edge="bottom"]::after { top: 100%; left: var(--tail-offset); transform: translate(-50%, -50%) rotate(45deg); }
+[data-tail-edge="top"]::after { bottom: 100%; left: var(--tail-offset); transform: translate(-50%, 50%) rotate(225deg); }
+[data-tail-edge="left"]::after { right: 100%; top: var(--tail-offset); transform: translate(50%, -50%) rotate(135deg); }
+[data-tail-edge="right"]::after { left: 100%; top: var(--tail-offset); transform: translate(-50%, -50%) rotate(-45deg); }
+.text-block--search {
+  width: var(--text-width);
+  padding: 0;
+  background: transparent;
+  align-items: center;
+  justify-content: flex-end;
+}
+.text-block--search .text-body {
+  writing-mode: horizontal-tb;
+  font-family: var(--font-sans);
+  height: auto;
+  font-size: calc(1.9 * var(--mm)); /* Search-field UI, inside the blue outline. */
+  line-height: 1;
+  white-space: nowrap;
+}
+#foot .text-body { font-size: calc(4.233333 * var(--mm)); /* 12pt */ }
+
+@media screen and (max-width: 759px) {
+  body { font-size: 16px; }
+  .page { height: auto; padding: 24px 16px 48px; }
+  .title-block { height: auto; margin-bottom: 24px; }
+  h1 { font-size: 24px; }
+  .subtitle { font-size: 14px; margin-top: 4px; }
+  .panels { display: flex; flex-direction: column; gap: 24px; }
+  .panel { grid-area: auto; }
+  .lettering { position: relative; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .text-block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    right: auto;
+    top: auto;
+    height: auto;
+    width: auto;
+    max-width: none;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+  .text-body, .speaker, .source {
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    font-family: var(--font-sans);
+    height: auto;
+    min-width: 0;
+  }
+  .text-body, .text-block--search .text-body, #foot .text-body { font-size: 16px; line-height: 1.5; }
+  .text-block--search { align-items: stretch; }
+  .speaker, .source { font-size: 14px; }
+  .tcy { text-combine-upright: none; -webkit-text-combine: none; }
+  .text-block--balloon { border-radius: 8px; margin-bottom: 4px; }
+  .text-block--balloon[data-tail-edge]::after { content: none; }
+  .panel-art { position: relative; aspect-ratio: var(--aspect); }
+  .colophon { height: auto; padding-top: 20px; font-size: 12px; }
+  .folio { bottom: 12px; font-size: 12px; }
+}
+
+@page { size: A5 portrait; margin: 0; }
+@media print {
+  body { --mm: 1mm; --rule: 0.25mm; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  html, body, .manga { width: 148mm; margin: 0; padding: 0; }
+  .page { width: 148mm; height: 210mm; padding: 12mm 10mm; break-after: page; break-inside: avoid; }
+  .page:last-child { break-after: auto; }
+  .page + .page { box-shadow: none; }
+}
