@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>大倉公園 — 展示室を歩く</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="title"><span>Morning Monsters / W Eiji</span><h1>展示室を歩く</h1></div>
+  <div class="controls">
+    <label>棟<select id="building">
+      <option value="park">公園 — 大倉公園</option>
+      <option value="rest">休憩棟 — 渡辺英司</option>
+      <option value="mgmt">管理棟 — 渡辺英治</option>
+    </select></label>
+    <label>視点<select id="viewpoint"></select></label>
+    <label class="photos">記録写真<select id="photos" title="記録写真を撮った位置から見た画面に写真を重ねる"><option value="">重ねない</option></select></label>
+    <button id="ladder" hidden>梯子を上る</button>
+    <button id="entrance">玄関に戻る</button>
+  </div>
+</header>
+
+<main id="stage">
+  <img id="photo" alt="">
+  <div id="loading" role="status"><div class="loading-panel">
+    <p id="loading-message">モデルを読み込んでいます…</p>
+    <div id="loading-actions" hidden><button id="retry">もう一度読み込む</button></div>
+  </div></div>
+  <div id="place"><span id="placetext" aria-live="polite">大倉公園</span><button id="workbtn" hidden>作品について</button></div>
+  <div id="prompt"></div>
+  <div class="hint">ドラッグで見回す <b>·</b> ホイールで拡大 <b>·</b> WASD / 矢印で移動</div>
+  <div class="pad" aria-label="移動操作">
+    <button data-move="forward" aria-label="前へ">↑</button>
+    <div><button data-move="left" aria-label="左へ">←</button><button data-move="back" aria-label="後ろへ">↓</button><button data-move="right" aria-label="右へ">→</button></div>
+  </div>
+  <div class="zoompad"><button id="zoomin" aria-label="拡大" title="拡大（ホイール・＋キー）">＋</button><button id="zoomout" aria-label="縮小" title="縮小（ホイール・−キー、0 で等倍）">−</button></div>
+  <div class="lookpad"><button id="lookleft" aria-label="左を向く">↶</button><button id="lookright" aria-label="右を向く">↷</button></div>
+  <details id="mapbox"><summary>現在位置と庭・部屋</summary><canvas id="map" width="520" height="408" title="押すとその場所へ移動"></canvas></details>
+  <div id="photoctl">
+    <span id="photocap"></span>
+    <label>写真の濃さ <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.5"></label>
+    <button id="photoclose">閉じる</button>
+  </div>
+</main>
+
+<footer>
+  <span>建物・庭・作品は2025年の記録写真と見取り図に基づく推定復元です。</span>
+  <div class="fbtn">
+    <button id="guidebtn" title="画面の案内・操作ボタン・地図の表示を切り替える（H キー）" aria-pressed="true">案内：あり</button>
+    <button id="flybtn" title="F キー">空から</button>
+    <button id="shadowbtn" title="影（重くなります）">影</button>
+    <button id="lightbtn" title="昼（晴れ）・夕方・曇りを切り替える">光：昼</button>
+    <button id="tourbtn" title="いまの棟の順路を自動で歩く">順路</button>
+    <button id="help">操作とモデルについて</button>
+  </div>
+</footer>
+
+<dialog id="about">
+  <h2>展示室の見方</h2>
+  <p>大倉公園の茅葺門の前から始まります。公園・休憩棟（渡辺英司）・管理棟（渡辺英治）を一続きに歩けます。「棟」を選ぶとその入口へ移り、「視点」でその棟の鑑賞位置へ移れます。「玄関に戻る」でいまの棟の入口へ戻ります。</p>
+  <p>画面をドラッグすると周囲を見回せます。WASD・矢印キー、または画面右下の矢印で移動し（← → は横へ歩きます）、↶ ↷ で 30° ずつ向きを変えます。Shift で速く、Shift＋ホイールで歩く速さを変えます。ホイール（トラックパッドのピンチ）・画面右下の ＋ −・キーの ＋ − で拡大・縮小し、0 キーで等倍に戻ります。スマホは 2 本指でつまんで拡大・縮小します。歩いても倍率は保ち、「視点」を選ぶと等倍に戻ります。床の段差は自動で上り下りし、壁や閉じた襖では止まります。</p>
+  <p>下の「案内」（H キー）で、画面に重なる表示（場所の札・操作の案内・右下のボタン・地図）を隠して、作品や景色だけを見られます。隠している間もキーボード・マウス・ドラッグで操作できます。</p>
+  <p>右上の「現在位置と庭・部屋」の地図を押すと、その場所へ移ります。左上の札には、いまいる棟・部屋と近くの作品を出します。近くに作品があるときは「作品について」で作品名・作者・場所を見られます。</p>
+  <p>下の「順路」で、いまの棟の順路を自動で歩きます（公園：茅葺門から休憩棟の東玄関へ、休憩棟・管理棟：館内をひと回り）。キーを押すか画面をドラッグすると止まります。「光」で昼（晴れ）・夕方・曇りを切り替えます。</p>
+  <p>休憩棟の樽の間では、梯子の前で梯子に向いて W（または「梯子を上る」）を押すと、梯子を上って《空の夢 / 空の上》の樽の中を覗けます。S で下ります。</p>
+  <p>管理棟の「星丸・床の間」では、《変身立体（星丸）》が手前からは丸に、鏡の中では六芒星に見えます。別の角度では輪郭が変わります。</p>
+  <p>「空から」（F キー）で高さを変えて飛べます（E・Space で上、Q で下）。もう一度押すと真下の床へ降ります（公園の外の上空では、いちばん近い床へ）。</p>
+  <p>建物の寸法・建具・作品の配置は、見取り図と2025年の記録写真（撮影位置を写真から解いたもの）に基づく推定です。写真と一致しない箇所も残ります。画像は許可を確かめたものだけを貼っています：展覧会ポスター（制作：渡辺英司／courtesy office SONO）、休憩棟の作品の写真転写（作品：渡辺英司／記録写真：青木兼治）、蛇の回転 2003（北岡明佳）、《エデンの海、錯視から解放された魚》（写真提供：渡辺英治）、月の錯視・ログビネンコ錯視、進化ストリームの図（渡辺英治）、茅葺門・奥の門の暖簾とのぼり。襖絵などは写真を貼らず、模様で表しています。</p>
+  <button id="closehelp">閉じる</button>
+</dialog>
+
+<dialog id="work">
+  <h2 id="worktitle"></h2>
+  <dl id="workinfo"></dl>
+  <div id="workphotos"></div>
+  <p class="note">作品の情報は、会場のモデルの記録（作品名・作者・場所・モデルの大きさ）から出しています。</p>
+  <button id="closework">閉じる</button>
+</dialog>
+
+<script src="assets/nav.js"></script>
+<script src="assets/park.js"></script>
+<script src="assets/rest.js"></script>
+<script src="assets/mgmt.js"></script>
+<script src="assets/leaves.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

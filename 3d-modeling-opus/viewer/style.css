@@ -1,0 +1,113 @@
+/* 旧版（3d-modeling/viewer）と同じ画面の構成・配色：上の帯・3D の画面・下の帯 */
+:root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", sans-serif;
+  color: #292d29; background: #eeefea; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+
+header { display: flex; gap: 24px; align-items: center; justify-content: space-between; padding: 16px 24px;
+  border-bottom: 1px solid #d8dbd1; background: #fafbf7; }
+.title span { font-size: 11px; letter-spacing: .09em; color: #626c61; }
+h1 { font-size: 20px; font-weight: 500; letter-spacing: .08em; margin: 5px 0 0; }
+.controls { display: flex; align-items: end; gap: 12px; }
+label { font-size: 11px; color: #586151; display: grid; gap: 5px; }
+button, select { font: inherit; color: inherit; background: #fcfdf9; border: 1px solid #b6bfb0; border-radius: 5px;
+  min-height: 38px; padding: 8px 11px; }
+button { cursor: pointer; }
+button:hover, button:active { background: #e1e7d9; }
+button.on { background: #52604a; border-color: #52604a; color: #fff; }
+button[disabled] { opacity: .55; cursor: default; }
+select { font-size: 13px; max-width: 220px; }
+.controls .photos select { max-width: 170px; }
+
+main { flex: 1; position: relative; min-height: 240px; overflow: hidden; background: #c9d3dc; }
+main > canvas { position: absolute; left: 0; top: 0; display: block; touch-action: none; outline-offset: -3px; cursor: grab; }
+main > canvas:active { cursor: grabbing; }
+main > canvas:focus { outline: none; }                    /* クリックで移ったときは枠を出さない */
+main > canvas:focus-visible { outline: 3px solid #627d53; outline-offset: -3px; }
+#photo { position: absolute; pointer-events: none; opacity: .5; display: none; object-fit: fill; z-index: 2; }
+#photo.show { display: block; }
+
+#loading { position: absolute; inset: 0; display: grid; place-items: center; background: #f2f3ebef; font-size: 16px;
+  text-align: center; padding: 30px; z-index: 10; }
+#loading[hidden] { display: none; }
+.loading-panel { max-width: 640px; overflow-wrap: anywhere; line-height: 1.8; }
+#loading-message { white-space: pre-line; }
+#loading-actions { display: flex; justify-content: center; gap: 16px; }
+#loading-actions[hidden] { display: none; }
+
+#place { position: absolute; top: 18px; left: 22px; background: #fcfdf1e8; border: 1px solid #cbd0bf; padding: 9px 14px;
+  font-size: 13px; border-radius: 4px; pointer-events: none; z-index: 3; max-width: calc(100% - 340px);
+  display: flex; align-items: center; gap: 10px; }
+#workbtn { pointer-events: auto; font-size: 12px; min-height: 28px; padding: 3px 9px; white-space: nowrap; }
+#workbtn[hidden] { display: none; }
+/* 操作の案内（梯子・速さ・拡大など）：見ている物（樽の中など）を隠さないよう、画面の真ん中ではなく下の中央に */
+#prompt { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: none; z-index: 3; font-size: 13px;
+  background: #fffffff0; border: 1px solid #cbd0bf; border-radius: 4px; padding: 7px 14px; pointer-events: none; }
+#prompt.show { display: block; }
+.hint { position: absolute; bottom: 21px; left: 22px; font-size: 12px; background: #fffffff0; padding: 9px 12px;
+  border-radius: 4px; pointer-events: none; z-index: 3; }
+.hint b { padding: 0 5px; font-weight: 400; }
+.pad { position: absolute; right: 22px; bottom: 20px; text-align: center; z-index: 3; }
+.pad button, .lookpad button, .zoompad button { width: 46px; height: 43px; min-height: 43px; margin: 2px; padding: 0; background: #fffffff0;
+  font-size: 20px; touch-action: none; }
+.pad button:active, .pad button.on { background: #bdcbae; color: inherit; }
+.lookpad { position: absolute; right: 24px; bottom: 122px; z-index: 3; }
+.zoompad { position: absolute; right: 24px; bottom: 172px; z-index: 3; }
+#mapbox { position: absolute; top: 18px; right: 22px; font-size: 12px; background: #fffffff0; border: 1px solid #d3d8c8;
+  border-radius: 4px; max-width: 280px; z-index: 4; }
+summary { padding: 10px 12px; cursor: pointer; }
+#map { width: 260px; height: 204px; display: block; margin: 0 8px 8px; cursor: crosshair; }
+
+/* 「案内：なし」：画面に重なる表示を隠して作品や景色だけにする（H キー） */
+body.clean #place, body.clean .hint, body.clean #prompt, body.clean .pad, body.clean .lookpad, body.clean .zoompad,
+body.clean #mapbox { display: none !important; }
+#photoctl { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: none; gap: 12px; align-items: center;
+  background: #fcfdf9f2; border: 1px solid #cbd0bf; border-radius: 4px; padding: 6px 12px; z-index: 5; font-size: 12px;
+  max-width: calc(100% - 32px); }
+#photoctl.show { display: flex; }
+#photoctl label { display: flex; align-items: center; gap: 6px; }
+#photoctl button { min-height: 30px; padding: 4px 10px; }
+
+footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 24px;
+  border-top: 1px solid #d5dace; font-size: 11px; color: #58614f; }
+.fbtn { display: flex; gap: 6px; }
+footer button { font-size: 11px; min-height: 30px; padding: 5px 9px; white-space: nowrap; }
+dialog { max-width: 530px; border: 1px solid #a7b39d; border-radius: 8px; padding: 26px; background: #fafbf6; line-height: 1.9;
+  font-size: 14px; color: #292d29; }
+dialog::backdrop { background: #202a2070; }
+h2 { font-size: 20px; font-weight: 500; margin-top: 0; }
+#workinfo { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; margin: 0 0 12px; }
+#workinfo dt { color: #586151; font-size: 12px; padding-top: 2px; }
+#workinfo dd { margin: 0; }
+#workphotos { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+#workphotos button { font-size: 12px; min-height: 30px; padding: 4px 9px; }
+#workphotos .t { width: 100%; font-size: 12px; color: #586151; }
+#workphotos .rest { font-size: 12px; color: #586151; }
+dialog .note { font-size: 12px; color: #626c61; line-height: 1.7; }
+button:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #627d53; outline-offset: 2px; }
+
+label[hidden] { display: none !important; }
+@media (max-width: 1100px) { .controls .photos { display: none; } }
+@media (max-width: 700px) {
+  header { padding: 11px 12px; display: block; }
+  .title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .title span { font-size: 9px; }
+  h1 { font-size: 17px; }
+  .controls { margin-top: 10px; gap: 7px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+  .controls label { min-width: 0; }
+  select { max-width: 100%; width: 100%; min-width: 0; padding: 8px 4px; font-size: 11px; }
+  .controls button { font-size: 11px; padding: 7px; white-space: nowrap; width: 100%; }
+  #ladder[hidden] + #entrance { grid-column: 1 / -1; justify-self: end; width: auto; }
+  #place { top: 10px; left: 10px; font-size: 11px; padding: 7px 9px; max-width: calc(100% - 20px); }
+  #mapbox { top: 47px; right: 10px; }
+  #prompt { left: 10px; top: 47px; bottom: auto; transform: none; font-size: 11px; max-width: calc(100% - 190px); }
+  .hint { left: 10px; bottom: 12px; font-size: 10px; max-width: 165px; line-height: 1.7; padding: 7px; }
+  .pad { right: 10px; bottom: 10px; }
+  .lookpad { right: 12px; bottom: 112px; }
+  .zoompad { right: 12px; bottom: 162px; }
+  footer { padding: 7px 10px; font-size: 10px; flex-wrap: wrap; gap: 5px; }
+  footer span { width: 100%; line-height: 1.5; }            /* 注記は 1 段目、ボタンは 2 段目 */
+  .fbtn { width: 100%; justify-content: flex-end; }
+  footer button { padding: 5px 6px; }
+  dialog { width: calc(100% - 28px); padding: 20px; }
+}
