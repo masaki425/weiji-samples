@@ -511,3 +511,4 @@ Opus 版での対応：
 - share/3d-modeling-opus/ に、旧版 share/3d-modeling/index.html と同じ形式のページ（説明・ブラウザで歩く・Blender で開く・確認画像・記録・画像のクレジット）を置き、share/index.html から旧版の下にリンクした。share は GitHub の masaki425/weiji-samples。
 - tools/publish_share.py：ビューア一式（記録写真は掲載の許諾の確認前なので、案内データの写真と作品の写真を空にし、説明の窓の記録写真の段落を除く。ビューアは写真がないとき「記録写真」の選択と作品の窓の写真の欄を出さない）、venue.blend（54 MB）、README・PLAN・PROGRESS・照合表（文章だけ）。GLB と .blend に入っている画像は、許可を確かめたものだけであることを確かめた。
 - tools/shots_share.cjs：公開版のビューアを Playwright で開いて確かめ（読み込みのエラーなし、記録写真が出ない）、確認画像 13 枚を「案内：なし」で撮る。
+- 確認画像を旧版と同じ 11 枚・同じ名前・同じ順に（制作者の指示「画像の並びも 3d-modeling と全く同じに」）：tools/frames_share.cjs（Playwright で公開版のビューアから、公園の俯瞰・公園の 18 視点・庭と室内 6・内装 9・二棟の巡回・細部 9・両棟の玄関のポスターを撮る）→ tools/sheets_share.py（旧版と同じ組み方の一覧、公園の平面配置と二棟の作品の配置図は案内データと spec から描く）。
