@@ -201,7 +201,7 @@
   color: var(--color-text-3);
 }
 
-/* 3:2 に収まらない写真（フライヤー、縦位置） */
+/* 3:2 に収まらない写真（ポスター、縦位置） */
 .l-figure--contain img {
   aspect-ratio: auto;
   object-fit: contain;
@@ -900,12 +900,12 @@
   margin-inline-start: 0.5em;
 }
 
-/* 幅を絞った共通の写真（フライヤー、縦位置） */
+/* 幅を絞った共通の写真（ポスター、縦位置） */
 .x-figure--narrow {
   width: min(100%, 20rem);
 }
 
-/* 3:2 に収まらない写真（フライヤー、縦位置の園路と講義の写真）は切らずに全体を見せる。
+/* 3:2 に収まらない写真（ポスター、縦位置の園路と講義の写真）は切らずに全体を見せる。
    (b) の .l-figure--contain img は、後に書かれた .x-figure img と、特異度が上の .x-cell figure img /
    .x-common figure img に負けて 3:2 に切られていた（2026-09-09、制作者「記録のポスターの上下が切れている」）。
    縦位置は幅を 20rem（.x-figure--narrow と同じ）に抑え、高さが出すぎないようにする */
