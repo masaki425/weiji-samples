@@ -200,6 +200,9 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
 - [x] 公開（2026-10-09）：管理棟だけを公開版へ（§67 の茶室・集会室・額、share 23ce2ab）。app.js も写す（ビューアの変更は鏡の扱いだけ）。休憩棟の check_all の作り直しと重ならないよう、18:22 の viewer/ を out/m67pub に写してから使った。
 - [x] iter102（2026-10-09）：ホールと玄関を写真に合わせて詰め、茶室・和室の床を 0.17 高く、屋根を平板葺きに、玄関の戸は開けたまま、S16 を奥の門の道沿いに（PLAN §69）。管理棟の写真 38 枚で F 平均 0.800、VERIFY OK。
 - 2026-10-09 管理棟のみ公開（share e150d42）：§69 の平板葺きの屋根・玄関の親子ドアとポーチ・茶室と和室の床 +0.17・ホール・S16 を門の道沿いに。窓は制作者の判断で今の高さのまま。out/m69pub で HEAD c2b597d を全体ビルド（VERIFY OK）、mgmt.js と nav の管理棟分だけ差し替え、配置図と歩行シートを再生成、公開版を headless で確認（ERRORS 0）。
+- [x] iter103（2026-10-10、PLAN §70）：撮影箇所ごとの詰め（サブエージェント 14 本）。ビューアの記録写真の重ね（tools/overlay_audit.cjs、全 87 枚）で乖離を見て、建物の点で解き直したカメラと検査点のずれ（tools/check_points.py、spec/s70_checks/）で詰めた。CHECK_ALL OK（照合 52 行 meanF 0.858→0.872）、VIEWER_TEST OK。ビューアの重ねで setViewOffset が縦横比を上書きして縦の倍率（pixel_aspect）が効かない不具合を直した。箇所ごとのカメラの道具は tools/s70/（pnp.py --write で解き直さない）。制作者に確かめること（樽の大きさ、司壁の柱、10帖3 の鴨居、撮影日の違いほか）は PLAN §70。
+- 2026-10-10 三区域を公開（share 4c5ca80、制作者の指示「終わったら公開まで進めて」）：publish_share.py（全体）→ frames_share.cjs → render_share.py（91 枚）→ sheets_share.py、index.html に 10 月 10 日の更新欄。公開版のビューアの検査は記録写真の項目（公開版は写真を載せない）以外は通過。公開 URL の nav.js・app.js・rest.js・index.html の shasum が手元と一致。
+- [x] iter104（2026-10-10、PLAN §71）：撮影箇所ごとの詰め・2 巡目（12 本、1 巡目の担当を続けさせた）。検査点を原因で分類し、撮影日の違い・写真の変換は理由つきで外す（39 点）。写真 84 枚のうち 25 枚が目標以内。奥の門を 0.82 倍、樽と梯子を 11/07 に、Upright を外したカメラ。統合でビューアの低い視点・玄関の鴨居・Blender の pixel aspect < 1・MH の天井を直した。CHECK_ALL OK（meanF 0.869）、VIEWER_TEST OK。
 ### 進行中
 
 - [x] サブエージェント 5 本（2026-09-24、制作者の指示。結果は PLAN.md §8 iter23：F 平均 0.759 → 0.791、管理棟の写真は 0 枚）：(1) 管理棟の写真探し 2 本（6484〜6561／6459〜6483・8010〜8021。結果は out/agents/result_a.json・result_b.json、spec と tools は書かない）、(2) 見た目の修正 3 本（休憩棟＝build_rest.py・exhibits_rest.py、管理棟＝build_mgmt.py・exhibits_mgmt.py、公園＝build_park.py だけを編集。Blender とコミットはこちら）。戻ったら組み立て → 照合表で F を測り、下がった変更は戻す。
