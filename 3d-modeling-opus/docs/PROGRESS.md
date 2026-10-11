@@ -210,18 +210,9 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
 - 2026-10-10 §74 を公開（share ef93ee9）：梯子の上の目の位置を写真 6143 の視点から取るよう直してから（export_glb.py）、publish_share.py（全体）→ frames_share → render_share（91 枚、細部の組は描き直し）→ sheets_share、index.html に「その 4」。公開版の検査は記録写真の項目以外は通過、公開 URL の 10 ファイルの shasum が手元と一致。
 ### 進行中
 
-- [ ] **iter107（2026-10-10 夜、PLAN §75、/goal の続き＋制作者の追加指示「休憩棟の外にある司作品が再現されていない… (1) 石畳の横に並んでいる飛行機ら (2) 小屋の前にある作品」）**
-  - 済：写真ごとの状態の仕組み（tools/states.py、commit f01696a。state_only／state_hide の札＝撮影日 'MMDD' か写真 ID。render_views は写真ごとに切り替え、export_glb は札ごとに別メッシュ＋extras、ビューアは gotoPhoto/exitPhoto で applyPhotoState）。試しの立方体で GLB の extras と nav.photos の date を確認済み。ビューアの切り替えの自動検査（test_viewer）はまだ。
-  - 動いているサブエージェント：独立の監査 14 本（約束 out/audit75/AUDIT_BRIEF.md、結果 out/audit75/<箇所>.md。模型は書き換えない）、屋外の司作品 2 本（約束 out/outdoor75/BRIEF_OUTDOOR.md。ol＝石畳の飛行機 tools/outdoor_ol.py、og＝小屋の前の A23-garden tools/outdoor_og.py。全写真の一覧 out/outdoor75/sheets/）。
-  - 2026-10-10 夜：5 巡目を 14 箇所の担当へ送った（約束 tools/s70/BRIEF6.md、commit の後）。監査が終わったら所見の要点を担当へ SendMessage で念押しする。test_viewer.cjs に「写真ごとの状態が切り替わる」検査を足した。照合表は 6143 の縁の点の残差を載せる。
-  - 監査は r3 以外の 13 箇所が完成し、要点を各担当へ送った（out/audit75/<箇所>.md。大は箇所ごとに 5〜30 件。色の所見の多くはビューアの側の原因）。gi の監査が既存の 6 枚に陶器の飛行機 延べ 35 機を見つけ、ol に伝えた。
-  - 統合の側で直したこと（commit 884fddc）：(1) ビューアの材質を Blender と同じ色・模様に（tools/albedo_bake.py が基本色と模様の板 out/pattern_tiles/ を焼き、export_glb.py の pattern_uv() が面の向きごとに貼る。build_viewer.sh が先に焼く。nav.albedo、main.js の matchAlbedo。写真に合わせた個別の倍率 MH・樹皮・司壁・聚楽は外した）。(2) 写真ごとの露出と色温度（`NOGAIN=1 node tools/overlay_audit.cjs out/overlay_nogain` → `.venv/bin/python tools/photo_gain.py out/overlay_nogain` → spec/photo_gain.json と viewer の nav、main.js の applyPhotoGain）。**統合のとき：ビューアを作る → NOGAIN で撮る → photo_gain → 倍率つきで撮り直す**。(3) 検査点が作られた形の上にあるか（`Blender -b out/venue.blend -P tools/check_points_model.py -- --out out/check/points_model.json`。§74 のモデルで 1913 点中 139 点が 2 cm 超）。(4) overlay_audit は操作の部品を隠して撮る。試しのビューア（viewer_x）で VIEWER_TEST OK・43.7 fps を確かめて消した。
-  - 5 巡目の報告（要約は tools/s70/REPORTS.md の「5 巡目」）：m1・re・r4・r5 が完了（21:00 ごろ）。残り r1 r2 r3 rx m2 mh mt mg gm gi、屋外の ol・og。窓の外の担当を 2 本新しく立てた（約束 out/outdoor75/BRIEF_WINDOWS.md、wr＝休憩棟の室内の写真の窓の外、wm＝管理棟。出力 out/photo_wr・out/photo_wm）。
-  - **制作者の目標の補正（2026-10-10 夜）：「エデンの海の切り抜きはすでにいい具合に出来上がっているので、完璧に再現する必要はない。部屋の構造と詳細のみを再現する方向性で進めて」** → 切り抜き専任の a6 は止めた（成果物なし）。r3 に、切り抜き（spec/a06_fish.json・アトラス・a06_from_photo.py・a06() の切り抜きの作り）を公開版 §74（commit 47c63d8）の状態に戻し、切り抜きの検査点を消し、部屋の残りに集中するよう指示した。統合のとき、切り抜きが §74 と同じに出ることを確かめる。
-  - 5 巡目の報告の続き：r2・r3・r1・m2 も戻った（REPORTS.md）。続きを頼んだもの：r1（北の欄間・6207・照明の笠）、r3（部屋の残り）、m1（m2 の結論「和室 10 帖の床は茶室より約 0.18 低い」の検証と、裏付けが取れたら和室 10 帖を下げ戻す実装）。r2 は 6帖の内法 3.75 m（図面の芯に左右対称、建具の線が芯から 4〜5 cm）→ 制作者への確認事項。
-  - 残っている判断：m1 と m2 の境（茶室との境の鴨居・襖・角の柱。m2 の報告を見て、境だけを両側の写真で解く担当を立てるか決める）。公開の前に確かめる画像：spec/textures/re/anketo_box_east.jpg（黄色いキャラクター）、spec/textures/s01/bag_print_6460.jpg（商標）。
-  - （送る前の予定）監査が戻ったら 5 巡目の約束（tools/s70/BRIEF6.md：(A) 写真ごとの状態で外した 48 点を戻す (B) 監査の所見の大・中を直す (C) 追加の携帯写真 ../files/photos/ 3670＝玄関のポスター→rx、3671＝樽の中→r4、3672＝エデン→r3）を書き、各箇所の担当（ID はセッションの要約にある）へ SendMessage。6143 の照合表の扱い（kind 'ellipse_vp'）は自分で。
-  - 統合：全箇所の検査点を測り直す → check_all・park_check・overlay_audit（out/overlay_audit_s75）→ test_viewer に状態の切り替えの検査を足す → PLAN §75・REPORTS.md → commit → 公開（share の index.html に更新欄）。
+- [x] **iter107（2026-10-10 夜〜10-11、PLAN §75）**：5 巡目（写真ごとの状態・独立の監査）＋屋外の司作品 2 件＋窓の外＋管理棟の外まわり。要約は PLAN §75、各担当の報告は tools/s70/REPORTS.md。記録写真 102 枚、検査点 延べ 123 枚・3168 点で目標を超えるのは 4 枚、外した点 88。CHECK_ALL OK・VERIFY OK・PARK_CHECK/PATH_CHECK/VEG_CHECK OK・VIEWER_TEST OK（41 fps）。エデンの切り抜きは制作者の指示で §74 のまま。未解決は PLAN §75 の末尾（門と休憩棟の座標の食い違い 0.7〜1 m ほか）。
+  - 統合の手順（次回も）：check_all.sh（**バックグラウンドで流すときは run_in_background で。nohup で切り離すと完了の通知が来ない**）→ park_check.sh → `NOGAIN=1 node tools/overlay_audit.cjs out/overlay_nogain` → `tools/photo_gain.py` → `node tools/overlay_audit.cjs out/overlay_audit_sNN` → 全箇所の check_points.py と `Blender -b out/venue.blend -P tools/check_points_model.py` → 公開。
+  - サブエージェントの ID（SendMessage で続けられる）：前回までの 14 本に加え、ol a732d7e91a9d7fe29、og a366098d05df4469d、wr ad0932f67f3bbb350、wm a1a7d7afd6cf543a9、mx aa31def75a20f2a37。
 
 - [x] サブエージェント 5 本（2026-09-24、制作者の指示。結果は PLAN.md §8 iter23：F 平均 0.759 → 0.791、管理棟の写真は 0 枚）：(1) 管理棟の写真探し 2 本（6484〜6561／6459〜6483・8010〜8021。結果は out/agents/result_a.json・result_b.json、spec と tools は書かない）、(2) 見た目の修正 3 本（休憩棟＝build_rest.py・exhibits_rest.py、管理棟＝build_mgmt.py・exhibits_mgmt.py、公園＝build_park.py だけを編集。Blender とコミットはこちら）。戻ったら組み立て → 照合表で F を測り、下がった変更は戻す。
 
@@ -423,3 +414,5 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
 1. iter33 の後の check_all（全部）：CHECK_ALL OK。休憩棟 10・管理棟 11・公園 6、F 平均 0.795。ビューアは葉 91.6 万枚で 60 fps。
 2. 材質（親の担当）：畳の目の強さ・合板の節と継ぎ目・天井の色（6219・6476）、A12 の柄の色、6167 の廊下の板壁の明暗。
 3. 管理棟の残り：6467 の受付の戸（31 px）、R5 の壁の上端（確認事項 24 の R5）、MGR の 3 台（6476・6480・6481）のカメラの解き直し（床のあたりが合わない）。
+- 2026-10-11 §75 を公開（share 8239ee8）：publish_share → frames_share → render_share（91 枚）→ sheets_share、index.html に「10 月 11 日の更新（三区域）」。公開版の検査は記録写真の 2 項目だけ想定どおり FAIL。
+- 2026-10-11 午後：6 巡目を開始（停止フックの指摘を受けて。確認事項 15 点は制作者の回答待ちのまま）。新しい担当 jr（門の座標と休憩棟の座標の食い違い 0.7〜1 m＋外観の 3 枚のカメラの同時解。ID a52594e2e7ed9ae66、出力 out/photo_jr/）。続き：wm（届いていない窓・色・空）、wr（同）、ol（12 px を超える点・推定の機）。戻ったら統合（check_all は run_in_background で）→ 公開。
