@@ -80,6 +80,7 @@ tools/iterate.sh out/iterNN
 | `tools/compare.py` | 写真と描画を 3 枚並べ（写真｜描画｜エッジの重ね）、エッジ F 値と色差 ΔE を出します。 |
 | `tools/photo_edges.py`・`tools/fit_camera.py` | 描画と写真のエッジの距離を最小にするよう、カメラの姿勢を合わせ込みます（Workbench、Nelder–Mead）。<br>・焦点距離は EXIF に固定します。<br>・校正済みのカメラから離れるほど罰則をかけます。<br>合わせた後に残る差が、形の違いを示します。 |
 | `tools/render_walk.py` | 巡回カメラの動画を書き出します。 |
+| `tools/probe_walk.cjs`・`probe_walk_stats.py`・`probe_walk_map.py`・`probe_escape.cjs` | ビューアの歩行の検査です。会場を 0.3 m の格子で歩き尽くし、入れるが出られない場所と、進めない辺の原因（壁の高さと材質・段・床なし）を出します（約 45 秒）。 |
 
 ## 構成
 

@@ -429,3 +429,7 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
 
 - 2026-10-13（§82）：制作者の指示「この作品の位置を資料を調べて確定して」「蝶の位置を割り出して、作品を Opus モデルに追加して」。**S16《蝶瞰図（エデンのトンネル）》はロビーの西の窓（中庭側）のガラスに貼った蝶の切り抜き**（カタログ p.19 の写真 1 枚が根拠。6483・6474・6525・実測図と照合）。写真のカメラを解いて蝶 15 枚をガラスへ投げ（research/s16/place.py → spec/s16_butterflies.json、ガラスからの距離 0.45 m は仮定）、s16() を書き換え、門の道沿いの飛行機と草むらを外した。視点 mg_MT_butterflies を追加。確認事項 (1) は扱い済み。確かめ out/s82/s16_compare.jpg。CHECK_ALL OK（53 行、meanF 0.881）。
 - 2026-10-13 §82 を公開（制作者の指示「公開版の方に反映させて」）：publish_share.py（全体。変わったのは mgmt.js・leaves.js・nav.js・docs）→ frames_share → render_share（91 枚）→ sheets_share、index.html に「10 月 13 日の更新（管理棟）」。配置図で S16 がロビーの西の壁、ほかの作品が動いていないことを確認。公開版の検査は shots・work の 2 項目だけ FAIL（想定どおり）。サイト（exhibition.html）の写真 6457 の差し替えは、カタログの画像を site/img に置く操作が権限で止まり未了。
+
+- 2026-10-13（§83）：制作者の指示「スタックして抜けれない箇所や壁でもないのに通り抜けられない場所があるので、バグを調べて修正して」。歩行の検査 tools/probe_walk.cjs（会場を 0.3 m の格子で歩き尽くす、約 45 秒）を作り、原因 4 つを直した（main.js：頭の光線 1.7→1.48、生垣・植え込み・ツツジ・屋根・幹に乗らない、段を上がるときの頭の空き、めり込みから出られる）。出られない場所 32 か所 → 0、頭の高さだけで止まる辺 2,907 → 1,388。蝶の視点は立った高さに。VIEWER_TEST OK。**歩行を変えたら**：`node tools/probe_walk.cjs out/probe_walk` → `.venv/bin/python tools/probe_walk_stats.py out/probe_walk` → `node tools/probe_escape.cjs out/probe_walk`（「出られない 0」）。
+- 2026-10-13 §83 を公開（制作者の指示「公開版を更新して」）：publish_share.py（全体。変わったのは app.js・nav.js・docs）、index.html は「最終更新」の 1 文だけ差し替え（更新の段落は足さない）。確認画像は作り直していない（モデルは不変）。公開版の検査は shots・work の 2 項目だけ FAIL（想定どおり）、公開版での歩行の検査も 出られない 0。
+
