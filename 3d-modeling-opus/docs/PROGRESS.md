@@ -433,3 +433,26 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
 - 2026-10-13（§83）：制作者の指示「スタックして抜けれない箇所や壁でもないのに通り抜けられない場所があるので、バグを調べて修正して」。歩行の検査 tools/probe_walk.cjs（会場を 0.3 m の格子で歩き尽くす、約 45 秒）を作り、原因 4 つを直した（main.js：頭の光線 1.7→1.48、生垣・植え込み・ツツジ・屋根・幹に乗らない、段を上がるときの頭の空き、めり込みから出られる）。出られない場所 32 か所 → 0、頭の高さだけで止まる辺 2,907 → 1,388。蝶の視点は立った高さに。VIEWER_TEST OK。**歩行を変えたら**：`node tools/probe_walk.cjs out/probe_walk` → `.venv/bin/python tools/probe_walk_stats.py out/probe_walk` → `node tools/probe_escape.cjs out/probe_walk`（「出られない 0」）。
 - 2026-10-13 §83 を公開（制作者の指示「公開版を更新して」）：publish_share.py（全体。変わったのは app.js・nav.js・docs）、index.html は「最終更新」の 1 文だけ差し替え（更新の段落は足さない）。確認画像は作り直していない（モデルは不変）。公開版の検査は shots・work の 2 項目だけ FAIL（想定どおり）、公開版での歩行の検査も 出られない 0。
 
+
+- 2026-10-17（§84）：制作者の /goal「公園を構成する施設・自然物の質感を写真と遜色ない写実的なレベルまで。コンポーネントごとにサブエージェントで」。
+  - 基盤（commit 6a0d553）：tools/pbr/（lib.py＝画像 3 枚の PBR 材質と置き換え・UV、texlib.py＝写真から画像を起こす、compare_patch.py＝写真｜Blender｜ビューアの同じ範囲の dE・fine・mid・sat、make_viewer.sh・viewer_shot.cjs＝作業用ビューア、bl.sh＝Blender を同時 4 本まで、mat_users.py）。build_all が最後に tools/pbr/c_<担当>.py を呼ぶ（PBR=0／PBR_ONLY／PBR_SKIP）。export_glb は m['pbr'] の材質を素の 3 枚に組み直して glTF に出す。ビューアは pbrDress（色むら・異方性）と viewer-src/src/pbr/<担当>.js の手直し。
+  - 動機：ビューアは手続きの材質を代表色 1 色にしていたので CG っぽかった（広場の舗装は写真 6430 に対して細部の量 0.0 倍）。
+  - 担当 12 本（約束 tools/pbr/BRIEF.md、出力 out/pbr_<担当>/）：rest a067b63553988bceb、mgmt abcbaf5587e446cb3、gates a8da05be0cced1d7d、toilets a330149306d28ea7d、plaza ad76b911223d6d064、paths a7ca4ea63d5e6223e、stone ae76ac37dcd307eab、ground aaa79100a9621f697、grass a28eabc26482625ea、trees a4d2c5c7d5e34d95d、shrubs a180ec0ed800827bc、water afa65bf0b978354af。
+  - 戻ったら：報告の数字と画像を自分で見る → PBR_ONLY なしで全体を組む（check_all）→ build_viewer → ビューアで写真のカメラの絵を撮って確かめる（test_viewer の fps）→ PLAN §84 → コミット。
+  - 追加の指示（同日）「植物の種類なども、files/のデータを見てなるべく正確にして」→ trees（樹木一覧 R08 の種ごとの樹形・葉・色・樹皮。上位 20 種で 9 割）・shrubs（計画平面図の凡例・植栽の種）・grass（芝・地被の種）へ送った。改良前のビューアの絵：out/pbr84_before/viewer/（28 枚）。
+  - 受け取り（2026-10-18）：toilets（行者堂・灯籠・瓦の形を続けさせた）、water（丸い護岸の石・映り込みを続けさせた）、shrubs（6424・6456 の生垣を道の縁まで・肌理を続けさせた）、mgmt（室内は写真とほぼ同じ。吹付けの粒を続けさせた）、rest（完了。室内 dE 2〜5、外は光の差）。
+  - 統合の側で直したこと：make_viewer.sh が leaves.js も差し替える。ビューアの pbrDress が extras の pbr_tint・rough_mul・normal を入れ直す（glTF の baseColorFactor は ≤1 で、tint>1 の材質＝白い漆喰などが画像の色のままだった）。
+  - **統合の宿題**：ビューアの光が Blender より約 1.25 倍明るく暖色（改良前から。6174 の壁 viewer 143,120,79／Blender 116,101,73／写真 106,92,74）。統合でビューアの光を Blender に一度に校正する。担当の <担当>.js の全体の補正は外させた（rest.js の「灰に 35 % 寄せ」は rest が完了済みなので統合で外す）。
+  - 受け取り（10/18 続き）：gates・plaza・water・shrubs・ground・stone 完了。残り toilets・paths・grass・trees。
+  - 光の調べ：render_views に PHOTO_SUN=1（撮影時刻の太陽、tools/pbr/sun.py）。6430 の広場から太陽へ光線 200 本のうち 188 本が葉に当たる（樹冠が詰まりすぎ、木漏れ日が出ない）→ trees へ。葉なしでも日なた／日陰の比が約 1.3 倍で写真（3〜5 倍）より平板 → 統合で太陽と空の比を見直す。Blender の fine が全担当で低い（EEVEE の濾過・AgX）→ 統合で描画の設定を試す。
+  - 描画の設定の試し（6430、広場）：filter_size 1.5→0.6 で舗装の fine 0.39→0.75（統合で vlib.render_settings に入れる。stone の Blender だけの detail の掛け算は過剰にならないか見る）。日なた／影の明るさの比（線形、葉なし）は太陽 4 で 2.95、12 で 4.48、写真は 4〜5 程度（日だまり対日陰）→ 統合で太陽 8〜10 を試し、室内の写真の色が崩れないか確かめてから決める。
+  - 10/18 後半：全担当の統合の試し out/pbr84_int0（BUILD_OK、VERIFY OK、PARK_CHECK OK。MGMT_PLAN は以前から FAIL。VEG_CHECK は草の株を除けば open_false 0.13、opaque_open 0.211 が基準 0.2 をわずかに超え→trees 3 巡目の後に再測）。
+  - ビューアの光の校正（out/pbr84_int0/calib.py・trial.sh、写真 20 枚のビューア／Blender の比）：ACES→AgX で彩度が合う（室内 sat 1.32→1.0）。空の映り込み（PMREM）と樹冠の影（canopy_map.py → nav.canopy、Data3DTexture を太陽へたどる）を入れた。試しの値 tm=agx&env=0.4&hi=0.45&si=0.8&amb=0.55 で室内 Y 0.93、屋外 1.14（木の下の写真 1.25〜1.47：葉の LEAF_GAIN 1.4・SAT 0.65 が旧の光向けで白っぽい／開けた所 0.71：太陽が弱い）。trees の 3 巡目の後に葉の補正と太陽を決めて既定にする。
+  - trees 2 巡目：樹種の入れ替え 4 組（t548⇄t773、t725⇄t696、t764⇄t458、t165⇄t1247）、仕立て松 164 本。3 巡目：写真に写る近くの木の樹冠の大きさを写真に（統合の判断で許可、幹の位置は不変）、松の塊の質感、色。
+- 2026-10-18 §84 を統合（commit まで、公開版 share は未反映）：
+  - check_all：1 build・2 verify（OK、failures 0）・3a build_viewer・4-5 match（meanF 0.900）は OK。3b test_viewer は園路 2 本の歩き始めで FAIL だった。
+    - 原因：ビューアの立てる／乗れるの判定が材質の名前の grass・bamboo で決まり、写実材質の竹林の床・芝の地面に立てなかった。加えて、まとめた物体の最初の材質で決めていた。
+    - 当たった面の材質で判定し、pbr の地面類は立てるように直した → VIEWER_TEST OK（60.3 fps）、probe_walk 出られない 0。
+  - ビューアの光は最終のモデルで校正：室内 0.93、屋外 1.01、葉 1.0 前後。比較 out/pbr84_final/before_after.jpg。
+  - 残る差と制作者に確かめたいことは PLAN §84 の末尾。小屋の前のドウダン（og_dodan）・管理棟の窓の外の木（wm_・wr_）は旧の葉の板のまま。
+  - 次の一手：制作者の確認と、公開版への反映の指示を待つ（publish_share → frames_share → render_share → sheets_share）。
