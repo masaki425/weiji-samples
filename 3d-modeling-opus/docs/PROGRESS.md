@@ -456,3 +456,15 @@ Blender は 5.2。サンドボックスの外で起動する（Bash の dangerou
   - ビューアの光は最終のモデルで校正：室内 0.93、屋外 1.01、葉 1.0 前後。比較 out/pbr84_final/before_after.jpg。
   - 残る差と制作者に確かめたいことは PLAN §84 の末尾。小屋の前のドウダン（og_dodan）・管理棟の窓の外の木（wm_・wr_）は旧の葉の板のまま。
   - 次の一手：制作者の確認と、公開版への反映の指示を待つ（publish_share → frames_share → render_share → sheets_share）。
+- 2026-10-18 §84 を公開（制作者の指示「§84 を公開版（share）に反映して」、share 6068a60、反映 120 秒）：
+  - 書き出しを軽くした（export_glb：写実材質の画像を 1024／512 px、幹と枝 0.4・見えない芯 0.25 に間引く）。公園の .js 144→69 MB、各ファイル 100 MB 以内、合計 235 MB。
+  - publish_share → frames_share → render_share（90 枚）→ sheets_share。index.html は「最終更新」の 1 文と、画像の出典に肌理の 1 文。
+  - 公開版の検査は shots・work の 2 項目だけ FAIL（想定どおり）、60.3 fps。
+  - 残っていた担当の処理（trees_tex.py pine が 10 時間以上）を止めた。
+- 2026-10-18 §85（停止フックの指摘「全コンポーネントで写真と遜色ない根拠がない」を受けて）：独立の監査役 ac313563b5cc32511（全コンポーネントの写真｜Blender｜ビューア、out/audit84/AUDIT.md）、trees 4 巡目（門の前の t1066 ほか・松の塊・wm_/wr_ を画像の葉に）、shrubs 2 巡目（og_dodan・mg.azalea・mg.MH.hedge・茅葺門の生垣）。監査の所見は各担当へ戻す。
+- 10/18〜19 §85 の続き：監査の所見に 12 担当が対応（commit 済み：rest・mgmt・toilets・shrubs・plaza・water・gates・ground・trees 4〜5 巡・stone 3〜4 巡）。統合の側：カメラに映る空を青に（Blender の Light Path、地平より下はくすんだ地面色。ビューアは空の球）、ビューアの地面類の空の映り込み 0.15 倍、export_glb は描かない葉の散布を GLB に入れない、water の植え込みを公園の区分へ・細分 1 段（管理棟の GLB 103 MB の原因）、make_viewer.sh の区域の既定。
+  - 統合の試し out/pbr85_int3：BUILD_OK、VERIFY OK、PARK_CHECK OK、PATH_CHECK OK、VEG_CHECK は opaque_open 0.215 だけ FAIL（原因は樹冠の葉：樹冠を隠すと 0.095）→ trees へ。ビューアの .js は 公園 87・休憩棟 63・管理棟 59・葉 33 MB。
+  - 再監査を ac313563b5cc32511 に依頼（out/audit85/）。
+- 10/19 §85 の 3 巡目：再監査（out/audit85）の所見に rest（屋根を metal 1 の暗い鋼板に）・trees（6〜7 巡：写真の松の板、門の前の広葉樹 5 本を松と入れ替え）・shrubs（生垣の膨らみ）・ground（境の斑の層）・stone（5 巡：割石の玉石）・water（流れを池と分ける）・plaza（白い筋・地形の突き出し）が対応、commit 済み。統合：ビューアの光（樹冠の影 0.5、地面類の空の映り込み 0.6、照り返し 0.8、茂みの陰 0.3）、太陽 8 は色差が悪化したので 4 のまま、out/files のリンク、paths の路肩の赤み。
+  - 統合の組み立て out/pbr85_int4：BUILD_OK・VERIFY OK・PARK_CHECK OK・PATH_CHECK OK・VEG_CHECK OK。ビューアの .js：公園 87・休憩棟 63・管理棟 72・葉 36 MB（いずれも 100 MB 以内）。3 回目の監査を依頼（out/audit86/）。
+- 10/19 3 回目の監査（out/audit86）：まだ「遜色ない」はない。大きな差は trees・shrubs・water の 3 つ。数字は横ばい（Blender dE 中央値 6.7→6.0→6.4）。PLAN §85 に記録。進め方を制作者に相談（公開・続けるなら写真ごとの光の再現か、松・生垣の作り方を変える）。
